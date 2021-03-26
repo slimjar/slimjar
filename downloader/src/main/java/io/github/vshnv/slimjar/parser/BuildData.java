@@ -3,23 +3,22 @@ package io.github.vshnv.slimjar.parser;
 import io.github.vshnv.slimjar.data.Dependency;
 import io.github.vshnv.slimjar.data.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class BuildData {
-    private final List<Dependency> dependencies;
-    private final List<Repository> repositories;
+public final class BuildData {
+    private final Set<Dependency> dependencies;
+    private final Set<Repository> repositories;
 
-    public BuildData(List<Dependency> dependencies, List<Repository> repositories) {
-        this.dependencies = dependencies;
-        this.repositories = repositories;
+    public BuildData(Collection<Dependency> dependencies, Collection<Repository> repositories) {
+        this.dependencies = new HashSet<>(dependencies);
+        this.repositories = new HashSet<>(repositories);
     }
 
-    public List<Dependency> getDependencies() {
-        return new ArrayList<>(dependencies);
+    public Set<Dependency> getDependencies() {
+        return Collections.unmodifiableSet(dependencies);
     }
 
-    public List<Repository> getRepositories() {
-        return new ArrayList<>(repositories);
+    public Set<Repository> getRepositories() {
+        return Collections.unmodifiableSet(repositories);
     }
 }
