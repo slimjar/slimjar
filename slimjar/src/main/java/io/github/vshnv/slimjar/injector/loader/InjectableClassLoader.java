@@ -4,16 +4,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public final class InjectableClassLoader extends URLClassLoader implements Injectable {
-    public InjectableClassLoader(ClassLoader parent) {
+    public InjectableClassLoader(final ClassLoader parent) {
         super(new URL[0], parent);
     }
 
-    public InjectableClassLoader(URL[] urls, ClassLoader parent) {
+    public InjectableClassLoader(final URL[] urls, final ClassLoader parent) {
         super(urls, parent);
     }
 
     @Override
-    public void inject(URL url) {
+    public void inject(final URL url) {
         addURL(url);
     }
 }

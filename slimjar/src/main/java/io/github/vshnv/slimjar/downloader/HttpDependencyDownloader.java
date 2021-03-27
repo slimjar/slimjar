@@ -13,29 +13,29 @@ import java.util.function.Function;
 public final class HttpDependencyDownloader implements DependencyDownloader {
     private final Function<String, OutputWriter> outputWriterProducer;
 
-    public HttpDependencyDownloader(Function<String, OutputWriter> outputWriterProducer) {
+    public HttpDependencyDownloader(final Function<String, OutputWriter> outputWriterProducer) {
         this.outputWriterProducer = outputWriterProducer;
     }
 
     @Override
-    public URL download(Dependency dependency) throws IOException {
-        URL url = new URL(dependency.getUrl());
-        HttpURLConnection httpConnection = createDownloadConnection(url);
-        String fileName = dependency.getName() + ".jar";
-        InputStream inputStream = httpConnection.getInputStream();
-        OutputWriter outputWriter = outputWriterProducer.apply(fileName);
+    public URL download(final Dependency dependency) throws IOException {
+        final URL url = new URL(dependency.getUrl());
+        final HttpURLConnection httpConnection = createDownloadConnection(url);
+        final String fileName = dependency.getName() + ".jar";
+        final InputStream inputStream = httpConnection.getInputStream();
+        final OutputWriter outputWriter = outputWriterProducer.apply(fileName);
         outputWriter.writeFrom(inputStream, httpConnection.getContentLength());
         httpConnection.disconnect();
         return url;
     }
 
-    private HttpURLConnection createDownloadConnection(URL url) throws IOException {
-        URLConnection connection =  url.openConnection();
+    private HttpURLConnection createDownloadConnection(final URL url) throws IOException {
+        final URLConnection connection =  url.openConnection();
         if (!Objects.equals(url.getProtocol(), "HTTP")) {
             throw new IOException("Unexpected protocol. Expecting Http, URL was: " + url);
         }
-        HttpURLConnection httpConnection = (HttpURLConnection) connection;
-        int responseCode = httpConnection.getResponseCode();
+        final HttpURLConnection httpConnection = (HttpURLConnection) connection;
+        final int responseCode = httpConnection.getResponseCode();
         if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new IOException("Could not download from" + url);
         }

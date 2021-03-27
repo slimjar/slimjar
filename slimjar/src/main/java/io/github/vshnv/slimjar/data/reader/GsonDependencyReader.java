@@ -6,7 +6,7 @@ import io.github.vshnv.slimjar.data.DependencyData;
 import java.io.*;
 import java.util.function.Function;
 
-public class GsonDependencyReader implements DependencyReader {
+public final class GsonDependencyReader implements DependencyReader {
     private final Function<Void, InputStream> inputStreamProducer;
     private final Gson gson;
 
@@ -18,7 +18,7 @@ public class GsonDependencyReader implements DependencyReader {
     @Override
     public DependencyData read() {
         try (InputStream stream = inputStreamProducer.apply(null)) {
-            InputStreamReader inputStreamReader = new InputStreamReader(stream);
+            final InputStreamReader inputStreamReader = new InputStreamReader(stream);
             return gson.fromJson(inputStreamReader, DependencyData.class);
         } catch (IOException e) {
             e.printStackTrace();

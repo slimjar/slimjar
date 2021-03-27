@@ -6,5 +6,5 @@ import java.io.IOException;
 import java.net.URL;
 
 public interface DependencyDownloader {
-    URL download(Dependency dependency) throws IOException;
+    URL download(final Dependency dependency) throws IOException;
 }

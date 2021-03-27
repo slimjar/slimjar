@@ -6,7 +6,7 @@ import java.util.Objects;
 public final class DependencyData {
     private final Collection<Dependency> dependencies;
 
-    public DependencyData(Collection<Dependency> dependencies) {
+    public DependencyData(final Collection<Dependency> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -15,10 +15,10 @@ public final class DependencyData {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DependencyData data = (DependencyData) o;
+        final DependencyData data = (DependencyData) o;
         return dependencies.equals(data.dependencies);
     }
 

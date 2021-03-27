@@ -11,17 +11,17 @@ import java.net.URL;
 public final class DownloadingDependencyInjector implements DependencyInjector {
     private final DependencyDownloader dependencyDownloader;
 
-    public DownloadingDependencyInjector(DependencyDownloader dependencyDownloader) {
+    public DownloadingDependencyInjector(final DependencyDownloader dependencyDownloader) {
         this.dependencyDownloader = dependencyDownloader;
     }
 
     @Override
-    public void inject(Injectable injectable, DependencyData dependencyData) {
-        for (Dependency dependency : dependencyData.getDependencies()) {
+    public void inject(final Injectable injectable, final DependencyData dependencyData) {
+        for (final Dependency dependency : dependencyData.getDependencies()) {
             try {
-                URL downloadedJarUrl = dependencyDownloader.download(dependency);
+                final URL downloadedJarUrl = dependencyDownloader.download(dependency);
                 injectable.inject(downloadedJarUrl);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new InjectionFailedException(dependency, e);
             }
         }
