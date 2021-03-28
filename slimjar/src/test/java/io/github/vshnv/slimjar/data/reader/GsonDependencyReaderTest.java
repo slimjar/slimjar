@@ -20,8 +20,8 @@ public class GsonDependencyReaderTest extends TestCase {
                 new Dependency("dep-c", "somerepo3.tld/path/tojar", Collections.emptyList())
         ));
         String jsonData = gson.toJson(data);
-        DependencyReader reader = new GsonDependencyReader(v -> new ByteArrayInputStream(jsonData.getBytes()), gson);
-        DependencyData loadedData = reader.read();
+        DependencyReader reader = new GsonDependencyReader(gson);
+        DependencyData loadedData = reader.read(new ByteArrayInputStream(jsonData.getBytes()));
         assertEquals(loadedData, data);
     }
 }
