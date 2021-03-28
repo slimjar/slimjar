@@ -6,6 +6,7 @@ import io.github.vshnv.slimjar.downloader.DependencyDownloader;
 import io.github.vshnv.slimjar.injector.loader.Injectable;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 public final class DownloadingDependencyInjector implements DependencyInjector {
@@ -23,6 +24,8 @@ public final class DownloadingDependencyInjector implements DependencyInjector {
                 injectable.inject(downloadedJarUrl);
             } catch (final IOException e) {
                 throw new InjectionFailedException(dependency, e);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
             }
         }
     }
