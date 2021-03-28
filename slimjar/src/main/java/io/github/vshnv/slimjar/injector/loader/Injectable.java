@@ -7,7 +7,7 @@ import java.net.URLClassLoader;
 public interface Injectable {
     void inject(final URL url) throws InvocationTargetException, IllegalAccessException;
     
-    static WrappedInjectableClassLoader wrap(URLClassLoader classLoader) {
+    static WrappedInjectableClassLoader wrap(final URLClassLoader classLoader) {
         return new WrappedInjectableClassLoader(classLoader);
     }
 }

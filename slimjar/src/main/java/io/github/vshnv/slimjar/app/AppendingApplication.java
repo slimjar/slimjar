@@ -1,4 +1,4 @@
 package io.github.vshnv.slimjar.app;
 
-final class AppendingApplication extends Application {
+public final class AppendingApplication extends Application {
 }

@@ -4,8 +4,10 @@ import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
-public class ChanneledFileOutputWriter implements OutputWriter {
+public final class ChanneledFileOutputWriter implements OutputWriter {
+
     private final File outputFile;
+
     public ChanneledFileOutputWriter(final File outputFile) {
         this.outputFile = outputFile;
     }

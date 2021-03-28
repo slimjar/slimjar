@@ -11,12 +11,10 @@ import io.github.vshnv.slimjar.injector.DependencyInjector;
 import io.github.vshnv.slimjar.injector.DownloadingDependencyInjector;
 import io.github.vshnv.slimjar.injector.loader.Injectable;
 import io.github.vshnv.slimjar.injector.loader.InjectableClassLoader;
-import io.github.vshnv.slimjar.injector.loader.WrappedInjectableClassLoader;
 import io.github.vshnv.slimjar.util.Parameters;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;

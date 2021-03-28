@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.github.vshnv.slimjar.data.DependencyData;
 
 import java.io.*;
-import java.util.function.Function;
 
 public final class GsonDependencyReader implements DependencyReader {
     private final Gson gson;

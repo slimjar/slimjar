@@ -21,7 +21,7 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
     }
 
     @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
+    public Class<?> loadClass(final String name) throws ClassNotFoundException {
         if (name.equals(entryPointClass)) {
             Class<?> clazz = findClass(name);
             return clazz;
@@ -30,13 +30,13 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
     }
 
     @Override
-    public Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(final String name) throws ClassNotFoundException {
         byte[] b = loadClassFromFile(name);
         if (b == null) return null;
         return defineClass(name, b, 0, b.length);
     }
 
-    private byte[] loadClassFromFile(String fileName)  {
+    private byte[] loadClassFromFile(final String fileName)  {
         InputStream inputStream = getParent().getResourceAsStream(
                 fileName.replace('.', File.separatorChar) + ".class");
         if (inputStream == null) {

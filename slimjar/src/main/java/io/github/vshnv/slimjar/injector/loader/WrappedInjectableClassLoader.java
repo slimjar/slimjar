@@ -9,7 +9,7 @@ public final class WrappedInjectableClassLoader implements Injectable {
     private final URLClassLoader urlClassLoader;
     private final Method addURLMethod;
 
-    public WrappedInjectableClassLoader(URLClassLoader urlClassLoader) {
+    public WrappedInjectableClassLoader(final URLClassLoader urlClassLoader) {
         Method methodDefer;
         this.urlClassLoader = urlClassLoader;
         try {
@@ -23,7 +23,7 @@ public final class WrappedInjectableClassLoader implements Injectable {
 
 
     @Override
-    public void inject(URL url) throws InvocationTargetException, IllegalAccessException {
+    public void inject(final URL url) throws InvocationTargetException, IllegalAccessException {
         addURLMethod.setAccessible(true);
         addURLMethod.invoke(urlClassLoader, url);
     }
