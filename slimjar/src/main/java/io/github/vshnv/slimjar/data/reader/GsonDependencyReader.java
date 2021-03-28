@@ -7,17 +7,15 @@ import java.io.*;
 import java.util.function.Function;
 
 public final class GsonDependencyReader implements DependencyReader {
-    private final Function<Void, InputStream> inputStreamProducer;
     private final Gson gson;
 
-    public GsonDependencyReader(Function<Void, InputStream> inputStreamProducer, Gson gson) {
-        this.inputStreamProducer = inputStreamProducer;
+    public GsonDependencyReader(Gson gson) {
         this.gson = gson;
     }
 
     @Override
-    public DependencyData read() {
-        try (InputStream stream = inputStreamProducer.apply(null)) {
+    public DependencyData read(InputStream inputStream) {
+        try (InputStream stream = inputStream) {
             final InputStreamReader inputStreamReader = new InputStreamReader(stream);
             return gson.fromJson(inputStreamReader, DependencyData.class);
         } catch (IOException e) {
