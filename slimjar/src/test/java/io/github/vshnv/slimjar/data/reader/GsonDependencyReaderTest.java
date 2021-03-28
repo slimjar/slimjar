@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar;
+package io.github.vshnv.slimjar.data.reader;
 
 import com.google.gson.Gson;
 import io.github.vshnv.slimjar.data.Dependency;
