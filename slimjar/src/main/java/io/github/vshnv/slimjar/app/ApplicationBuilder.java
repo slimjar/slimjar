@@ -6,6 +6,7 @@ import io.github.vshnv.slimjar.data.reader.DependencyReader;
 import io.github.vshnv.slimjar.data.reader.GsonDependencyReader;
 import io.github.vshnv.slimjar.downloader.ChanneledFileOutputWriter;
 import io.github.vshnv.slimjar.downloader.DependencyDownloader;
+import io.github.vshnv.slimjar.downloader.FileOutputWriterFactory;
 import io.github.vshnv.slimjar.downloader.URLDependencyDownloader;
 import io.github.vshnv.slimjar.injector.DependencyInjector;
 import io.github.vshnv.slimjar.injector.DownloadingDependencyInjector;
@@ -21,6 +22,11 @@ import java.net.URLClassLoader;
 import java.util.Objects;
 
 public final class ApplicationBuilder {
+
+    private static final String userHome = System.getProperty("user.home");
+    private static final String defaultPath = String.format("%s/.jar_dependencies", userHome);
+    private static final File defaultDirectory = new File(defaultPath);
+
     private DependencyData dependencyData;
     private File dependenciesFile;
     private DependencyReader dependencyReader;
@@ -85,8 +91,7 @@ public final class ApplicationBuilder {
 
     protected DependencyDownloader getDependencyDownloader() {
         if (dependencyDownloader == null) {
-            return new URLDependencyDownloader((fileName) ->
-                    new ChanneledFileOutputWriter(new File("slimjar/" + fileName)));
+            return new URLDependencyDownloader(new FileOutputWriterFactory(defaultDirectory));
         }
         return dependencyDownloader;
     }
@@ -99,16 +104,17 @@ public final class ApplicationBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    public Application buildInjectable(final String fqclassName, final Object... args) throws ReflectiveOperationException {
-        final InjectableClassLoader classLoader = new InjectableClassLoader(fqclassName);
+    public Application buildInjectable(final String fqClazzName, final Object... args) throws ReflectiveOperationException {
+        final InjectableClassLoader classLoader = new InjectableClassLoader(fqClazzName);
         injectDependenciesInto(classLoader);
 
-        final Class<?> clazz = classLoader.loadClass(fqclassName);
+        final Class<?> clazz = classLoader.loadClass(fqClazzName);
         if (!Application.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException("Specified class does not extend Application");
         }
 
-        final Class<Application> applicationClass = (Class<Application>) Class.forName(fqclassName, true, classLoader);
+        final Class<Application> applicationClass =
+                (Class<Application>) Class.forName(fqClazzName, true, classLoader);
         final Class<?>[] constructorParams = Parameters.typesFrom(args);
         return applicationClass.getConstructor(constructorParams).newInstance(args);
     }

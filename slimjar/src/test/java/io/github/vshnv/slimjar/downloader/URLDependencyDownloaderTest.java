@@ -34,7 +34,7 @@ public class URLDependencyDownloaderTest extends TestCase {
         assertEquals(expected, output.get());
     }
 
-    private Function<String, OutputWriter> createOutputWriter(AtomicReference<String> output) {
+    private OutputWriterFactory createOutputWriter(AtomicReference<String> output) {
         return name -> (inputStream, length) -> {
             output.set(
                     new BufferedReader(

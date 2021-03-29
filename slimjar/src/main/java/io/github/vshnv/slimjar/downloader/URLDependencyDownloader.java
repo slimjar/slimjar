@@ -10,9 +10,9 @@ import java.net.URLConnection;
 import java.util.function.Function;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
-    private final Function<String, OutputWriter> outputWriterProducer;
+    private final OutputWriterFactory outputWriterProducer;
 
-    public URLDependencyDownloader(final Function<String, OutputWriter> outputWriterProducer) {
+    public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer) {
         this.outputWriterProducer = outputWriterProducer;
     }
 
@@ -22,7 +22,7 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         final URLConnection connection = createDownloadConnection(url);
         final String fileName = dependency.getName() + ".jar";
         final InputStream inputStream = connection.getInputStream();
-        final OutputWriter outputWriter = outputWriterProducer.apply(fileName);
+        final OutputWriter outputWriter = outputWriterProducer.create(fileName);
         outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
         return url;
