@@ -31,9 +31,13 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
 
     @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
+        Class<?> loaded = findLoadedClass(name);
+        if (loaded != null) return loaded;
+
         byte[] b = loadClassFromFile(name);
-        if (b == null) return null;
-        return defineClass(name, b, 0, b.length);
+        if (b != null) return defineClass(name, b, 0, b.length);
+
+        return super.findClass(name);
     }
 
     private byte[] loadClassFromFile(final String fileName)  {
