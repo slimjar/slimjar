@@ -1,3 +1,4 @@
 rootProject.name = 'slimjar'
 include 'slimjar'
+include 'gradle-plugin'
 

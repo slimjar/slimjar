@@ -1,0 +1,45 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.4.31"
+    id "java-gradle-plugin"
+    id "com.gradle.plugin-publish" version "0.12.0"
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+    testImplementation "org.assertj:assertj-core:3.19.0"
+}
+
+compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+gradlePlugin {
+    plugins {
+        slimjar {
+            id = "io.github.vshnv.slimjar"
+            // TODO Complete later
+            displayName = ""
+            description = ""
+            implementationClass = "io.github.vshnv.slimjar.SlimJarPlugin"
+        }
+    }
+}
+
+// TODO Complete this for publishing
+pluginBundle {
+    website = ""
+    vcsUrl = ""
+    tags = []
+}
