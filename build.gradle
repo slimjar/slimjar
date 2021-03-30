@@ -5,8 +5,11 @@ plugins {
 group 'io.github.vshnv'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+// Can organize this later
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
 dependencies {
