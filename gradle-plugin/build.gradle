@@ -5,8 +5,6 @@ plugins {
     id "maven-publish"
 }
 
-version = "1.0.7-SNAPSHOT"
-
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
@@ -14,13 +12,8 @@ dependencies {
 }
 
 compileKotlin {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-compileKotlin {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "1.8"
     }
 }
 

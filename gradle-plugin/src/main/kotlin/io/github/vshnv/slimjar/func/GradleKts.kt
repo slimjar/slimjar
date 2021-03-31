@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.kts
+package io.github.vshnv.slimjar.func
 
 import io.github.vshnv.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.vshnv.slimjar.SLIM_CONFIGURATION_NAME
@@ -41,7 +41,7 @@ fun DependencyHandler.slimApi(dependencyNotation: Any): Dependency? = add(SLIM_A
 /**
  * Creates a configuration with options
  */
-private fun withOptions(
+private fun DependencyHandler.withOptions(
     configuration: String,
     dependencyNotation: String,
     dependencyConfiguration: Action<ExternalModuleDependency>
