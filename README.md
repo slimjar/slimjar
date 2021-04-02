@@ -9,7 +9,7 @@ Alternative use cases would include reuse of downloaded dependencies when switch
 
 ## Usage example
 
-Will be updates soon.
+Will be updated soon.
 
 ## Development setup
 
