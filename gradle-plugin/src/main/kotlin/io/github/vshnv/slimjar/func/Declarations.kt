@@ -13,5 +13,8 @@ internal fun Project.createConfig(configName: String, extends: String): Configur
 
     val slimConfig = configurations.create(configName)
     compileOnlyConfig.extendsFrom(slimConfig)
+    // TODO need to test this one, probably doesn't do what I think it does
+    slimConfig.isTransitive = true
+
     return slimConfig
 }

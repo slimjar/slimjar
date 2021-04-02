@@ -18,7 +18,7 @@ class PluginTest {
     @Test
     fun `Test apply java-library plugin`() {
         assertThatCode {
-            project.plugins.getPlugin("java-library")
+            project.plugins.getPlugin("java")
         }.doesNotThrowAnyException()
     }
 
