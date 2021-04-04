@@ -1,13 +1,14 @@
 package io.github.vshnv.slimjar.downloader;
 
 import io.github.vshnv.slimjar.data.Dependency;
+import io.github.vshnv.slimjar.downloader.output.OutputWriter;
+import io.github.vshnv.slimjar.downloader.output.OutputWriterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.function.Function;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
     private final OutputWriterFactory outputWriterProducer;
