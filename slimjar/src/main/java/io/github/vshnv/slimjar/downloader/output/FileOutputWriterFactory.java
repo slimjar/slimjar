@@ -8,7 +8,13 @@ public final class FileOutputWriterFactory implements OutputWriterFactory {
     public FileOutputWriterFactory(final File outputDirectory) {
         this.outputDirectory = outputDirectory;
         if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
+            boolean success = outputDirectory.mkdirs();
+            if (!success) {
+                throw new IllegalStateException(
+                        "Could not create output directory at " +
+                                outputDirectory.getAbsolutePath()
+                );
+            }
         }
     }
 

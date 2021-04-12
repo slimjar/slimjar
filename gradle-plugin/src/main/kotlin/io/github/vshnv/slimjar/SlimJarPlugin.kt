@@ -17,7 +17,7 @@ class SlimJarPlugin : Plugin<Project> {
         plugins.apply("java")
 
         val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
-        //val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
+        val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
 
         val slimJar = tasks.register(SLIM_JAR_TASK_NAME, SlimJar::class.java)
 

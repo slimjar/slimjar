@@ -7,7 +7,6 @@ import org.gradle.api.tasks.CacheableTask
 open class SlimJar : DefaultTask() {
 
     open fun relocate(from: String, to: String): SlimJar {
-        println("fuck")
         return this
     }
 

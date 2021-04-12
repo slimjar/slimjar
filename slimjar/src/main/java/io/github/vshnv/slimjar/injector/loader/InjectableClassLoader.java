@@ -23,8 +23,7 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
     @Override
     public Class<?> loadClass(final String name) throws ClassNotFoundException {
         if (name.equals(entryPointClass)) {
-            Class<?> clazz = findClass(name);
-            return clazz;
+            return findClass(name);
         }
         return super.loadClass(name);
     }
