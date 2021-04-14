@@ -23,6 +23,11 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
     @Override
     public Class<?> loadClass(final String name) throws ClassNotFoundException {
         if (name.equals(entryPointClass)) {
+            final Class<?> loadedClass = findLoadedClass(entryPointClass);
+            if (loadedClass == null) return findClass(name);
+            if (loadedClass.getClassLoader() != this) {
+                throw new AssertionError("Application class already loaded by another classloader!");
+            }
             return findClass(name);
         }
         return super.loadClass(name);
@@ -58,4 +63,5 @@ public final class InjectableClassLoader extends URLClassLoader implements Injec
         buffer = byteStream.toByteArray();
         return buffer;
     }
+
 }
