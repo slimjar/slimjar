@@ -14,13 +14,15 @@ class SlimJarPlugin : Plugin<Project> {
 
     override fun apply(project: Project): Unit = with(project) {
         // Applies Java if not present, since it's required for the compileOnly configuration
-        plugins.apply("java")
+        plugins.apply(JavaPlugin::class.java)
 
         val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
-        //val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
+        val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
 
-        val slimJar = tasks.register(SLIM_JAR_TASK_NAME, SlimJar::class.java)
-
+        val slimJar = tasks.register(SLIM_JAR_TASK_NAME, SlimJar::class.java) {
+            it.group = "slimJar"
+        }
+        
         println(slimJar)
 
     }
