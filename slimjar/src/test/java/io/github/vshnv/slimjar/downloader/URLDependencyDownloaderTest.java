@@ -1,6 +1,7 @@
 package io.github.vshnv.slimjar.downloader;
 
 import io.github.vshnv.slimjar.data.Dependency;
+import io.github.vshnv.slimjar.downloader.output.OutputWriterFactory;
 import junit.framework.TestCase;
 
 import java.io.BufferedReader;
@@ -10,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class URLDependencyDownloaderTest extends TestCase {

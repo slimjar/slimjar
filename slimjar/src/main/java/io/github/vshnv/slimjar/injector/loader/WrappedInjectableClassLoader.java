@@ -13,7 +13,7 @@ public final class WrappedInjectableClassLoader implements Injectable {
         Method methodDefer;
         this.urlClassLoader = urlClassLoader;
         try {
-            methodDefer = urlClassLoader.getClass().getMethod("addURL", URL.class);
+            methodDefer = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             methodDefer = null;

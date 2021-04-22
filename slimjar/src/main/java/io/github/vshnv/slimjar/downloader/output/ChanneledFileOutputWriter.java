@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.downloader;
+package io.github.vshnv.slimjar.downloader.output;
 
 import java.io.*;
 import java.nio.channels.Channels;

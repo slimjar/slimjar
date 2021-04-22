@@ -7,13 +7,6 @@ import org.gradle.jvm.tasks.Jar
 open class SlimJar : Jar() {
 
     open fun relocate(from: String, to: String): SlimJar {
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         return this
     }
 
