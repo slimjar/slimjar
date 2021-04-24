@@ -5,12 +5,34 @@ plugins {
     id "maven-publish"
 }
 
-version = "1.0.15-SNAPSHOT"
+configurations {
+    unzip
+    shade
+    compileOnly {
+        extendsFrom unzip
+        extendsFrom shade
+    }
+}
+
+repositories {
+    maven { url = "https://plugins.gradle.org/m2/" }
+}
 
 dependencies {
+    shade project(":slimjar")
+
+    compileOnly "com.github.jengelman.gradle.plugins:shadow:6.1.0"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
     testImplementation "org.assertj:assertj-core:3.19.0"
+}
+
+
+jar {
+    from {
+        (configurations.shade + configurations.unzip)
+                .collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 compileKotlin {

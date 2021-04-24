@@ -34,8 +34,11 @@ class GroovyBuildScriptTest {
         val result = GradleRunner.create()
             .withProjectDir(testDir.root)
             .withPluginClasspath()
-            .withArguments("slimJar")
+            .withArguments("build", "--stacktrace")
             .build()
+
+        println(result.output)
+        println(result.tasks)
 
         assertThat(TaskOutcome.SUCCESS).isEqualTo(result.task(":slimJar")?.outcome)
     }
