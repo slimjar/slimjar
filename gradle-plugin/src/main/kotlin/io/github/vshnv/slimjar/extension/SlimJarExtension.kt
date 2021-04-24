@@ -1,8 +1,6 @@
 package io.github.vshnv.slimjar.extension
 
-import org.gradle.api.Project
-
-open class SlimJarExtension(private val project: Project) {
+open class SlimJarExtension {
 
     val relocations = mutableSetOf<Pair<String, String>>()
 

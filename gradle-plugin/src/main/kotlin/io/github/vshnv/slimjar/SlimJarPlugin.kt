@@ -24,15 +24,13 @@ class SlimJarPlugin : Plugin<Project> {
 
         val slimJar = tasks.register(SLIM_JAR_TASK_NAME, SlimJar::class.java)
 
-        val shadow = tasks.findByName("shadowJar")
-
         val slimJarExtension = extensions.findByType(SlimJarExtension::class.java) ?: extensions.create(
             "slimJar",
-            SlimJarExtension::class.java,
-            this
+            SlimJarExtension::class.java
         )
 
-        if (shadow == null) {
+        // Checks if shadow is present
+        if (tasks.findByName("shadowJar") == null) {
             // TODO Create the task for relocating without shadow
             tasks.withType(Jar::class.java).first().finalizedBy(slimJar)
         } else {
@@ -43,8 +41,6 @@ class SlimJarPlugin : Plugin<Project> {
             }
 
         }
-
-        println(slimJar)
 
     }
 
