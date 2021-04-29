@@ -1,6 +1,8 @@
 package io.github.vshnv.slimjar.plugin.groovy
 
-import io.github.vshnv.slimjar.plugin.PLUGIN_ID
+import io.github.vshnv.slimjar.plugin.APPLY_SHADOW
+import io.github.vshnv.slimjar.plugin.APPLY_SLIMJAR
+import io.github.vshnv.slimjar.plugin.SHADOW_BUILDSCRIPT
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.GradleRunner
@@ -17,27 +19,31 @@ class GroovyBuildScriptTest {
 
     init {
         testDir.create()
-        settingsFile = testDir.newFile("settings.gradle.kts")
-        settingsFile.writeText("""
-            rootProject.name = "hello-world"
-        """.trimIndent())
+        settingsFile = testDir.newFile("settings.gradle")
+        settingsFile.writeText(
+            """
+                rootProject.name = "slimjar-test"
+            """.trimIndent()
+        )
     }
 
     @Test
-    fun `Test contains slimJar task`() {
-        testDir.newFile("build.gradle").writeText("""
-            plugins {
-                id '$PLUGIN_ID'
-            }
-        """.trimIndent())
+    fun `Test applies shadow`() {
+        testDir.newFile("build.gradle").writeText(
+            """
+                $SHADOW_BUILDSCRIPT                
+                $APPLY_SLIMJAR
+                $APPLY_SHADOW
+            """.trimIndent()
+        )
 
         val result = GradleRunner.create()
             .withProjectDir(testDir.root)
             .withPluginClasspath()
-            .withArguments("slimJar")
+            .withArguments("shadowJar")
             .build()
 
-        assertThat(TaskOutcome.SUCCESS).isEqualTo(result.task(":slimJar")?.outcome)
+        assertThat(TaskOutcome.SUCCESS).isEqualTo(result.task(":shadowJar")?.outcome)
     }
 
 }
