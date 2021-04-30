@@ -4,8 +4,10 @@ plugins {
 
 group 'io.github.vshnv'
 version '1.0-SNAPSHOT'
-sourceCompatibility = 1.14
+
+sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
 repositories {
     mavenCentral()
 }
