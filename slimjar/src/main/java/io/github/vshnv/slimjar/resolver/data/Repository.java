@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.data;
 
 import java.util.Objects;
 
@@ -31,5 +31,13 @@ public final class Repository {
     @Override
     public int hashCode() {
         return Objects.hash(identifier, url);
+    }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "identifier='" + identifier + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

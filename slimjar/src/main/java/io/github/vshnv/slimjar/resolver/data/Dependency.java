@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.data;
 
 import java.util.Objects;
 
@@ -38,5 +38,14 @@ public final class Dependency {
     @Override
     public int hashCode() {
         return Objects.hash(groupId, artifactId, version);
+    }
+
+    @Override
+    public String toString() {
+        return "Dependency{" +
+                "groupId='" + groupId + '\'' +
+                ", artifactId='" + artifactId + '\'' +
+                ", version='" + version + '\'' +
+                '}';
     }
 }
