@@ -1,5 +1,7 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.enquirer;
 
+import io.github.vshnv.slimjar.resolver.strategy.PathResolutionStrategy;
+import io.github.vshnv.slimjar.resolver.pinger.URLPinger;
 import io.github.vshnv.slimjar.resolver.data.Dependency;
 import io.github.vshnv.slimjar.resolver.data.Repository;
 

@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.pinger;
 
 import java.net.URL;
 

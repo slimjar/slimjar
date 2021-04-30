@@ -1,12 +1,10 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.pinger;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public final class HttpURLPinger implements URLPinger {
     private static final String SLIMJAR_USER_AGENT = "SlimjarApplication/* URL Validation Ping";

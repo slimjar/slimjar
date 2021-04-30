@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.strategy;
 
 import io.github.vshnv.slimjar.resolver.data.Dependency;
 import io.github.vshnv.slimjar.resolver.data.Repository;

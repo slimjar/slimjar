@@ -3,6 +3,8 @@ package io.github.vshnv.slimjar.resolver;
 
 import io.github.vshnv.slimjar.resolver.data.Dependency;
 import io.github.vshnv.slimjar.resolver.data.Repository;
+import io.github.vshnv.slimjar.resolver.enquirer.RepositoryEnquirer;
+import io.github.vshnv.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 
 import java.net.URL;
 import java.util.Collection;
