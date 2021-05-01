@@ -31,7 +31,7 @@ class SlimJarPlugin : Plugin<Project> {
             // Hooks into shadow to inject relocations
             val shadowTask = tasks.withType(ShadowJar::class.java).firstOrNull() ?: return
             shadowTask.doFirst { _ ->
-                slimJar.relocations.forEach { rule ->
+                slimJar.relocations().forEach { rule ->
                     shadowTask.relocate(
                         rule.originalPackagePattern,
                         rule.relocatedPackagePattern

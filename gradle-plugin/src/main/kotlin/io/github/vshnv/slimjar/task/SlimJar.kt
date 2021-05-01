@@ -23,7 +23,7 @@ import javax.inject.Inject
 @CacheableTask
 open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
 
-    internal val relocations = mutableSetOf<RelocationRule>()
+    private val relocations = mutableSetOf<RelocationRule>()
     private val mirrors = mutableSetOf<Mirror>()
 
     init {
@@ -75,6 +75,10 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
                 .create()
                 .toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
         }
+    }
+
+    internal fun relocations(): Set<RelocationRule> {
+        return relocations
     }
 
 }
