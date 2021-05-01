@@ -30,6 +30,10 @@ public final class Dependency {
         return version;
     }
 
+    public String getSnapshotId() {
+        return snapshotId;
+    }
+
     public Collection<Dependency> getTransitive() {
         return transitive;
     }
@@ -40,6 +44,7 @@ public final class Dependency {
                 "groupId='" + groupId + '\'' +
                 ", artifactId='" + artifactId + '\'' +
                 ", version='" + version + '\'' +
+                ", snapshotId='" + snapshotId + '\'' +
                 ", transitive=" + transitive +
                 '}';
     }
@@ -59,12 +64,4 @@ public final class Dependency {
         return Objects.hash(groupId, artifactId, version);
     }
 
-    @Override
-    public String toString() {
-        return "Dependency{" +
-                "groupId='" + groupId + '\'' +
-                ", artifactId='" + artifactId + '\'' +
-                ", version='" + version + '\'' +
-                '}';
-    }
 }

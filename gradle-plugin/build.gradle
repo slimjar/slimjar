@@ -5,8 +5,6 @@ plugins {
     id "maven-publish"
 }
 
-version = "1.0.128-SNAPSHOT"
-
 configurations {
     unzip
     shade

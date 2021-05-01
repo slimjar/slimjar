@@ -3,9 +3,9 @@ package io.github.vshnv.slimjar.task
 import com.google.gson.GsonBuilder
 import io.github.vshnv.slimjar.relocation.RelocationConfig
 import io.github.vshnv.slimjar.relocation.RelocationRule
-import io.github.vshnv.slimjar.resolver.Dependency
 import io.github.vshnv.slimjar.resolver.DependencyData
-import io.github.vshnv.slimjar.resolver.Repository
+import io.github.vshnv.slimjar.resolver.data.Dependency
+import io.github.vshnv.slimjar.resolver.data.Repository
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
@@ -22,8 +22,6 @@ import javax.inject.Inject
 open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
 
     val relocations = mutableSetOf<RelocationRule>()
-
-    var mirror: String? = null
 
     init {
         group = "slimJar"
@@ -44,7 +42,11 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     internal fun createJson() = with(project) {
 
         val dependencies =
-            RenderableModuleResult(config.incoming.resolutionResult.root).children.map { it.toSlimDependency() }
+            RenderableModuleResult(config.incoming.resolutionResult.root)
+                .children
+                .mapNotNull {
+                    it.toSlimDependency()
+                }
 
         val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
             .filterNot { it.url.toString().startsWith("file") }
@@ -69,11 +71,10 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 /**
  * Turns a [RenderableDependency] into a [Dependency]] with all its transitives
  */
-private fun RenderableDependency.toSlimDependency(): Dependency {
-    val (group, artifact, version) = name.split(":")
+private fun RenderableDependency.toSlimDependency(): Dependency? {
     val transitive = mutableSetOf<Dependency>()
     collectTransitive(transitive, children)
-    return Dependency(group, artifact, version, id.toString(), transitive)
+    return id.toString().toDependency(transitive)
 }
 
 /**
@@ -81,10 +82,23 @@ private fun RenderableDependency.toSlimDependency(): Dependency {
  */
 private fun collectTransitive(transitive: MutableSet<Dependency>, dependencies: Set<RenderableDependency>) {
     for (dependency in dependencies) {
-        val (group, artifact, version) = dependency.name.split(":")
-        val dep = Dependency(group, artifact, version, dependency.id.toString(), emptySet())
+        val dep = dependency.id.toString().toDependency(emptySet()) ?: continue
         if (dep in transitive) continue
         transitive.add(dep)
         collectTransitive(transitive, dependency.children)
     }
+}
+
+/**
+ * Creates a [Dependency] based on a string
+ * group:artifact:version:snapshot - The snapshot is the only nullable value
+ */
+private fun String.toDependency(transitive: Set<Dependency>): Dependency? {
+    val values = split(":")
+    val group = values.getOrNull(0) ?: return null
+    val artifact = values.getOrNull(1) ?: return null
+    val version = values.getOrNull(2) ?: return null
+    val snapshot = values.getOrNull(3)
+
+    return Dependency(group, artifact, version, snapshot, transitive)
 }

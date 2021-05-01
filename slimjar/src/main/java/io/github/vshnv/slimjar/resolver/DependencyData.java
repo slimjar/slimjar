@@ -1,7 +1,7 @@
 package io.github.vshnv.slimjar.resolver;
 
-import io.github.vshnv.slimjar.data.Dependency;
 import io.github.vshnv.slimjar.relocation.RelocationRule;
+import io.github.vshnv.slimjar.resolver.data.Dependency;
 import io.github.vshnv.slimjar.resolver.data.Repository;
 
 import java.util.Collection;
