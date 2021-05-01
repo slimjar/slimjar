@@ -8,7 +8,7 @@ plugins {
 configurations {
     unzip
     shade
-    compileOnly {
+    implementation {
         extendsFrom unzip
         extendsFrom shade
     }
