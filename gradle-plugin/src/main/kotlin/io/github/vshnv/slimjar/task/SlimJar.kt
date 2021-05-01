@@ -5,6 +5,7 @@ import io.github.vshnv.slimjar.relocation.RelocationConfig
 import io.github.vshnv.slimjar.relocation.RelocationRule
 import io.github.vshnv.slimjar.resolver.DependencyData
 import io.github.vshnv.slimjar.resolver.data.Dependency
+import io.github.vshnv.slimjar.resolver.data.Mirror
 import io.github.vshnv.slimjar.resolver.data.Repository
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
@@ -16,12 +17,14 @@ import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependenc
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
 import java.io.File
 import java.io.FileWriter
+import java.net.URL
 import javax.inject.Inject
 
 @CacheableTask
 open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
 
     val relocations = mutableSetOf<RelocationRule>()
+    private val mirrors = mutableSetOf<Mirror>()
 
     init {
         group = "slimJar"
@@ -33,6 +36,14 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         val rule = RelocationRule(original, relocated, relocationConfig.exclusions, relocationConfig.inclusions)
         relocations.add(rule)
         return this
+    }
+
+    open fun mirror(mirror: String, original: String) {
+        mirrors.add(Mirror(URL(mirror), URL(original)))
+    }
+
+    open infix fun String.mirroring(original: String) {
+        mirrors.add(Mirror(URL(this), URL(original)))
     }
 
     /**
@@ -62,7 +73,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             GsonBuilder()
                 .setPrettyPrinting()
                 .create()
-                .toJson(DependencyData(repositories, dependencies, relocations), it)
+                .toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
         }
     }
 

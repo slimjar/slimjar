@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    shade "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     shade project(":slimjar")
     shade "com.google.code.gson:gson:2.8.6"
 

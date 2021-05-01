@@ -2,6 +2,7 @@ package io.github.vshnv.slimjar.resolver;
 
 import io.github.vshnv.slimjar.relocation.RelocationRule;
 import io.github.vshnv.slimjar.resolver.data.Dependency;
+import io.github.vshnv.slimjar.resolver.data.Mirror;
 import io.github.vshnv.slimjar.resolver.data.Repository;
 
 import java.util.Collection;
@@ -9,11 +10,18 @@ import java.util.Objects;
 
 public final class DependencyData {
 
+    private final Collection<Mirror> mirrors;
     private final Collection<Repository> repositories;
     private final Collection<Dependency> dependencies;
     private final Collection<RelocationRule> relocations;
 
-    public DependencyData(final Collection<Repository> repositories, final Collection<Dependency> dependencies, final Collection<RelocationRule> relocations) {
+    public DependencyData(
+            final Collection<Mirror> mirrors,
+            final Collection<Repository> repositories,
+            final Collection<Dependency> dependencies,
+            final Collection<RelocationRule> relocations
+    ) {
+        this.mirrors = mirrors;
         this.repositories = repositories;
         this.dependencies = dependencies;
         this.relocations = relocations;
