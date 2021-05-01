@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-public final class RelocationRule {
+public class RelocationRule {
     private final String originalPackagePattern;
     private final String relocatedPackagePattern;
     private final Collection<String> exclusions;
