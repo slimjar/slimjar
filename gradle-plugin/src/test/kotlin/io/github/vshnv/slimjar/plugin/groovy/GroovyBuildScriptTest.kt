@@ -46,4 +46,30 @@ class GroovyBuildScriptTest {
         assertThat(TaskOutcome.SUCCESS).isEqualTo(result.task(":shadowJar")?.outcome)
     }
 
+    @Test
+    fun `Test `() {
+        testDir.newFile("build.gradle").writeText(
+            """
+                $SHADOW_BUILDSCRIPT                
+                $APPLY_SLIMJAR
+                $APPLY_SHADOW
+                
+                dependencies {
+                    slim "com.google.guava:guava:30.1.1-jre"
+                }
+                
+            """.trimIndent()
+        )
+
+        val result = GradleRunner.create()
+            .withProjectDir(testDir.root)
+            .withPluginClasspath()
+            .withArguments("shadowJar")
+            .build()
+
+        println(result.output)
+
+        //assertThat(TaskOutcome.SUCCESS).isEqualTo(result.task(":shadowJar")?.outcome)
+    }
+
 }

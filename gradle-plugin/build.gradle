@@ -5,6 +5,8 @@ plugins {
     id "maven-publish"
 }
 
+version = "1.0.128-SNAPSHOT"
+
 configurations {
     unzip
     shade
@@ -20,6 +22,8 @@ repositories {
 
 dependencies {
     shade project(":slimjar")
+    shade "com.google.code.gson:gson:2.8.6"
+
     compileOnly "com.github.jengelman.gradle.plugins:shadow:6.1.0"
 
     testImplementation "com.github.jengelman.gradle.plugins:shadow:6.1.0"
