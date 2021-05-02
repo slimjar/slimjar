@@ -1,6 +1,7 @@
 package io.github.vshnv.slimjar.downloader.path;
 
-import io.github.vshnv.slimjar.data.Dependency;
+
+import io.github.vshnv.slimjar.resolver.data.Dependency;
 
 import java.io.File;
 
@@ -16,7 +17,7 @@ public final class FolderedFilePathStrategy implements FilePathStrategy {
         return null;
     }
 
-    public static FilePathStrategy createStrategy(File rootDirectory) throws IllegalArgumentException {
+    static FilePathStrategy createStrategy(File rootDirectory) throws IllegalArgumentException {
         if (!rootDirectory.exists()) {
             boolean created = rootDirectory.mkdirs();
             if (!created) {

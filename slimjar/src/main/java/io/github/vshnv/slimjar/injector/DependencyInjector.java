@@ -1,7 +1,7 @@
 package io.github.vshnv.slimjar.injector;
 
-import io.github.vshnv.slimjar.data.DependencyData;
 import io.github.vshnv.slimjar.injector.loader.Injectable;
+import io.github.vshnv.slimjar.resolver.data.DependencyData;
 
 
 public interface DependencyInjector {

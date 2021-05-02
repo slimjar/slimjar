@@ -1,9 +1,9 @@
 package io.github.vshnv.slimjar.injector;
 
-import io.github.vshnv.slimjar.data.Dependency;
-import io.github.vshnv.slimjar.data.DependencyData;
 import io.github.vshnv.slimjar.downloader.DependencyDownloader;
 import io.github.vshnv.slimjar.injector.loader.Injectable;
+import io.github.vshnv.slimjar.resolver.data.Dependency;
+import io.github.vshnv.slimjar.resolver.data.DependencyData;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
