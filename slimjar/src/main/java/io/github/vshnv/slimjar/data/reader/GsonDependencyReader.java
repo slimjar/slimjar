@@ -14,12 +14,7 @@ public final class GsonDependencyReader implements DependencyReader {
 
     @Override
     public DependencyData read(InputStream inputStream) {
-        try (InputStream stream = inputStream) {
-            final InputStreamReader inputStreamReader = new InputStreamReader(stream);
-            return gson.fromJson(inputStreamReader, DependencyData.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        return gson.fromJson(inputStreamReader, DependencyData.class);
     }
 }

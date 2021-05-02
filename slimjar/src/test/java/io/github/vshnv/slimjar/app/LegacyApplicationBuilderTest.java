@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import java.util.Collections;
 
-public class ApplicationBuilderTest extends TestCase {
+public class LegacyApplicationBuilderTest extends TestCase {
     public void testInjectingApplicationLoader() throws ReflectiveOperationException {
         Application app = AppendingApplication.builder()
                 .withDependencies(

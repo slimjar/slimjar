@@ -20,7 +20,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Objects;
 
-public final class ApplicationBuilder {
+public final class LegacyApplicationBuilder {
 
     private static final String userHome = System.getProperty("user.home");
     private static final String defaultPath = String.format("%s/.jar_dependencies", userHome);
@@ -32,27 +32,27 @@ public final class ApplicationBuilder {
     private DependencyDownloader dependencyDownloader;
     private DependencyInjector dependencyInjector;
 
-    public ApplicationBuilder withDependencies(DependencyData dependencies) {
+    public LegacyApplicationBuilder withDependencies(DependencyData dependencies) {
         this.dependencyData = dependencies;
         return this;
     }
 
-    public ApplicationBuilder withDependenciesFrom(File dependenciesFile) {
+    public LegacyApplicationBuilder withDependenciesFrom(File dependenciesFile) {
         this.dependenciesFile = dependenciesFile;
         return this;
     }
 
-    public ApplicationBuilder withDependencyReader(DependencyReader dependencyReader) {
+    public LegacyApplicationBuilder withDependencyReader(DependencyReader dependencyReader) {
         this.dependencyReader = dependencyReader;
         return this;
     }
 
-    public ApplicationBuilder withDependencyDownloader(DependencyDownloader dependencyDownloader) {
+    public LegacyApplicationBuilder withDependencyDownloader(DependencyDownloader dependencyDownloader) {
         this.dependencyDownloader = dependencyDownloader;
         return this;
     }
 
-    public ApplicationBuilder withDependencyInjector(DependencyInjector dependencyInjector) {
+    public LegacyApplicationBuilder withDependencyInjector(DependencyInjector dependencyInjector) {
         this.dependencyInjector = dependencyInjector;
         return this;
     }

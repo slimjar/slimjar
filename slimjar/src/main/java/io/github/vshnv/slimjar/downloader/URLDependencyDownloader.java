@@ -23,7 +23,7 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         final URLConnection connection = createDownloadConnection(url);
         final String fileName = dependency.getName() + ".jar";
         final InputStream inputStream = connection.getInputStream();
-        final OutputWriter outputWriter = outputWriterProducer.create(fileName);
+        final OutputWriter outputWriter = outputWriterProducer.create(dependency);
         outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
         return url;
