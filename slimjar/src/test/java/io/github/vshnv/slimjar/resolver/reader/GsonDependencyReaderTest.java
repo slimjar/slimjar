@@ -1,10 +1,8 @@
-package io.github.vshnv.slimjar.data.reader;
+package io.github.vshnv.slimjar.resolver.reader;
 
 import com.google.gson.Gson;
 import io.github.vshnv.slimjar.data.Dependency;
 import io.github.vshnv.slimjar.data.DependencyData;
-import io.github.vshnv.slimjar.data.reader.DependencyReader;
-import io.github.vshnv.slimjar.data.reader.GsonDependencyReader;
 import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;

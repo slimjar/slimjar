@@ -1,7 +1,7 @@
-package io.github.vshnv.slimjar.data.reader;
+package io.github.vshnv.slimjar.resolver.reader;
 
 import com.google.gson.Gson;
-import io.github.vshnv.slimjar.data.DependencyData;
+import io.github.vshnv.slimjar.resolver.DependencyData;
 
 import java.io.*;
 

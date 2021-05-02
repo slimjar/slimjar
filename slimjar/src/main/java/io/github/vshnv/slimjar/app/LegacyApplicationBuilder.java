@@ -2,8 +2,8 @@ package io.github.vshnv.slimjar.app;
 
 import com.google.gson.Gson;
 import io.github.vshnv.slimjar.data.DependencyData;
-import io.github.vshnv.slimjar.data.reader.DependencyReader;
-import io.github.vshnv.slimjar.data.reader.GsonDependencyReader;
+import io.github.vshnv.slimjar.resolver.reader.DependencyReader;
+import io.github.vshnv.slimjar.resolver.reader.GsonDependencyReader;
 import io.github.vshnv.slimjar.downloader.DependencyDownloader;
 import io.github.vshnv.slimjar.downloader.output.FileOutputWriterFactory;
 import io.github.vshnv.slimjar.downloader.URLDependencyDownloader;

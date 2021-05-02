@@ -1,6 +1,6 @@
 package io.github.vshnv.slimjar.app;
 
-import io.github.vshnv.slimjar.data.reader.DependencyDataProvider;
+import io.github.vshnv.slimjar.resolver.reader.DependencyDataProvider;
 import io.github.vshnv.slimjar.downloader.path.FilePathStrategy;
 import io.github.vshnv.slimjar.injector.DependencyInjector;
 
