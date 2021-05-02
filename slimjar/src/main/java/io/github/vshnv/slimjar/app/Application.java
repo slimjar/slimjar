@@ -25,8 +25,8 @@ public abstract class Application {
         return (T) obj;
     }
 
-    public static ApplicationBuilder builder() {
-        return new ApplicationBuilder();
+    public static LegacyApplicationBuilder builder() {
+        return new LegacyApplicationBuilder();
     }
 
     public boolean start() { return false; }
