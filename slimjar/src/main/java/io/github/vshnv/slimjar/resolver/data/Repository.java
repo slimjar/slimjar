@@ -1,21 +1,17 @@
 package io.github.vshnv.slimjar.resolver.data;
 
+import java.net.URL;
 import java.util.Objects;
 
 public final class Repository {
-    private final String identifier;
-    private final String url;
 
-    public Repository(String identifier, String url) {
-        this.identifier = identifier;
+    private final URL url;
+
+    public Repository(URL url) {
         this.url = url;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public String getUrl() {
+    public URL getUrl() {
         return url;
     }
 
@@ -24,20 +20,19 @@ public final class Repository {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Repository that = (Repository) o;
-        return identifier.equals(that.identifier) &&
-                url.equals(that.url);
+        return url.equals(that.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, url);
+        return Objects.hash(url);
     }
 
     @Override
     public String toString() {
         return "Repository{" +
-                "identifier='" + identifier + '\'' +
                 ", url='" + url + '\'' +
                 '}';
     }
+
 }

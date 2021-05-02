@@ -1,16 +1,21 @@
 package io.github.vshnv.slimjar.resolver.data;
 
+import java.util.Collection;
 import java.util.Objects;
 
 public final class Dependency {
     private final String groupId;
     private final String artifactId;
     private final String version;
+    private final String snapshotId;
+    private final Collection<Dependency> transitive;
 
-    public Dependency(String groupId, String artifactId, String version) {
+    public Dependency(String groupId, String artifactId, String version, String snapshotId, Collection<Dependency> transitive) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
+        this.snapshotId = snapshotId;
+        this.transitive = transitive;
     }
 
     public String getGroupId() {
@@ -23,6 +28,25 @@ public final class Dependency {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getSnapshotId() {
+        return snapshotId;
+    }
+
+    public Collection<Dependency> getTransitive() {
+        return transitive;
+    }
+
+    @Override
+    public String toString() {
+        return "Dependency{" +
+                "groupId='" + groupId + '\'' +
+                ", artifactId='" + artifactId + '\'' +
+                ", version='" + version + '\'' +
+                ", snapshotId='" + snapshotId + '\'' +
+                ", transitive=" + transitive +
+                '}';
     }
 
     @Override
@@ -40,12 +64,4 @@ public final class Dependency {
         return Objects.hash(groupId, artifactId, version);
     }
 
-    @Override
-    public String toString() {
-        return "Dependency{" +
-                "groupId='" + groupId + '\'' +
-                ", artifactId='" + artifactId + '\'' +
-                ", version='" + version + '\'' +
-                '}';
-    }
 }

@@ -8,7 +8,7 @@ plugins {
 configurations {
     unzip
     shade
-    compileOnly {
+    implementation {
         extendsFrom unzip
         extendsFrom shade
     }
@@ -19,7 +19,10 @@ repositories {
 }
 
 dependencies {
+    shade "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     shade project(":slimjar")
+    shade "com.google.code.gson:gson:2.8.6"
+
     compileOnly "com.github.jengelman.gradle.plugins:shadow:6.1.0"
 
     testImplementation "com.github.jengelman.gradle.plugins:shadow:6.1.0"
