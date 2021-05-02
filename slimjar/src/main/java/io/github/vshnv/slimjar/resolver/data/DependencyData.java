@@ -36,6 +36,9 @@ public final class DependencyData {
         return relocations;
     }
 
+    public Collection<Mirror> getMirrors() {
+        return mirrors;
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -53,7 +56,8 @@ public final class DependencyData {
     @Override
     public String toString() {
         return "DependencyData{" +
-                "repositories=" + repositories +
+                "mirrors=" + mirrors +
+                ", repositories=" + repositories +
                 ", dependencies=" + dependencies +
                 ", relocations=" + relocations +
                 '}';
