@@ -45,7 +45,11 @@ public final class DependencyData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DependencyData that = (DependencyData) o;
-        return Objects.equals(repositories, that.repositories) && Objects.equals(dependencies, that.dependencies) && Objects.equals(relocations, that.relocations);
+        return isCollectionEqual(repositories, that.repositories) && isCollectionEqual(dependencies, that.dependencies) && isCollectionEqual(relocations, that.relocations);
+    }
+
+    private <T> boolean isCollectionEqual(Collection<T> a, Collection<T> b) {
+        return a.containsAll(b) && b.containsAll(a);
     }
 
     @Override

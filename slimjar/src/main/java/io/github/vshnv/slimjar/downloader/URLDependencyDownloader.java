@@ -1,8 +1,9 @@
 package io.github.vshnv.slimjar.downloader;
 
-import io.github.vshnv.slimjar.data.Dependency;
 import io.github.vshnv.slimjar.downloader.output.OutputWriter;
 import io.github.vshnv.slimjar.downloader.output.OutputWriterFactory;
+import io.github.vshnv.slimjar.resolver.DependencyResolver;
+import io.github.vshnv.slimjar.resolver.data.Dependency;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,16 +13,16 @@ import java.net.URLConnection;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
     private final OutputWriterFactory outputWriterProducer;
-
-    public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer) {
+    private final DependencyResolver dependencyResolver;
+    public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver) {
         this.outputWriterProducer = outputWriterProducer;
+        this.dependencyResolver = dependencyResolver;
     }
 
     @Override
     public URL download(final Dependency dependency) throws IOException {
-        final URL url = new URL(dependency.getUrl());
+        final URL url = dependencyResolver.resolve(dependency);
         final URLConnection connection = createDownloadConnection(url);
-        final String fileName = dependency.getName() + ".jar";
         final InputStream inputStream = connection.getInputStream();
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
         outputWriter.writeFrom(inputStream, connection.getContentLength());

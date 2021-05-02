@@ -1,7 +1,7 @@
 package io.github.vshnv.slimjar.downloader.output;
 
-import io.github.vshnv.slimjar.data.Dependency;
 import io.github.vshnv.slimjar.downloader.path.FilePathStrategy;
+import io.github.vshnv.slimjar.resolver.data.Dependency;
 
 import java.io.File;
 
