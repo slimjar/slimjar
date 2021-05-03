@@ -23,6 +23,7 @@ import io.github.vshnv.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.vshnv.slimjar.resolver.strategy.PathResolutionStrategy;
 
 import java.io.File;
+import java.net.URL;
 
 public final class ApplicationConfiguration {
     private static final File DEFAULT_DOWNLOAD_DIRECTORY;
@@ -51,14 +52,14 @@ public final class ApplicationConfiguration {
     }
 
     public static ApplicationConfiguration createDefault() {
-        final String depFilePath = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json").getFile();
-        if (depFilePath == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
-        return createDefault(new File(depFilePath), DEFAULT_DOWNLOAD_DIRECTORY);
+        final URL depFileURL = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json");
+        if (depFileURL == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
+        return createDefault(depFileURL, DEFAULT_DOWNLOAD_DIRECTORY);
     }
 
-    public static ApplicationConfiguration createDefault(final File depFile, final File downloadDirectory) {
+    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory) {
         final DependencyReader dependencyReader = new GsonDependencyReader(GSON);
-        final DependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(dependencyReader, depFile);
+        final DependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(dependencyReader, depFileURL);
         final DependencyData data = dependencyDataProvider.get();
 
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectory);

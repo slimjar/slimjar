@@ -4,14 +4,15 @@ package io.github.vshnv.slimjar.resolver.reader;
 import io.github.vshnv.slimjar.resolver.data.DependencyData;
 
 import java.io.*;
+import java.net.URL;
 
 public final class FileDependencyDataProvider implements DependencyDataProvider {
     private final DependencyReader dependencyReader;
-    private final File depFile;
+    private final URL depFileURL;
 
-    public FileDependencyDataProvider(final DependencyReader dependencyReader, final File depFile) {
+    public FileDependencyDataProvider(final DependencyReader dependencyReader, final URL depFileURL) {
         this.dependencyReader = dependencyReader;
-        this.depFile = depFile;
+        this.depFileURL = depFileURL;
     }
 
     public DependencyReader getDependencyReader() {
@@ -20,7 +21,7 @@ public final class FileDependencyDataProvider implements DependencyDataProvider 
 
     @Override
     public DependencyData get() {
-        try (InputStream is = new FileInputStream(depFile)) {
+        try (InputStream is = depFileURL.openStream()) {
             return dependencyReader.read(is);
         } catch (IOException e) {
             e.printStackTrace();
