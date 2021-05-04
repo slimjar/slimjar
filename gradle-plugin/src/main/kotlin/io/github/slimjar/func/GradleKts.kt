@@ -1,7 +1,7 @@
-package io.github.vshnv.slimjar.func
+package io.github.slimjar.func
 
-import io.github.vshnv.slimjar.SLIM_API_CONFIGURATION_NAME
-import io.github.vshnv.slimjar.SLIM_CONFIGURATION_NAME
+import io.github.slimjar.SLIM_CONFIGURATION_NAME
+import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import org.gradle.api.Action
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
