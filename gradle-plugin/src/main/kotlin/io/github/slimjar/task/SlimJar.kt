@@ -3,8 +3,8 @@ package io.github.slimjar.task
 import com.google.gson.GsonBuilder
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.vshnv.slimjar.relocation.RelocationRule
-import io.github.vshnv.slimjar.resolver.DependencyData
 import io.github.vshnv.slimjar.resolver.data.Dependency
+import io.github.vshnv.slimjar.resolver.data.DependencyData
 import io.github.vshnv.slimjar.resolver.data.Mirror
 import io.github.vshnv.slimjar.resolver.data.Repository
 import org.gradle.api.Action
