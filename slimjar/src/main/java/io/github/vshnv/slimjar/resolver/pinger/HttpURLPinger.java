@@ -20,7 +20,7 @@ public final class HttpURLPinger implements URLPinger {
             connection = (HttpURLConnection) url.openConnection();
             connection.addRequestProperty("User-Agent", SLIMJAR_USER_AGENT);
             connection.connect();
-            return connection.getResponseCode() != HttpURLConnection.HTTP_OK;
+            return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             return false;
         } finally {

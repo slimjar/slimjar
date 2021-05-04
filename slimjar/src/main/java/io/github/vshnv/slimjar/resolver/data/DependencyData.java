@@ -1,9 +1,6 @@
-package io.github.vshnv.slimjar.resolver;
+package io.github.vshnv.slimjar.resolver.data;
 
 import io.github.vshnv.slimjar.relocation.RelocationRule;
-import io.github.vshnv.slimjar.resolver.data.Dependency;
-import io.github.vshnv.slimjar.resolver.data.Mirror;
-import io.github.vshnv.slimjar.resolver.data.Repository;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -39,13 +36,20 @@ public final class DependencyData {
         return relocations;
     }
 
+    public Collection<Mirror> getMirrors() {
+        return mirrors;
+    }
 
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DependencyData that = (DependencyData) o;
-        return Objects.equals(repositories, that.repositories) && Objects.equals(dependencies, that.dependencies) && Objects.equals(relocations, that.relocations);
+        return isCollectionEqual(repositories, that.repositories) && isCollectionEqual(dependencies, that.dependencies) && isCollectionEqual(relocations, that.relocations);
+    }
+
+    private <T> boolean isCollectionEqual(Collection<T> a, Collection<T> b) {
+        return a.containsAll(b) && b.containsAll(a);
     }
 
     @Override
@@ -56,7 +60,8 @@ public final class DependencyData {
     @Override
     public String toString() {
         return "DependencyData{" +
-                "repositories=" + repositories +
+                "mirrors=" + mirrors +
+                ", repositories=" + repositories +
                 ", dependencies=" + dependencies +
                 ", relocations=" + relocations +
                 '}';
