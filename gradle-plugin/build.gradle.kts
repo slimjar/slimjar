@@ -11,6 +11,9 @@ plugins {
     `maven-publish`
 }
 
+group = "io.github.slimjar"
+version = "1.0.0"
+
 repositories {
     maven("https://plugins.gradle.org/m2/")
 }
