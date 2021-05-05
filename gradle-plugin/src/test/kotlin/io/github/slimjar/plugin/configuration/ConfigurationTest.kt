@@ -1,7 +1,7 @@
-package io.github.vshnv.slimjar.plugin.configuration
+package io.github.slimjar.plugin.configuration
 
-import io.github.vshnv.slimjar.plugin.PLUGIN_ID
-import io.github.vshnv.slimjar.plugin.SLIM_CONFIG_NAME
+import io.github.slimjar.plugin.PLUGIN_ID
+import io.github.slimjar.plugin.SLIM_CONFIG_NAME
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.gradle.testfixtures.ProjectBuilder

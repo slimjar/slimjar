@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.exceptions
+package io.github.slimjar.exceptions
 
 import java.lang.RuntimeException
 

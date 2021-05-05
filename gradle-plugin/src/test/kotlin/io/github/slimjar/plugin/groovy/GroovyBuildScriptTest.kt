@@ -1,8 +1,8 @@
-package io.github.vshnv.slimjar.plugin.groovy
+package io.github.slimjar.plugin.groovy
 
-import io.github.vshnv.slimjar.plugin.APPLY_SHADOW
-import io.github.vshnv.slimjar.plugin.APPLY_SLIMJAR
-import io.github.vshnv.slimjar.plugin.SHADOW_BUILDSCRIPT
+import io.github.slimjar.plugin.APPLY_SHADOW
+import io.github.slimjar.plugin.APPLY_SLIMJAR
+import io.github.slimjar.plugin.SHADOW_BUILDSCRIPT
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.GradleRunner

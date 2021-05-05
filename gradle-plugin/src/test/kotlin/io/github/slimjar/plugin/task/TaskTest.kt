@@ -1,6 +1,6 @@
-package io.github.vshnv.slimjar.plugin.task
+package io.github.slimjar.plugin.task
 
-import io.github.vshnv.slimjar.plugin.PLUGIN_ID
+import io.github.slimjar.plugin.PLUGIN_ID
 import org.assertj.core.api.Assertions.assertThatCode
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test

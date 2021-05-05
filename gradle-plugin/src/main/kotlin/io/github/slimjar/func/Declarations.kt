@@ -1,6 +1,6 @@
-package io.github.vshnv.slimjar.func
+package io.github.slimjar.func
 
-import io.github.vshnv.slimjar.exceptions.ConfigurationNotFoundException
+import io.github.slimjar.exceptions.ConfigurationNotFoundException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 
