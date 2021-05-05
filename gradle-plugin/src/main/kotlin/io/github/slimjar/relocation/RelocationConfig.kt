@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.relocation
+package io.github.slimjar.relocation
 
 /**
  * Added as a wrapper for the [RelocationRule] due to Gradle not liking it

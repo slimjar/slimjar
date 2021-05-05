@@ -5,3 +5,5 @@
 gradle-plugin/build/
 
 slimjar/build/
+
+gradle.properties

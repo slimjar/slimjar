@@ -1,8 +1,8 @@
-package io.github.vshnv.slimjar
+package io.github.slimjar
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import io.github.vshnv.slimjar.func.createConfig
-import io.github.vshnv.slimjar.task.SlimJar
+import io.github.slimjar.func.createConfig
+import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
@@ -30,14 +30,14 @@ class SlimJarPlugin : Plugin<Project> {
         } else {
             // Hooks into shadow to inject relocations
             val shadowTask = tasks.withType(ShadowJar::class.java).firstOrNull() ?: return
-            shadowTask.doFirst { _ ->
+            shadowTask.doFirst {
                 slimJar.relocations().forEach { rule ->
                     shadowTask.relocate(
                         rule.originalPackagePattern,
                         rule.relocatedPackagePattern
                     ) {
-                        rule.inclusions.forEach(it::include)
-                        rule.exclusions.forEach(it::exclude)
+                        rule.inclusions.forEach { include(it) }
+                        rule.exclusions.forEach { exclude(it) }
                     }
                 }
             }

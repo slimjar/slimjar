@@ -5,8 +5,8 @@ plugins {
 // Can organize this later
 allprojects {
 
-    group 'io.github.vshnv'
-    version '1.0-SNAPSHOT'
+    group 'io.github.slimjar'
+    version '1.0.0'
 
     repositories {
         mavenCentral()

@@ -1,4 +1,4 @@
-package io.github.vshnv.slimjar.plugin
+package io.github.slimjar.plugin
 
 const val PLUGIN_ID = "io.github.vshnv.slimjar"
 const val SLIM_CONFIG_NAME = "slim"
