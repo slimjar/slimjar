@@ -17,8 +17,9 @@ public final class JarFileRelocator implements Relocator {
 
     @Override
     public void relocate(File input, File output) throws IOException {
-        if (output.exists()) return;
         final Collection<Relocation> internalRelocation = relocations.stream().map(JarFileRelocator::parseRule).collect(Collectors.toList());
+        output.getParentFile().mkdirs();
+        output.createNewFile();
         final JarRelocator jarRelocator = new JarRelocator(input, output, internalRelocation);
         jarRelocator.run();
     }
