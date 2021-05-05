@@ -23,7 +23,7 @@ public final class ApplicationFactory {
         final DependencyData dependencyData = applicationConfiguration.getDependencyDataProvider().get();
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
         final InjectableClassLoader classLoader = new InjectableClassLoader(fqClassName);
-        dependencyInjector.inject(classLoader, dependencyData);
+        dependencyInjector.inject(classLoader, dependencyData.getDependencies());
         final Class<Application> applicationClass = (Class<Application>) Class.forName(fqClassName, true, classLoader);
         return applicationClass.getConstructor(Parameters.typesFrom(args)).newInstance(args);
     }
@@ -32,7 +32,7 @@ public final class ApplicationFactory {
         final DependencyData dependencyData = applicationConfiguration.getDependencyDataProvider().get();
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
         final Injectable injectable = new WrappedInjectableClassLoader(classLoader);
-        dependencyInjector.inject(injectable, dependencyData);
+        dependencyInjector.inject(injectable, dependencyData.getDependencies());
         return new AppendingApplication();
     }
 

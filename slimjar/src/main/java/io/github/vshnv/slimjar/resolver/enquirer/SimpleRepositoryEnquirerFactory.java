@@ -8,7 +8,7 @@ public class SimpleRepositoryEnquirerFactory implements RepositoryEnquirerFactor
     private final PathResolutionStrategy pathResolutionStrategy;
     private final URLPinger urlPinger;
 
-    public SimpleRepositoryEnquirerFactory(PathResolutionStrategy pathResolutionStrategy, URLPinger urlPinger) {
+    public SimpleRepositoryEnquirerFactory(final PathResolutionStrategy pathResolutionStrategy, final URLPinger urlPinger) {
         this.pathResolutionStrategy = pathResolutionStrategy;
         this.urlPinger = urlPinger;
     }
@@ -18,7 +18,7 @@ public class SimpleRepositoryEnquirerFactory implements RepositoryEnquirerFactor
     }
 
     @Override
-    public RepositoryEnquirer create(Repository repository) {
+    public RepositoryEnquirer create(final Repository repository) {
         return new PingingRepositoryEnquirer(repository, pathResolutionStrategy, urlPinger);
     }
 }

@@ -9,23 +9,26 @@ import io.github.vshnv.slimjar.injector.DownloadingDependencyInjector;
 import io.github.vshnv.slimjar.resolver.CachingDependencyResolver;
 import io.github.vshnv.slimjar.resolver.DependencyResolver;
 import io.github.vshnv.slimjar.resolver.data.DependencyData;
+import io.github.vshnv.slimjar.resolver.data.Repository;
 import io.github.vshnv.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 import io.github.vshnv.slimjar.resolver.enquirer.SimpleRepositoryEnquirerFactory;
+import io.github.vshnv.slimjar.resolver.mirrors.MirrorSelector;
+import io.github.vshnv.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.vshnv.slimjar.resolver.pinger.HttpURLPinger;
 import io.github.vshnv.slimjar.resolver.pinger.URLPinger;
-import io.github.vshnv.slimjar.resolver.reader.DependencyDataProvider;
+import io.github.vshnv.slimjar.resolver.reader.*;
 import io.github.vshnv.slimjar.downloader.path.FilePathStrategy;
 import io.github.vshnv.slimjar.injector.DependencyInjector;
-import io.github.vshnv.slimjar.resolver.reader.DependencyReader;
-import io.github.vshnv.slimjar.resolver.reader.FileDependencyDataProvider;
-import io.github.vshnv.slimjar.resolver.reader.GsonDependencyReader;
 import io.github.vshnv.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.vshnv.slimjar.resolver.strategy.PathResolutionStrategy;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 
 public final class ApplicationConfiguration {
+    private static final Gson GSON = new Gson();
     private static final File DEFAULT_DOWNLOAD_DIRECTORY;
 
     static {
@@ -34,7 +37,6 @@ public final class ApplicationConfiguration {
         DEFAULT_DOWNLOAD_DIRECTORY = new File(defaultPath);
     }
 
-    private static final Gson GSON = new Gson();
     private final DependencyInjector dependencyInjector;
     private final DependencyDataProvider dependencyDataProvider;
 
@@ -51,27 +53,28 @@ public final class ApplicationConfiguration {
         return dependencyDataProvider;
     }
 
-    public static ApplicationConfiguration createDefault() {
+    public static ApplicationConfiguration createDefault() throws MalformedURLException {
         final URL depFileURL = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json");
         if (depFileURL == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
         return createDefault(depFileURL, DEFAULT_DOWNLOAD_DIRECTORY);
     }
 
-    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory) {
-        final DependencyReader dependencyReader = new GsonDependencyReader(GSON);
-        final DependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(dependencyReader, depFileURL);
+    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory) throws MalformedURLException {
+        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(GSON);
+        final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
         final DependencyData data = dependencyDataProvider.get();
+
+        final MirrorSelector mirrorSelector = new SimpleMirrorSelector();
+        final Collection<Repository> repositories = mirrorSelector.select(data.getRepositories(), data.getMirrors());
 
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectory);
         final OutputWriterFactory outputWriterFactory = new DependencyFileOutputWriterFactory(filePathStrategy);
         final PathResolutionStrategy pathResolutionStrategy = new MavenPathResolutionStrategy();
         final URLPinger urlPinger = new HttpURLPinger();
         final RepositoryEnquirerFactory repositoryEnquirerFactory = new SimpleRepositoryEnquirerFactory(pathResolutionStrategy, urlPinger);
-        final DependencyResolver dependencyResolver = new CachingDependencyResolver(data.getRepositories(), repositoryEnquirerFactory);
+        final DependencyResolver dependencyResolver = new CachingDependencyResolver(repositories, repositoryEnquirerFactory);
         final DependencyDownloader dependencyDownloader = new URLDependencyDownloader(outputWriterFactory, dependencyResolver);
         final DependencyInjector dependencyInjector = new DownloadingDependencyInjector(dependencyDownloader);
         return new ApplicationConfiguration(dependencyInjector, dependencyDataProvider);
     }
-
-
 }
