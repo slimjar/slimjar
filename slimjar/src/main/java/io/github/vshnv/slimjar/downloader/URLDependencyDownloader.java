@@ -25,9 +25,9 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         final URLConnection connection = createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
-        outputWriter.writeFrom(inputStream, connection.getContentLength());
+        final URL result = outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
-        return url;
+        return result;
     }
 
     private URLConnection createDownloadConnection(final URL url) throws IOException {

@@ -18,7 +18,7 @@ public class DownloadingDependencyInjectorTest extends TestCase {
         Injectable injectable = url -> result[0] = url;
         DependencyDownloader dependencyDownloader = dependency -> testURL;
         DependencyInjector dependencyInjector = new DownloadingDependencyInjector(dependencyDownloader);
-        dependencyInjector.inject(injectable, new DependencyData(Collections.emptySet(), Collections.emptySet(), Collections.singleton(new Dependency("", "", "", "", Collections.emptyList())), Collections.emptySet()));
+        dependencyInjector.inject(injectable, Collections.emptySet());
         assertEquals(result[0], testURL);
     }
 }

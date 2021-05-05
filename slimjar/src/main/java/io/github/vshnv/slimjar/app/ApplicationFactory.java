@@ -20,7 +20,7 @@ public final class ApplicationFactory {
     }
 
     public Application createIsolatedApplication(final String fqClassName, final Object... args) throws ReflectiveOperationException, ClassCastException {
-        final DependencyData dependencyData = applicationConfiguration.getDependencyDataProvider().get();
+        final DependencyData dependencyData = applicationConfiguration.getDependencyData();
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
         final InjectableClassLoader classLoader = new InjectableClassLoader(fqClassName);
         dependencyInjector.inject(classLoader, dependencyData.getDependencies());
@@ -29,7 +29,7 @@ public final class ApplicationFactory {
     }
 
     public Application createAppendingApplication(final URLClassLoader classLoader) {
-        final DependencyData dependencyData = applicationConfiguration.getDependencyDataProvider().get();
+        final DependencyData dependencyData = applicationConfiguration.getDependencyData();
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
         final Injectable injectable = new WrappedInjectableClassLoader(classLoader);
         dependencyInjector.inject(injectable, dependencyData.getDependencies());
