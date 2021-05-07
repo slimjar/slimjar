@@ -1,18 +1,15 @@
 package io.github.vshnv.slimjar.resolver.reader;
 
-import com.google.gson.Gson;
+
+
+import org.json.simple.parser.JSONParser;
 
 import java.net.URL;
 
 public final class DependencyDataProviderFactory {
-    private final Gson gson;
-
-    public DependencyDataProviderFactory(final Gson gson) {
-        this.gson = gson;
-    }
-
+    private final JSONParser jsonParser = new JSONParser();
     public DependencyDataProvider create(final URL dependencyFileURL) {
-        final DependencyReader dependencyReader = new SimpleJsonDependencyReader();
+        final DependencyReader dependencyReader = new SimpleJsonDependencyReader(jsonParser);
         return new FileDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
 }

@@ -1,6 +1,5 @@
 package io.github.vshnv.slimjar.app;
 
-import com.google.gson.Gson;
 import io.github.vshnv.slimjar.downloader.DependencyDownloader;
 import io.github.vshnv.slimjar.downloader.URLDependencyDownloader;
 import io.github.vshnv.slimjar.downloader.output.DependencyFileOutputWriterFactory;
@@ -30,7 +29,6 @@ import java.net.URL;
 import java.util.Collection;
 
 public final class ApplicationConfiguration {
-    private static final Gson GSON = new Gson();
     private static final File DEFAULT_DOWNLOAD_DIRECTORY;
 
     static {
@@ -62,7 +60,7 @@ public final class ApplicationConfiguration {
     }
 
     public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws MalformedURLException {
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(GSON);
+        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory();
         final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
         final DependencyData data = dependencyDataProvider.get();
 
