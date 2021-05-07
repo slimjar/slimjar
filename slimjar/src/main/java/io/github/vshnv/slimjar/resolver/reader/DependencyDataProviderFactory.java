@@ -12,7 +12,7 @@ public final class DependencyDataProviderFactory {
     }
 
     public DependencyDataProvider create(final URL dependencyFileURL) {
-        final DependencyReader dependencyReader = new GsonDependencyReader(gson);
+        final DependencyReader dependencyReader = new SimpleJsonDependencyReader();
         return new FileDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
 }
