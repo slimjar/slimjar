@@ -23,12 +23,6 @@ public final class DependencyFileOutputWriterFactory implements OutputWriterFact
     public OutputWriter create(final Dependency dependency) {
         final File outputFile = outputFilePathStrategy.selectFileFor(dependency);
         outputFile.getParentFile().mkdirs();
-        try {
-            outputFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if ("true".equals(System.getProperty("slimjarIgnoreRelocations"))) {
             return new SimpleFileOutputWriter(outputFile);
         } else {

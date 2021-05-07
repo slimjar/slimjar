@@ -21,7 +21,7 @@ public final class RelocatingFileOutputWriter implements OutputWriter {
 
     @Override
     public URL writeFrom(final InputStream inputStream, final long length) throws IOException {
-        if (!outputFile.exists()) {
+        if (outputFile.createNewFile()) {
             try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
                 try (final FileOutputStream output = new FileOutputStream(outputFile)) {
                     output.getChannel().transferFrom(channel, 0, length);
