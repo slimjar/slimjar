@@ -23,6 +23,7 @@ public final class DownloadingDependencyInjector implements DependencyInjector {
             try {
                 final URL downloadedJarUrl = dependencyDownloader.download(dependency);
                 injectable.inject(downloadedJarUrl);
+                inject(injectable, dependency.getTransitive());
             } catch (final IOException e) {
                 throw new InjectionFailedException(dependency, e);
             } catch (IllegalAccessException | InvocationTargetException e) {
