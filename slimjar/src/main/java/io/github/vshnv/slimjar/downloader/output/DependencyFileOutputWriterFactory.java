@@ -28,7 +28,8 @@ public final class DependencyFileOutputWriterFactory implements OutputWriterFact
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (System.getProperty("slimjarIgnoreRelocations").equals("1")) {
+
+        if ("1".equals(System.getProperty("slimjarIgnoreRelocations"))) {
             return new SimpleFileOutputWriter(outputFile);
         } else {
             final File relocatedFile = relocationFilePathStrategy.selectFileFor(dependency);
