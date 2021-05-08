@@ -18,10 +18,11 @@ class SlimJarPlugin : Plugin<Project> {
         // Applies Java if not present, since it's required for the compileOnly configuration
         plugins.apply(JavaPlugin::class.java)
 
+
         val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
         //val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
 
-        val slimJar = tasks.create("slimJar", SlimJar::class.java, slimConfig)
+        val slimJar = tasks.create(SLIM_JAR_TASK_NAME, SlimJar::class.java, slimConfig)
 
         // Checks if shadow is present
         if (tasks.findByName("shadowJar") == null) {
@@ -43,10 +44,8 @@ class SlimJarPlugin : Plugin<Project> {
             }
 
         }
-
         // Runs the task once resources are being processed to save the json file
         tasks.findByName(RESOURCES_TASK)?.finalizedBy(slimJar)
-
     }
 
 }

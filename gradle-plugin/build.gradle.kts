@@ -83,7 +83,7 @@ afterEvaluate {
 gradlePlugin {
     plugins {
         create("slimjar") {
-            id = "io.github.slimjar"
+            id = "io.github.slimjar.test"
             displayName = "SlimJar"
             description = "JVM Runtime Dependency Management."
             implementationClass = "io.github.slimjar.SlimJarPlugin"

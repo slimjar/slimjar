@@ -9,12 +9,14 @@ import io.github.vshnv.slimjar.resolver.data.Mirror
 import io.github.vshnv.slimjar.resolver.data.Repository
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
+import org.gradle.plugins.ide.idea.model.Module
 import java.io.File
 import java.io.FileWriter
 import java.net.URL
@@ -25,6 +27,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     private val relocations = mutableSetOf<RelocationRule>()
     private val mirrors = mutableSetOf<Mirror>()
+    private val isolatedProjects = mutableSetOf<Project>()
 
     init {
         group = "slimJar"
@@ -44,6 +47,15 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     open infix fun String.mirroring(original: String) {
         mirrors.add(Mirror(URL(this), URL(original)))
+    }
+
+    open fun isolate(proj: Project) {
+        isolatedProjects.add(proj)
+        val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
+        val jarTask = shadowTask ?: proj.getTasksByName("jar", true).firstOrNull()
+        jarTask?.let {
+            dependsOn(it)
+        }
     }
 
     /**
@@ -74,6 +86,22 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
                 .setPrettyPrinting()
                 .create()
                 .toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
+        }
+    }
+
+    // Finds jars to be isolated and adds them to final jar
+    @TaskAction
+    internal fun includeIsolatedJars() = with(project) {
+        isolatedProjects.filter { it != this }.forEach {
+            val shadowTask = getTasksByName("shadowJar", true).firstOrNull()
+            val jarTask = shadowTask ?: getTasksByName("jar", true).firstOrNull()
+            jarTask?.let { task ->
+                val archive = task.outputs.files.singleFile
+                val folder = File("${buildDir}/resources/main/")
+                if (folder.exists().not()) folder.mkdirs()
+                val output = File(folder, "${it.name}.isolated-jar")
+                archive.copyTo(output, true)
+            }
         }
     }
 
