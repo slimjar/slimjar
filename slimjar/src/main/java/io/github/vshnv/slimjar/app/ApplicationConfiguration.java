@@ -25,6 +25,7 @@ import io.github.vshnv.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.vshnv.slimjar.resolver.strategy.PathResolutionStrategy;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -55,13 +56,13 @@ public final class ApplicationConfiguration {
         return dependencyData;
     }
 
-    public static ApplicationConfiguration createDefault(final String applicationName) throws MalformedURLException {
+    public static ApplicationConfiguration createDefault(final String applicationName) throws IOException {
         final URL depFileURL = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json");
         if (depFileURL == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
         return createDefault(depFileURL, DEFAULT_DOWNLOAD_DIRECTORY, applicationName);
     }
 
-    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws MalformedURLException {
+    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws IOException {
         final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(GSON);
         final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
         final DependencyData data = dependencyDataProvider.get();
