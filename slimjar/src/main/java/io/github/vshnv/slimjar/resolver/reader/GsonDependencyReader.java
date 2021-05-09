@@ -13,7 +13,7 @@ public final class GsonDependencyReader implements DependencyReader {
     }
 
     @Override
-    public DependencyData read(InputStream inputStream) {
+    public DependencyData read(final InputStream inputStream) throws IOException {
         final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         return gson.fromJson(inputStreamReader, DependencyData.class);
     }
