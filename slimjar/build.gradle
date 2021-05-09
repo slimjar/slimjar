@@ -21,8 +21,51 @@ dependencies {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        mavenPublish(MavenPublication) {
             from components.java
+            groupId 'io.github.slimjar'
+            artifactId 'slimjar'
+            version project.version
+            pom {
+                name = "SlimJar"
+                description = "A simple and robust runtime dependency manager for JVM languages."
+                url = "http://www.github.com/SlimJar/slimjar"
+                licenses {
+                    license {
+                        name = "The MIT License"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "vshnv"
+                        name = "Vaishnav Anil"
+                        email = "vaishnavanil7th@gmail.com"
+                    }
+                    developer {
+                        id = "ipsk"
+                        name = "Mateus Moreira"
+                    }
+                }
+                scm {
+                    connection = "https://github.com/SlimJar/slimjar"
+                    developerConnection = "https://github.com/SlimJar/slimjar.git"
+                    url = "https://github.com/SlimJar/slimjar"
+                }
+            }
+
+        }
+    }
+    repositories {
+        maven {
+            url "https://repo.vshnv.tech/"
+            credentials {
+                username = reposiliteAlias
+                password = reposiliteToken
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
 }
