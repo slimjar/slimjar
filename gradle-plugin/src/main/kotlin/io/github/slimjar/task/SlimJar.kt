@@ -34,12 +34,12 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         group = "slimJar"
     }
 
-    open fun relocate(original: String, relocated: String, configure: Action<RelocationConfig>? = null): SlimJar {
-        val relocationConfig = RelocationConfig()
-        configure?.execute(relocationConfig)
-        val rule = RelocationRule(original, relocated, relocationConfig.exclusions, relocationConfig.inclusions)
-        relocations.add(rule)
-        return this
+    open fun relocate(original: String, relocated: String): SlimJar {
+        return addRelocation(original, relocated, null)
+    }
+
+    open fun relocate(original: String, relocated: String, configure: Action<RelocationConfig>): SlimJar {
+        return addRelocation(original, relocated, configure)
     }
 
     open fun mirror(mirror: String, original: String) {
@@ -120,8 +120,26 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         }
     }
 
+    /**
+     * Internal getter required because Gradle will think an internal property is an action
+     */
     internal fun relocations(): Set<RelocationRule> {
         return relocations
+    }
+
+    /**
+     * Adds a relocation to the list, method had to be separated because Gradle doesn't support default values
+     */
+    private fun addRelocation(
+        original: String,
+        relocated: String,
+        configure: Action<RelocationConfig>? = null
+    ): SlimJar {
+        val relocationConfig = RelocationConfig()
+        configure?.execute(relocationConfig)
+        val rule = RelocationRule(original, relocated, relocationConfig.exclusions, relocationConfig.inclusions)
+        relocations.add(rule)
+        return this
     }
 
 }
