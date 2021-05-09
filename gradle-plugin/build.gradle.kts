@@ -46,6 +46,53 @@ shadowJarTask.configure {
     configurations = listOf(shadowImplementation)
 }
 
+// Required for plugin substitution to work in samples project
+artifacts {
+    add("runtimeOnly", shadowJarTask)
+}
+
+tasks.whenTaskAdded {
+    if (name == "publishPluginJar" || name == "generateMetadataFileForPluginMavenPublication") {
+        dependsOn(tasks.named("shadowJar"))
+    }
+}
+
+// Disabling default jar task as it is overridden by shadowJar
+tasks.named("jar").configure {
+    enabled = false
+}
+
+val ensureDependenciesAreInlined by tasks.registering {
+    description = "Ensures all declared dependencies are inlined into shadowed jar"
+    group = HelpTasksPlugin.HELP_GROUP
+    dependsOn(tasks.shadowJar)
+
+    doLast {
+        val nonInlinedDependencies = mutableListOf<String>()
+        zipTree(tasks.shadowJar.flatMap { it.archiveFile }).visit {
+            if (!isDirectory) {
+                val path = relativePath
+                if (
+                    !path.startsWith("META-INF") &&
+                    path.lastName.endsWith(".class") &&
+                    !path.pathString.startsWith(
+                        "io.github.slimjar".replace(".", "/")
+                    )
+                ) {
+                    nonInlinedDependencies.add(path.pathString)
+                }
+            }
+        }
+        if (nonInlinedDependencies.isNotEmpty()) {
+            throw GradleException("Found non inlined dependencies: $nonInlinedDependencies")
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(ensureDependenciesAreInlined)
+}
+
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
@@ -56,7 +103,7 @@ tasks {
     withType<ShadowJar> {
         mapOf(
             "kotlin" to ".kotlin",
-            "io.github.vshnv.slimjar" to "",
+            "io.github.slimjar" to "",
             "me.lucko.jarrelocator" to ".jarrelocator",
             "com.google.gson" to ".gson"
         ).forEach { relocate(it.key, "io.github.slimjar${it.value}") }
