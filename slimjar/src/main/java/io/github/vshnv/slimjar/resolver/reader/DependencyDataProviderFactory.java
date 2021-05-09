@@ -15,4 +15,9 @@ public final class DependencyDataProviderFactory {
         final DependencyReader dependencyReader = new GsonDependencyReader(gson);
         return new FileDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
+
+    public DependencyDataProvider forModule(final URL dependencyFileURL) {
+        final DependencyReader dependencyReader = new GsonDependencyReader(gson);
+        return new ModuleDependencyDataProvider(dependencyReader, dependencyFileURL);
+    }
 }
