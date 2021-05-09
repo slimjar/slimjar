@@ -1,6 +1,9 @@
 package io.github.slimjar.task
 
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.google.gson.GsonBuilder
+import io.github.slimjar.SlimJarPlugin
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.vshnv.slimjar.relocation.RelocationRule
 import io.github.vshnv.slimjar.resolver.data.Dependency
@@ -51,6 +54,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     open fun isolate(proj: Project) {
         isolatedProjects.add(proj)
+        proj.pluginManager.apply(SlimJarPlugin::class.java)
         val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
         val jarTask = shadowTask ?: proj.getTasksByName("jar", true).firstOrNull()
         jarTask?.let {
@@ -76,7 +80,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             .toSet()
             .map { Repository(it.url.toURL()) }
 
-        if (dependencies.isEmpty() || repositories.isEmpty()) return
+        // Note: Commented out to allow creation of empty dependency file
+        // if (dependencies.isEmpty() || repositories.isEmpty()) return
 
         val folder = File("${buildDir}/resources/main/")
         if (folder.exists().not()) folder.mkdirs()
@@ -93,8 +98,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     @TaskAction
     internal fun includeIsolatedJars() = with(project) {
         isolatedProjects.filter { it != this }.forEach {
-            val shadowTask = getTasksByName("shadowJar", true).firstOrNull()
-            val jarTask = shadowTask ?: getTasksByName("jar", true).firstOrNull()
+            val shadowTask = it.getTasksByName("shadowJar", true).firstOrNull()
+            val jarTask = shadowTask ?: it.getTasksByName("jar", true).firstOrNull()
             jarTask?.let { task ->
                 val archive = task.outputs.files.singleFile
                 val folder = File("${buildDir}/resources/main/")
