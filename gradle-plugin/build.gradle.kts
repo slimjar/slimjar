@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.slimjar"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     maven("https://plugins.gradle.org/m2/")
@@ -83,7 +83,7 @@ afterEvaluate {
 gradlePlugin {
     plugins {
         create("slimjar") {
-            id = "io.github.slimjar.test"
+            id = "io.github.slimjar"
             displayName = "SlimJar"
             description = "JVM Runtime Dependency Management."
             implementationClass = "io.github.slimjar.SlimJarPlugin"

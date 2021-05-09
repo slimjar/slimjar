@@ -1,15 +1,13 @@
 package io.github.slimjar.task
 
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.google.gson.GsonBuilder
 import io.github.slimjar.SlimJarPlugin
 import io.github.slimjar.relocation.RelocationConfig
-import io.github.vshnv.slimjar.relocation.RelocationRule
-import io.github.vshnv.slimjar.resolver.data.Dependency
-import io.github.vshnv.slimjar.resolver.data.DependencyData
-import io.github.vshnv.slimjar.resolver.data.Mirror
-import io.github.vshnv.slimjar.resolver.data.Repository
+import io.github.slimjar.relocation.RelocationRule
+import io.github.slimjar.resolver.data.Dependency
+import io.github.slimjar.resolver.data.DependencyData
+import io.github.slimjar.resolver.data.Mirror
+import io.github.slimjar.resolver.data.Repository
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -19,7 +17,7 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
-import org.gradle.plugins.ide.idea.model.Module
+import org.gradle.kotlin.dsl.maven
 import java.io.File
 import java.io.FileWriter
 import java.net.URL
@@ -48,13 +46,25 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         mirrors.add(Mirror(URL(mirror), URL(original)))
     }
 
+    open fun implementation() {
+        project.repositories.maven(url = "https://repo.vshnv.tech/")
+        project.dependencies.add("implementation", "io.github.slimjar:slimjar:1.0.0")
+    }
+
+    open fun compileOnly() {
+        project.repositories.maven(url = "https://repo.vshnv.tech/")
+        project.dependencies.add("compileOnly", "io.github.slimjar:slimjar:1.0.0")
+    }
+
     open infix fun String.mirroring(original: String) {
         mirrors.add(Mirror(URL(this), URL(original)))
     }
 
     open fun isolate(proj: Project) {
         isolatedProjects.add(proj)
-        proj.pluginManager.apply(SlimJarPlugin::class.java)
+        runCatching {
+            proj.pluginManager.apply(SlimJarPlugin::class.java)
+        }
         val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
         val jarTask = shadowTask ?: proj.getTasksByName("jar", true).firstOrNull()
         jarTask?.let {

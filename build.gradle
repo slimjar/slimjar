@@ -2,9 +2,7 @@ plugins {
     id 'java'
 }
 
-// Can organize this later
 allprojects {
-
     group 'io.github.slimjar'
     version '1.0.0'
 
