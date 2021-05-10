@@ -1,16 +1,20 @@
 package io.github.slimjar.plugin
 
-const val PLUGIN_ID = "io.github.vshnv.slimjar"
+import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin
+import io.github.slimjar.SlimJarPlugin
+import org.gradle.api.Project
+
+const val PLUGIN_ID = "io.github.slimjar"
 const val SLIM_CONFIG_NAME = "slim"
 const val SIM_API_CONFIG_NAME = "slimApi"
 
 const val SHADOW_BUILDSCRIPT = """
     buildscript {
         repositories {
-            jcenter()
+            gradlePluginPortal()
         }
         dependencies {
-            classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+            classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
         }
     }
 """
@@ -22,3 +26,8 @@ const val APPLY_SLIMJAR = """
 """
 
 const val APPLY_SHADOW = "apply plugin: 'com.github.johnrengelman.shadow'"
+
+fun Project.applyPlugins() {
+    project.pluginManager.apply(ShadowPlugin::class.java)
+    project.pluginManager.apply(SlimJarPlugin::class.java)
+}
