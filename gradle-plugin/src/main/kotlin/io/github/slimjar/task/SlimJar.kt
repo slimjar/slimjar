@@ -17,7 +17,6 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
-import org.gradle.kotlin.dsl.maven
 import java.io.File
 import java.io.FileWriter
 import java.net.URL
@@ -44,16 +43,6 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     open fun mirror(mirror: String, original: String) {
         mirrors.add(Mirror(URL(mirror), URL(original)))
-    }
-
-    open fun implementation() {
-        project.repositories.maven(url = "https://repo.vshnv.tech/")
-        project.dependencies.add("implementation", "io.github.slimjar:slimjar:1.0.0")
-    }
-
-    open fun compileOnly() {
-        project.repositories.maven(url = "https://repo.vshnv.tech/")
-        project.dependencies.add("compileOnly", "io.github.slimjar:slimjar:1.0.0")
     }
 
     open infix fun String.mirroring(original: String) {
