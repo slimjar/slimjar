@@ -1,6 +1,7 @@
 package io.github.slimjar.task
 
 import com.google.gson.GsonBuilder
+import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
@@ -24,6 +25,9 @@ import javax.inject.Inject
 
 @CacheableTask
 open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
+
+    // Find by name since it won't always be present
+    private val apiConfig = project.configurations.findByName(SLIM_API_CONFIGURATION_NAME)
 
     private val relocations = mutableSetOf<RelocationRule>()
     private val mirrors = mutableSetOf<Mirror>()
@@ -68,11 +72,17 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     internal fun createJson() = with(project) {
 
         val dependencies =
-            RenderableModuleResult(config.incoming.resolutionResult.root)
-                .children
-                .mapNotNull {
-                    it.toSlimDependency()
-                }
+            RenderableModuleResult(config.incoming.resolutionResult.root).children
+                .mapNotNull { it.toSlimDependency() }
+                .toMutableSet()
+
+        // If api config is present map dependencies from it as well
+        apiConfig?.let { config ->
+            dependencies.addAll(
+                RenderableModuleResult(config.incoming.resolutionResult.root).children
+                    .mapNotNull { it.toSlimDependency() }
+            )
+        }
 
         val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
             .filterNot { it.url.toString().startsWith("file") }

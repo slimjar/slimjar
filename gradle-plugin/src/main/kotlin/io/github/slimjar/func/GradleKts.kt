@@ -1,7 +1,7 @@
 package io.github.slimjar.func
 
-import io.github.slimjar.SLIM_CONFIGURATION_NAME
 import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
+import io.github.slimjar.SLIM_CONFIGURATION_NAME
 import org.gradle.api.Action
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
@@ -36,7 +36,8 @@ fun DependencyHandler.slim(dependencyNotation: Any): Dependency? = add(SLIM_CONF
 /**
  * Alternative for adding `slimApi` configuration for Kotlin dsl but without options
  */
-fun DependencyHandler.slimApi(dependencyNotation: Any): Dependency? = add(SLIM_API_CONFIGURATION_NAME, dependencyNotation)
+fun DependencyHandler.slimApi(dependencyNotation: Any): Dependency? =
+    add(SLIM_API_CONFIGURATION_NAME, dependencyNotation)
 
 /**
  * Creates a configuration with options

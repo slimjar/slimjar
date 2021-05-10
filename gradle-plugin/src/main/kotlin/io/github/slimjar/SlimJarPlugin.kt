@@ -27,10 +27,13 @@ class SlimJarPlugin : Plugin<Project> {
         }
 
         val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
-        //val slimApiConfig = createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
+        if (plugins.hasPlugin("java-library")) {
+            createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
+        }
 
         val slimJar = tasks.create(SLIM_JAR_TASK_NAME, SlimJar::class.java, slimConfig)
 
+        // Auto adds the slimJar lib dependency
         afterEvaluate {
             if (slimDefaultDependency) {
                 repositories.maven("https://repo.vshnv.tech/")
