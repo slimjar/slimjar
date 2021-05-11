@@ -1,9 +1,14 @@
-# Slim Jar
-> Runtime dependency management.
+<h1 align="center">Slim Jar</h1>
+<h3 align="center">Runtime Dependency Management</h3>
+<hr>
 
-SlimJar allows you to download and load up dependencies at runtime. This reduces the initial Jar size, this is mostly useful when you have strict size requirements.
+<h4 class="test">What is SlimJar?</h4>
 
-Alternative use cases would include reuse of downloaded dependencies when switching the application jar, sharing of dependency jars between multiple applications (if same version of the dependency were to be used).
+SlimJar allows you to download and load up dependencies at runtime as an alternative to shading your dependencies. This helps you reduce build output size and share downloaded dependencies between projects at client side. It is built mainly with the gradle eco-system in mind and is easily configurable being an almost a drop-in replacement/add-on to gradle projects.
+
+<h4 class="test">Why use SlimJar?</h4>
+
+SlimJar makes the process of switching out jars easier by providing jars that are much lesser in size, all the "slimmed" dependencies are already available and do not need to be explicitly moved back to your working directory during and update or change. This can be extremely useful for users who have lower bandwidth connections to push large updates to production or testing environments. It also provides vital features such as package relocation, module isolation, auto configuration generation...etc with the simplicity of minor tweaks in your build file.
 
 ![](header.png)
 
