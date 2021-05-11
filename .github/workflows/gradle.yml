@@ -23,9 +23,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      env:
-        GRADLE\_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
-      run: mkdir -p ~/.gradle && echo $GRADLE_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
+      run: ./gradlew slimjar:build
     - name: Run tests
       run: ./gradlew test
   build-11:
@@ -41,8 +39,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      env:
-        GRADLE\_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
-      run: mkdir -p ~/.gradle && echo $GRADLE_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
+      run: ./gradlew slimjar:build
     - name: Run tests
       run: ./gradlew test
