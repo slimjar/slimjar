@@ -90,6 +90,7 @@ public final class ExampleApplication extends Application {
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
+  id 'io.github.slimjar' version '1.1.0'
 }
 dependencies {
   slim 'group.id:artifact.id:version'
