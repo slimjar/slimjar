@@ -23,11 +23,6 @@ public final class DependencyFileOutputWriterFactory implements OutputWriterFact
     public OutputWriter create(final Dependency dependency) {
         final File outputFile = outputFilePathStrategy.selectFileFor(dependency);
         outputFile.getParentFile().mkdirs();
-        try {
-            outputFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         final File relocatedFile = relocationFilePathStrategy.selectFileFor(dependency);
         return new RelocatingFileOutputWriter(outputFile, relocatedFile, relocator);
     }
