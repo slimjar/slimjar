@@ -44,7 +44,7 @@ public final class MyApplication {
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.1.0'
+  id 'io.github.slimjar' version '[slimjar-gradle-version]'
 }
 slimJar {
   isolate project(':hello-world')
@@ -106,7 +106,7 @@ public final class MyApplication {
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.1.0'
+  id 'io.github.slimjar' version '[slimjar-gradle-version]'
 }
 dependencies {
   slim 'group.id:artifact.id:version'
@@ -140,3 +140,5 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 3. Commit your changes (`git commit -am 'Added some feature abcd'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
+
+[slimjar-gradle-version]: 1.1.0
