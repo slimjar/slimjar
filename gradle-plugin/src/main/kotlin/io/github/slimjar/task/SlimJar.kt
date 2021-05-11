@@ -1,7 +1,9 @@
 package io.github.slimjar.task
 
 import com.google.gson.GsonBuilder
+import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
+import io.github.slimjar.func.slimDefaultDependency
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
 import io.github.slimjar.resolver.data.Dependency
@@ -26,6 +28,9 @@ import javax.inject.Inject
 @CacheableTask
 open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
 
+    // Find by name since it won't always be present
+    private val apiConfig = project.configurations.findByName(SLIM_API_CONFIGURATION_NAME)
+
     private val relocations = mutableSetOf<RelocationRule>()
     private val mirrors = mutableSetOf<Mirror>()
     private val isolatedProjects = mutableSetOf<Project>()
@@ -34,26 +39,16 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         group = "slimJar"
     }
 
-    open fun relocate(original: String, relocated: String, configure: Action<RelocationConfig>? = null): SlimJar {
-        val relocationConfig = RelocationConfig()
-        configure?.execute(relocationConfig)
-        val rule = RelocationRule(original, relocated, relocationConfig.exclusions, relocationConfig.inclusions)
-        relocations.add(rule)
-        return this
+    open fun relocate(original: String, relocated: String): SlimJar {
+        return addRelocation(original, relocated, null)
+    }
+
+    open fun relocate(original: String, relocated: String, configure: Action<RelocationConfig>): SlimJar {
+        return addRelocation(original, relocated, configure)
     }
 
     open fun mirror(mirror: String, original: String) {
         mirrors.add(Mirror(URL(mirror), URL(original)))
-    }
-
-    open fun implementation() {
-        project.repositories.maven(url = "https://repo.vshnv.tech/")
-        project.dependencies.add("implementation", "io.github.slimjar:slimjar:1.0.0")
-    }
-
-    open fun compileOnly() {
-        project.repositories.maven(url = "https://repo.vshnv.tech/")
-        project.dependencies.add("compileOnly", "io.github.slimjar:slimjar:1.0.0")
     }
 
     open infix fun String.mirroring(original: String) {
@@ -62,6 +57,12 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     open fun isolate(proj: Project) {
         isolatedProjects.add(proj)
+        // Adds slimJar as compileOnly
+        if (proj.slimDefaultDependency) {
+            proj.repositories.maven("https://repo.vshnv.tech/")
+            proj.dependencies.add("compileOnly", "io.github.slimjar:slimjar:1.0.0")
+        }
+
         runCatching {
             proj.pluginManager.apply(SlimJarPlugin::class.java)
         }
@@ -83,7 +84,18 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
                 .children
                 .mapNotNull {
                     it.toSlimDependency()
-                }
+                }.toMutableSet()
+
+        // If api config is present map dependencies from it as well
+        apiConfig?.let { config ->
+            dependencies.addAll(
+                RenderableModuleResult(config.incoming.resolutionResult.root)
+                    .children
+                    .mapNotNull {
+                        it.toSlimDependency()
+                    }
+            )
+        }
 
         val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
             .filterNot { it.url.toString().startsWith("file") }
@@ -120,8 +132,26 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         }
     }
 
+    /**
+     * Internal getter required because Gradle will think an internal property is an action
+     */
     internal fun relocations(): Set<RelocationRule> {
         return relocations
+    }
+
+    /**
+     * Adds a relocation to the list, method had to be separated because Gradle doesn't support default values
+     */
+    private fun addRelocation(
+        original: String,
+        relocated: String,
+        configure: Action<RelocationConfig>? = null
+    ): SlimJar {
+        val relocationConfig = RelocationConfig()
+        configure?.execute(relocationConfig)
+        val rule = RelocationRule(original, relocated, relocationConfig.exclusions, relocationConfig.inclusions)
+        relocations.add(rule)
+        return this
     }
 
 }
