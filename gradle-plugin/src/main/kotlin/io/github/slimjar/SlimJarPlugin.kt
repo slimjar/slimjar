@@ -2,13 +2,13 @@ package io.github.slimjar
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.slimjar.exceptions.ShadowNotFoundException
+import io.github.slimjar.func.applySlimLib
 import io.github.slimjar.func.createConfig
 import io.github.slimjar.func.slimDefaultDependency
 import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.kotlin.dsl.maven
 
 const val SLIM_CONFIGURATION_NAME = "slim"
 const val SLIM_API_CONFIGURATION_NAME = "slimApi"
@@ -36,8 +36,7 @@ class SlimJarPlugin : Plugin<Project> {
         // Auto adds the slimJar lib dependency
         afterEvaluate {
             if (slimDefaultDependency) {
-                repositories.maven("https://repo.vshnv.tech/")
-                dependencies.add("implementation", "io.github.slimjar:slimjar:1.0.0")
+                applySlimLib()
             }
         }
 

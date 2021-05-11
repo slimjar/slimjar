@@ -3,6 +3,7 @@ package io.github.slimjar.task
 import com.google.gson.GsonBuilder
 import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
+import io.github.slimjar.func.applySlimLib
 import io.github.slimjar.func.slimDefaultDependency
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
@@ -19,7 +20,6 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
-import org.gradle.kotlin.dsl.maven
 import java.io.File
 import java.io.FileWriter
 import java.net.URL
@@ -57,15 +57,16 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
     open fun isolate(proj: Project) {
         isolatedProjects.add(proj)
-        // Adds slimJar as compileOnly
-        if (proj.slimDefaultDependency) {
-            proj.repositories.maven("https://repo.vshnv.tech/")
-            proj.dependencies.add("compileOnly", "io.github.slimjar:slimjar:1.0.0")
-        }
 
         runCatching {
             proj.pluginManager.apply(SlimJarPlugin::class.java)
         }
+
+        // Adds slimJar as compileOnly
+        if (proj.slimDefaultDependency) {
+            proj.applySlimLib("compileOnly")
+        }
+
         val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
         val jarTask = shadowTask ?: proj.getTasksByName("jar", true).firstOrNull()
         jarTask?.let {
