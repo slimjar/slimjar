@@ -16,8 +16,6 @@ SlimJar makes the process of switching out jars easier by providing jars that ar
 <br><br>
 
 SlimJar provides 2 major ways to inject dependencies to your applications, Appending Applications and Isolated Module Applications: <br>
-1. Isolated module applications use a bootstrap module to inject required dependencies to another module(s). <br>
-2. Appending applications require you to provide a URLClassLoader to which slimjar would append the dependency URLs to. <br>
 
 <br><br>
 
