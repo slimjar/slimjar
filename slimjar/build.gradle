@@ -59,10 +59,9 @@ publishing {
     repositories {
         maven {
             url "https://repo.vshnv.tech/"
-
             credentials {
-                username = reposiliteAlias ?: ""
-                password = reposiliteToken ?: ""
+                username = project.findProperty("reposiliteAlias") ?: ""
+                password = project.findProperty("reposiliteToken") ?: ""
             }
             authentication {
                 basic(BasicAuthentication)
