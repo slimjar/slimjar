@@ -117,23 +117,29 @@ slimJar {
 }
 
 ```
+<br>
+<br>
+<h2 align="center">Development setup</h2>
 
-
-## Development setup
 
 ```sh
 git clone https://github.com/SlimJar/slimjar.git
 gradlew test
 ```
-
-## Releases
+<br>
+<br>
+<h2 align="center">Releases</h2>
 
 * https://plugins.gradle.org/plugin/io.github.slimjar
 * https://repo.vshnv.tech/releases/io/github/slimjar/slimjar/1.0.0
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-## Contributing
+<br>
+<br>
+<h2 align="center">Contributing</h2>
+
+
 
 1. Fork it (<https://github.com/SlimJar/slimjar/fork>)
 2. Create your feature branch (`git checkout -b feature/abcd`)
