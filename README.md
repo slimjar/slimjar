@@ -109,7 +109,7 @@ public final class MyApplication {
     final ApplicationConfiguration config = ApplicationConfiguration.createDefault("MyApplication");
     final ApplicationFactory appFactory = new ApplicationFactory(config);
     final Application app = appFactory.createAppendingApplication((URLClassLoader)MyApplication.class.getClassLoader());
-    // The depencies are now available in the classloader provided, in this case, the application classloader
+    // The dependencies are now available in the classloader provided, in this case, the application classloader
     final SomeLibrary library = new SomeLibrary();
     library.test();
   }
