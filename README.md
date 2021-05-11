@@ -19,7 +19,7 @@ Will be updated soon.
 ## Development setup
 
 ```sh
-git clone https://github.com/Vshnv/slimjar.git
+git clone https://github.com/SlimJar/slimjar.git
 gradlew test
 ```
 
@@ -31,7 +31,7 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 
 ## Contributing
 
-1. Fork it (<https://github.com/vshnv/slimjar/fork>)
+1. Fork it (<https://github.com/SlimJar/slimjar/fork>)
 2. Create your feature branch (`git checkout -b feature/abcd`)
 3. Commit your changes (`git commit -am 'Added some feature abcd'`)
 4. Push to the branch (`git push origin feature/fooBar`)
