@@ -1,6 +1,9 @@
 <h1 align="center">Slim Jar</h1>
 <h3 align="center">Runtime Dependency Management</h3>
   <div align="center">
+    <a href="https://github.com/SlimJar/slimjar/">
+        <img src="https://img.shields.io/github/license/SlimJar/slimjar">
+    </a>
     <a href="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml">
         <img src="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml/badge.svg">
     </a>
@@ -9,9 +12,6 @@
     </a>
     <a href="https://repo.vshnv.tech/releases/io/github/slimjar/slimjar">
         <img src="https://img.shields.io/maven-metadata/v.svg?label=maven&metadataUrl=https%3A%2F%2Frepo.vshnv.tech%2Fio%2Fgithub%2Fslimjar%2Fslimjar%2Fmaven-metadata.xml">
-    </a>
-    <a href="https://github.com/SlimJar/slimjar/">
-        <img src="https://img.shields.io/github/license/SlimJar/slimjar">
     </a>
   </div>
 
