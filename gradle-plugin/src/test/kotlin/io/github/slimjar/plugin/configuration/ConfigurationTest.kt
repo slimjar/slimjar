@@ -1,7 +1,7 @@
 package io.github.slimjar.plugin.configuration
 
-import io.github.slimjar.plugin.PLUGIN_ID
 import io.github.slimjar.plugin.SLIM_CONFIG_NAME
+import io.github.slimjar.plugin.applyPlugins
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.gradle.testfixtures.ProjectBuilder
@@ -11,11 +11,7 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ConfigurationTest {
 
-    private val project = ProjectBuilder.builder().build()
-
-    init {
-        project.pluginManager.apply(PLUGIN_ID)
-    }
+    private val project = ProjectBuilder.builder().build().also { it.applyPlugins() }
 
     @Test
     fun `Test slim configuration exists`() {
