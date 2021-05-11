@@ -24,8 +24,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       env:
-        GRADLE\_PROPERTIES: ${{ secrets.GRADLE\_PROPERTIES }}
-      run: mkdir -p ~/.gradle && echo $GRADLE\_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
+        GRADLE\_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+      run: mkdir -p ~/.gradle && echo $GRADLE_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
     - name: Run tests
       run: ./gradlew test
   build-11:
@@ -42,7 +42,7 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       env:
-        GRADLE\_PROPERTIES: ${{ secrets.GRADLE\_PROPERTIES }}
-      run: mkdir -p ~/.gradle && echo $GRADLE\_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
+        GRADLE\_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+      run: mkdir -p ~/.gradle && echo $GRADLE_PROPERTIES | base64 -d > ~/.gradle/gradle.properties && cat ~/.gradle/gradle.properties && ./gradlew build
     - name: Run tests
       run: ./gradlew test
