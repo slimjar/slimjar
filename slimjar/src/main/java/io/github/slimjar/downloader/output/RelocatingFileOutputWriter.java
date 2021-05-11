@@ -29,6 +29,10 @@ public final class RelocatingFileOutputWriter implements OutputWriter {
             }
         }
         inputStream.close();
+        final boolean ignoreRelocations = System.getProperty("ignoreRelocations").equalsIgnoreCase("true");
+        if (ignoreRelocations) {
+            return outputFile.toURI().toURL();
+        }
         relocator.relocate(outputFile, relocatedFile);
         return relocatedFile.toURI().toURL();
     }
