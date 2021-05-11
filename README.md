@@ -52,7 +52,7 @@ slimJar {
 ```
 
 *Module: hello-world*<br>
-*.class*<br>
+*ExampleApplication.class*<br>
 ```java
 package example.project;
 
