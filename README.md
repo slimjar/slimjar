@@ -4,6 +4,9 @@
     <a href="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml">
         <img src="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml/badge.svg">
     </a>
+    <a href="https://plugins.gradle.org/plugin/io.github.slimjar">
+        <img src="https://img.shields.io/maven-metadata/v.svg?label=gradle-plugin&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Fio%2Fgithub%2Fslimjar%2Fio.github.slimjar.gradle.plugin%2Fmaven-metadata.xml">
+    </a>
   </div>
 
 <hr>
