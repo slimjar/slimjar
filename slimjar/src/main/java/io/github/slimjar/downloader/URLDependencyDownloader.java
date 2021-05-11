@@ -3,6 +3,7 @@ package io.github.slimjar.downloader;
 import io.github.slimjar.downloader.output.OutputWriter;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
 import io.github.slimjar.resolver.DependencyResolver;
+import io.github.slimjar.resolver.UnresolvedDependencyException;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.IOException;
@@ -21,7 +22,8 @@ public final class URLDependencyDownloader implements DependencyDownloader {
 
     @Override
     public URL download(final Dependency dependency) throws IOException {
-        final URL url = dependencyResolver.resolve(dependency);
+        final URL url = dependencyResolver.resolve(dependency)
+                .orElseThrow(() -> new UnresolvedDependencyException(dependency));
         final URLConnection connection = createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);

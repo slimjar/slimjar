@@ -21,9 +21,8 @@ public final class CachingDependencyResolver implements DependencyResolver {
     }
 
     @Override
-    public URL resolve(final Dependency dependency) {
-        return Optional.ofNullable(cachedResults.get(dependency))
-                .orElseGet(() -> attemptResolve(dependency));
+    public Optional<URL> resolve(final Dependency dependency) {
+        return Optional.ofNullable(cachedResults.computeIfAbsent(dependency, this::attemptResolve));
     }
 
     private URL attemptResolve(final Dependency dependency) {
@@ -31,9 +30,6 @@ public final class CachingDependencyResolver implements DependencyResolver {
                 .map(enquirer -> enquirer.enquire(dependency))
                 .filter(Objects::nonNull)
                 .findFirst();
-        final URL resolvedURL = resolvedUrl
-                .orElseThrow(() -> new UnresolvedDependencyException(dependency));
-        cachedResults.put(dependency, resolvedURL);
-        return resolvedURL;
+        return resolvedUrl.orElse(null);
     }
 }
