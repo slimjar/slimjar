@@ -7,6 +7,9 @@
     <a href="https://plugins.gradle.org/plugin/io.github.slimjar">
         <img src="https://img.shields.io/maven-metadata/v.svg?label=gradle-plugin&metadataUrl=https%3A%2F%2Fplugins.gradle.org%2Fm2%2Fio%2Fgithub%2Fslimjar%2Fio.github.slimjar.gradle.plugin%2Fmaven-metadata.xml">
     </a>
+    <a href="https://repo.vshnv.tech/releases/io/github/slimjar/slimjar">
+        <img src="https://img.shields.io/maven-metadata/v.svg?label=maven&metadataUrl=https%3A%2F%2Frepo.vshnv.tech%2Fio%2Fgithub%2Fslimjar%2Fslimjar%2Fmaven-metadata.xml">
+    </a>
   </div>
 
 <hr>
