@@ -1,6 +1,11 @@
 <h1 align="center">Slim Jar</h1>
 <h3 align="center">Runtime Dependency Management</h3>
-<div align="center">[![Java CI with Gradle](https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml/badge.svg)](https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml)</div>
+  <div align="center">
+    <a href="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml">
+        <img src="https://github.com/SlimJar/slimjar/actions/workflows/gradle.yml/badge.svg">
+    </a>
+  </div>
+
 <hr>
 
 <h4>What is SlimJar?</h4>
