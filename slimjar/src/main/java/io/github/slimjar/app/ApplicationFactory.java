@@ -47,15 +47,6 @@ public final class ApplicationFactory {
         return applicationClass.getConstructor(Parameters.typesFrom(args)).newInstance(args);
     }
 
-    public Application createIsolatedApplication(final String fqClassName, final Object... args) throws ReflectiveOperationException, ClassCastException {
-        final DependencyData dependencyData = applicationConfiguration.getDependencyData();
-        final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
-        final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader();
-        dependencyInjector.inject(classLoader, dependencyData.getDependencies());
-        final Class<Application> applicationClass = (Class<Application>) Class.forName(fqClassName, true, classLoader);
-        return applicationClass.getConstructor(Parameters.typesFrom(args)).newInstance(args);
-    }
-
     public Application createAppendingApplication(final URLClassLoader classLoader) {
         final DependencyData dependencyData = applicationConfiguration.getDependencyData();
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
