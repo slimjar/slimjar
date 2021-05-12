@@ -1,13 +1,23 @@
 plugins {
     id 'java'
+    id 'com.github.hierynomus.license-base' version '0.15.0'
 }
 
 allprojects {
     group 'io.github.slimjar'
     version '1.0.0'
 
+    apply plugin: 'com.github.hierynomus.license-base'
+
     repositories {
         mavenCentral()
+    }
+
+    license {
+        header rootProject.file('LICENSE')
+        includes(['**/*.java', '**/*.kt'])
+        mapping 'kt': 'DOUBLESLASH_STYLE',
+                'java': 'DOUBLESLASH_STYLE'
     }
 }
 
