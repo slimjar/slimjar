@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.io.IOException;
 import java.net.URL;
 
 @RunWith(PowerMockRunner.class)
@@ -19,5 +21,24 @@ public class FileDependencyDataProviderTest extends TestCase {
         PowerMockito.when(mockUrl.openStream()).thenReturn(mockDependencyData.getDependencyDataInputStream());
         final DependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
         assertEquals("Read and provide proper dependencies",mockDependencyData.getExpectedSample(), dependencyDataProvider.get());
+    }
+
+    public void testFileDependencyDataProviderReturnReader() throws Exception {
+        final MockDependencyData mockDependencyData = new MockDependencyData();
+        final URL mockUrl = PowerMockito.mock(URL.class);
+        PowerMockito.whenNew(URL.class).withParameterTypes(String.class).withArguments("MyURLString").thenReturn(mockUrl);
+        PowerMockito.when(mockUrl.openStream()).thenReturn(mockDependencyData.getDependencyDataInputStream());
+        final DependencyReader dependencyReader = new GsonDependencyReader(new Gson());
+        final FileDependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(dependencyReader, mockUrl);
+        assertEquals("Provider must use given reader", dependencyReader, dependencyDataProvider.getDependencyReader());
+    }
+
+    public void testFileDependencyDataProviderNullOnException() throws Exception {
+        final URL mockUrl = PowerMockito.mock(URL.class);
+        final DependencyReader mockReader = PowerMockito.mock(DependencyReader.class);
+        PowerMockito.whenNew(URL.class).withParameterTypes(String.class).withArguments("MyURLString").thenReturn(mockUrl);
+        PowerMockito.when(mockUrl.openStream()).thenThrow(new IOException());
+        final DependencyDataProvider dependencyDataProvider = new FileDependencyDataProvider(mockReader, mockUrl);
+        assertNull("Provider must return null on exception", dependencyDataProvider.get());
     }
 }

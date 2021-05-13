@@ -13,6 +13,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -58,5 +59,28 @@ public class ModuleDependencyDataProviderTest extends TestCase {
         PowerMockito.when(jarFile.getEntry("slimjar.json")).thenReturn(null);
         final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
         assertEquals("Empty dependency if not exists", emptyDependency, dependencyDataProvider.get());
+    }
+
+    public void testModuleDependencyDataProviderExceptionIfNonJar() throws Exception {
+        final MockDependencyData mockDependencyData = new MockDependencyData();
+        final URL mockUrl = PowerMockito.mock(URL.class);
+        final HttpURLConnection urlConnection = PowerMockito.mock(HttpURLConnection.class);
+        final JarFile jarFile = PowerMockito.mock(JarFile.class);
+        final DependencyData emptyDependency = new DependencyData(
+                Collections.emptySet(),
+                Collections.emptySet(),
+                Collections.emptySet(),
+                Collections.emptySet()
+        );
+        PowerMockito.whenNew(URL.class).withAnyArguments().thenReturn(mockUrl);
+        PowerMockito.when(mockUrl.openConnection()).thenReturn(urlConnection);
+        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
+        Error error = null;
+        try {
+            dependencyDataProvider.get();
+        } catch (Error thrown) {
+            error = thrown;
+        }
+        assertTrue("Non-Jar urlcorrection should throw AssertionError", error instanceof AssertionError);
     }
 }
