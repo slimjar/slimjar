@@ -66,10 +66,6 @@ public final class ModuleDependencyDataProvider implements DependencyDataProvide
             );
         }
         try (InputStream inputStream = jarFile.getInputStream(dependencyFileEntry)){
-            final Path file = Files.createTempFile("test", ".json");
-            Files.copy(inputStream, file, StandardCopyOption.REPLACE_EXISTING);
-        }
-        try (InputStream inputStream = jarFile.getInputStream(dependencyFileEntry)){
             return dependencyReader.read(inputStream);
         }
     }
