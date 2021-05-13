@@ -32,7 +32,7 @@ import java.util.Collection;
 
 public final class HttpURLPinger implements URLPinger {
     private static final String SLIMJAR_USER_AGENT = "SlimjarApplication/* URL Validation Ping";
-    private static final Collection<String> SUPPOURTED_PROTOCOLS = Arrays.asList("HTTP", "HTTPS");
+    private static final Collection<String> SUPPORTED_PROTOCOLS = Arrays.asList("HTTP", "HTTPS");
 
     @Override
     public boolean ping(final URL url) {
@@ -56,6 +56,6 @@ public final class HttpURLPinger implements URLPinger {
 
     public boolean isSupported(final URL url) {
         final String protocol = url.getProtocol().toUpperCase();
-        return SUPPOURTED_PROTOCOLS.contains(protocol);
+        return SUPPORTED_PROTOCOLS.contains(protocol);
     }
 }

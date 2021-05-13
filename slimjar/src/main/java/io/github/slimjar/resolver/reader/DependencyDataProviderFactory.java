@@ -35,7 +35,17 @@ public final class DependencyDataProviderFactory {
         this.gson = gson;
     }
 
+    /**
+     * @see DependencyDataProviderFactory#forFile(URL)
+     * @param dependencyFileURL URL of dependency data file
+     * @return DependencyDataProvider for given URL
+     */
+    @Deprecated
     public DependencyDataProvider create(final URL dependencyFileURL) {
+        return forFile(dependencyFileURL);
+    }
+
+    public DependencyDataProvider forFile(final URL dependencyFileURL) {
         final DependencyReader dependencyReader = new GsonDependencyReader(gson);
         return new FileDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
