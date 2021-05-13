@@ -19,6 +19,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.2'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.2'
+    testImplementation 'cglib:cglib:3.1'
 }
 
 publishing {
