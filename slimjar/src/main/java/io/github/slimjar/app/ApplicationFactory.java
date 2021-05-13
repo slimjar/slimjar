@@ -55,11 +55,15 @@ public final class ApplicationFactory {
     }
 
     public Application createIsolatedApplication(final Collection<String> moduleNames, final String fqClassName, final Object... args) throws ReflectiveOperationException, ClassCastException, IOException {
+        return createIsolatedApplication(moduleNames, fqClassName, ClassLoader.getSystemClassLoader().getParent(), args);
+    }
+
+    public Application createIsolatedApplication(final Collection<String> moduleNames, final String fqClassName, final ClassLoader parent, final Object... args) throws ReflectiveOperationException, ClassCastException, IOException {
         final Gson gson = new Gson();
         final ModuleExtractor moduleExtractor = new TemporaryModuleExtractor();
         final URL[] extractedModules = findExtractedModules(moduleExtractor, moduleNames);
         final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(gson);
-        final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(extractedModules, Collections.singleton(Application.class), Collections.emptyList());
+        final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(extractedModules, parent, Collections.singleton(Application.class), Collections.emptyList());
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
 
         for (final URL module : extractedModules) {
