@@ -13,6 +13,9 @@
     <a href="https://repo.vshnv.tech/releases/io/github/slimjar/slimjar">
         <img src="https://img.shields.io/maven-metadata/v.svg?label=maven&metadataUrl=https%3A%2F%2Frepo.vshnv.tech%2Fio%2Fgithub%2Fslimjar%2Fslimjar%2Fmaven-metadata.xml">
     </a>
+    <a href=".">
+      <img src="https://visitor-badge.glitch.me/badge?page_id=slimjar.git">
+  </a>
   </div>
 
 <hr>
