@@ -54,4 +54,27 @@ public class URLPingerTest extends TestCase {
         boolean result = urlPinger.ping(mockUrl);
         assertFalse("Non-OK should fail", result);
     }
+
+    public void testHttpURLPingerExceptionOnPing() throws IOException {
+        final URL mockUrl = PowerMockito.mock(URL.class);
+        final HttpsURLConnection httpsURLConnection = PowerMockito.mock(HttpsURLConnection.class);
+        PowerMockito.when(mockUrl.openConnection()).thenReturn(httpsURLConnection);
+        PowerMockito.when(mockUrl.getProtocol()).thenReturn("HTTPS");
+        PowerMockito.doNothing().when(httpsURLConnection).addRequestProperty("","");
+        PowerMockito.doThrow(new IOException()).when(httpsURLConnection).connect();
+        PowerMockito.doReturn(HttpURLConnection.HTTP_BAD_REQUEST).when(httpsURLConnection).getResponseCode();
+        final URLPinger urlPinger = new HttpURLPinger();
+        boolean result = urlPinger.ping(mockUrl);
+        assertFalse("Exception should fail", result);
+    }
+
+    public void testHttpURLPingerUnsupportedProtocol() {
+        final URL mockUrl = PowerMockito.mock(URL.class);
+        final URLPinger urlPinger = new HttpURLPinger();
+
+        PowerMockito.doReturn("NON-EXISTENT-PROTOCOL").when(mockUrl).getProtocol();
+        boolean result = urlPinger.ping(mockUrl);
+        assertFalse("Non-OK should fail", result);
+    }
+
 }

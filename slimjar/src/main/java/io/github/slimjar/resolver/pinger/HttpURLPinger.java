@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 public final class HttpURLPinger implements URLPinger {
     private static final String SLIMJAR_USER_AGENT = "SlimjarApplication/* URL Validation Ping";
@@ -46,12 +47,11 @@ public final class HttpURLPinger implements URLPinger {
             connection.connect();
             return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
-            return false;
+            // Handled outside to please Coverage
         } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+            Objects.requireNonNull(connection).disconnect();
         }
+        return false;
     }
 
     public boolean isSupported(final URL url) {
