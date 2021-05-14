@@ -28,7 +28,7 @@ import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.pinger.URLPinger;
 import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
-public class SimpleRepositoryEnquirerFactory implements RepositoryEnquirerFactory {
+public final class SimpleRepositoryEnquirerFactory implements RepositoryEnquirerFactory {
     private final PathResolutionStrategy pathResolutionStrategy;
     private final URLPinger urlPinger;
 
