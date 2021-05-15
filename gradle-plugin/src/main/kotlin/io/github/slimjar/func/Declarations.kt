@@ -38,9 +38,9 @@ val Project.slimDefaultDependency: Boolean
 /**
  * Adds the slimJar dependency to the project
  */
-fun Project.applySlimLib(configuration: String = "implementation") {
+fun Project.applySlimLib(configuration: String = "implementation", version: String) {
     repositories.maven("https://repo.vshnv.tech/")
-    dependencies.add(configuration, "io.github.slimjar:slimjar:1.0.0")
+    dependencies.add(configuration, "io.github.slimjar:slimjar:$version")
 }
 
 /**

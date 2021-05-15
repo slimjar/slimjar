@@ -60,7 +60,8 @@ class SlimJarPlugin : Plugin<Project> {
         // Auto adds the slimJar lib dependency
         afterEvaluate {
             if (slimDefaultDependency) {
-                applySlimLib()
+                val version = System.getProperty("slimjar.version") ?: "1.1.0"
+                applySlimLib(version = version)
             }
         }
 

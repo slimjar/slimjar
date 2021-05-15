@@ -88,7 +88,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
         // Adds slimJar as compileOnly
         if (proj.slimDefaultDependency) {
-            proj.applySlimLib("compileOnly")
+            val version = System.getProperty("slimjar.version") ?: "1.1.0"
+            proj.applySlimLib("compileOnly", version)
         }
 
         val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
