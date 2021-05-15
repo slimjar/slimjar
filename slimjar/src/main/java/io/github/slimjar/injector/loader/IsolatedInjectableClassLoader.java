@@ -39,7 +39,11 @@ public class IsolatedInjectableClassLoader extends InjectableClassLoader {
     }
 
     public IsolatedInjectableClassLoader(final URL[] urls, final Collection<Class<?>> delegates, final Collection<String> openClassNames) {
-        super(urls, getSystemClassLoader().getParent());
+      this(urls, getSystemClassLoader().getParent(), delegates, openClassNames);
+    }
+
+    public IsolatedInjectableClassLoader(final URL[] urls, final ClassLoader parent, final Collection<Class<?>> delegates, final Collection<String> openClassNames) {
+        super(urls, parent);
         for (Class<?> clazz : delegates) {
             delegatesMap.put(clazz.getName(), clazz);
         }
