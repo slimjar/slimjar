@@ -63,7 +63,7 @@ public final class ApplicationFactory {
         final ModuleExtractor moduleExtractor = new TemporaryModuleExtractor();
         final URL[] extractedModules = findExtractedModules(moduleExtractor, moduleNames);
         final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(gson);
-        final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(extractedModules, parent, Collections.singleton(Application.class), Collections.emptyList());
+        final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(extractedModules, parent, Collections.singleton(Application.class));
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
 
         for (final URL module : extractedModules) {
