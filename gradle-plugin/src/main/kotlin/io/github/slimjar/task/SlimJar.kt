@@ -24,11 +24,14 @@
 
 package io.github.slimjar.task
 
+import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin
 import com.google.gson.GsonBuilder
 import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
 import io.github.slimjar.func.applySlimLib
 import io.github.slimjar.func.slimDefaultDependency
+import io.github.slimjar.func.slimInjectToIsolated
+import io.github.slimjar.func.slimVersion
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
 import io.github.slimjar.resolver.data.Dependency
@@ -59,6 +62,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     private val mirrors = mutableSetOf<Mirror>()
     private val isolatedProjects = mutableSetOf<Project>()
 
+    var shade = true
+
     init {
         group = "slimJar"
     }
@@ -82,14 +87,12 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     open fun isolate(proj: Project) {
         isolatedProjects.add(proj)
 
-        runCatching {
+        if (proj.slimInjectToIsolated) {
+            proj.pluginManager.apply(ShadowPlugin::class.java)
             proj.pluginManager.apply(SlimJarPlugin::class.java)
-        }
-
-        // Adds slimJar as compileOnly
-        if (proj.slimDefaultDependency) {
-            val version = System.getProperty("slimjar.version") ?: "1.1.0"
-            proj.applySlimLib("compileOnly", version)
+            proj.getTasksByName("slimJar", true).firstOrNull()?.let {
+                it.setProperty("shade", false)
+            }
         }
 
         val shadowTask = proj.getTasksByName("shadowJar", true).firstOrNull()
@@ -157,6 +160,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             }
         }
     }
+
 
     /**
      * Internal getter required because Gradle will think an internal property is an action

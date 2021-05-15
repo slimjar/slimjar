@@ -36,6 +36,15 @@ val Project.slimDefaultDependency: Boolean
     get() = findProperty("slimjar.default.dependency")?.toString()?.toBoolean() ?: true
 
 /**
+ * Checks in the gradle.properties if should or not add the slimJar plugin to isolated projects by default
+ */
+val Project.slimInjectToIsolated: Boolean
+    get() = findProperty("slimjar.default.isolated.inject")?.toString()?.toBoolean() ?: true
+
+val Project.slimVersion: String
+    get() = findProperty("slimjar.version")?.toString() ?: "1.1.0"
+
+/**
  * Adds the slimJar dependency to the project
  */
 fun Project.applySlimLib(configuration: String = "implementation", version: String) {

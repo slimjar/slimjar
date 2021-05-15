@@ -29,6 +29,7 @@ import io.github.slimjar.exceptions.ShadowNotFoundException
 import io.github.slimjar.func.applySlimLib
 import io.github.slimjar.func.createConfig
 import io.github.slimjar.func.slimDefaultDependency
+import io.github.slimjar.func.slimVersion
 import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -57,11 +58,18 @@ class SlimJarPlugin : Plugin<Project> {
 
         val slimJar = tasks.create(SLIM_JAR_TASK_NAME, SlimJar::class.java, slimConfig)
 
+        slimJar.doFirst {
+
+        }
         // Auto adds the slimJar lib dependency
         afterEvaluate {
             if (slimDefaultDependency) {
-                val version = System.getProperty("slimjar.version") ?: "1.1.0"
-                applySlimLib(version = version)
+                val configurationType =
+                        if (slimJar.shade)
+                            "implementation"
+                        else
+                            "compileOnly"
+                applySlimLib(configurationType, version = slimVersion)
             }
         }
 
