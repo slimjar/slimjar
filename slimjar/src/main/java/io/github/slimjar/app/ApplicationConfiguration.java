@@ -56,7 +56,7 @@ import java.util.Collection;
 
 public final class ApplicationConfiguration {
     private static final Gson GSON = new Gson();
-    private static final File DEFAULT_DOWNLOAD_DIRECTORY;
+    public static final File DEFAULT_DOWNLOAD_DIRECTORY;
 
     static {
         final String userHome = System.getProperty("user.home");
@@ -90,7 +90,10 @@ public final class ApplicationConfiguration {
         final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(GSON);
         final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
         final DependencyData data = dependencyDataProvider.get();
+        return createFrom(data, downloadDirectory, applicationName);
+    }
 
+    public static ApplicationConfiguration createFrom(final DependencyData data, final File downloadDirectory, final String applicationName) throws IOException {
         final MirrorSelector mirrorSelector = new SimpleMirrorSelector();
         final Collection<Repository> repositories = mirrorSelector.select(data.getRepositories(), data.getMirrors());
 
