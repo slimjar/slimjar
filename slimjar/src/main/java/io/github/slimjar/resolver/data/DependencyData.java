@@ -27,6 +27,7 @@ package io.github.slimjar.resolver.data;
 import io.github.slimjar.relocation.RelocationRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 public final class DependencyData {
@@ -42,10 +43,10 @@ public final class DependencyData {
             final Collection<Dependency> dependencies,
             final Collection<RelocationRule> relocations
     ) {
-        this.mirrors = mirrors;
-        this.repositories = repositories;
-        this.dependencies = dependencies;
-        this.relocations = relocations;
+        this.mirrors = Collections.unmodifiableCollection(mirrors);
+        this.repositories = Collections.unmodifiableCollection(repositories);
+        this.dependencies = Collections.unmodifiableCollection(dependencies);
+        this.relocations = Collections.unmodifiableCollection(relocations);
     }
 
     public Collection<Repository> getRepositories() {
