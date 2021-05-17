@@ -12,5 +12,6 @@ repositories {
 }
 
 dependencies {
+    compileOnly project(':slimjar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
