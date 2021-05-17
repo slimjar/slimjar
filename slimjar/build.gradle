@@ -74,3 +74,5 @@ publishing {
         }
     }
 }
+
+jar.dependsOn project.tasks.getByName("shadowJar")
