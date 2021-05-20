@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '1.1.1'
+version '1.1.2-LOCAL'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,8 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'me.lucko:jar-relocator:1.4'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    testImplementation project(':slimjar-external')
+    testImplementation 'me.lucko:jar-relocator:1.4'
+    testImplementation 'com.google.code.gson:gson:2.8.6'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.2'
