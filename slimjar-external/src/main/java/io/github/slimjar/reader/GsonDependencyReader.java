@@ -22,10 +22,11 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.resolver.reader;
+package io.github.slimjar.reader;
 
 import com.google.gson.Gson;
 import io.github.slimjar.resolver.data.DependencyData;
+import io.github.slimjar.resolver.reader.DependencyReader;
 
 import java.io.*;
 
