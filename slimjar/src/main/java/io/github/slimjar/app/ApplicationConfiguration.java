@@ -35,7 +35,7 @@ import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.slimjar.downloader.DependencyDownloader;
 import io.github.slimjar.downloader.URLDependencyDownloader;
-import io.github.slimjar.downloader.output.DependencyFileOutputWriterFactory;
+import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
 import io.github.slimjar.injector.DownloadingDependencyInjector;
 import io.github.slimjar.resolver.data.DependencyData;
@@ -101,7 +101,7 @@ public final class ApplicationConfiguration {
         final Relocator relocator = dependencyProvider.createRelocator(data.getRelocations());
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectory);
         final FilePathStrategy relocationFilePathStrategy = FilePathStrategy.createRelocationStrategy(downloadDirectory, applicationName);
-        final OutputWriterFactory outputWriterFactory = new DependencyFileOutputWriterFactory(filePathStrategy, relocationFilePathStrategy, relocator);
+        final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy, relocationFilePathStrategy, relocator);
         final PathResolutionStrategy pathResolutionStrategy = new MavenPathResolutionStrategy();
         final URLPinger urlPinger = new HttpURLPinger();
         final RepositoryEnquirerFactory repositoryEnquirerFactory = new SimpleRepositoryEnquirerFactory(pathResolutionStrategy, urlPinger);
