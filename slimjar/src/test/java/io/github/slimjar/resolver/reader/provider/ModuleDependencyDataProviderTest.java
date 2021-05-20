@@ -1,9 +1,9 @@
 package io.github.slimjar.resolver.reader.provider;
 
+import io.github.slimjar.reader.GsonDependencyReader;
 import com.google.gson.Gson;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
-import io.github.slimjar.resolver.reader.GsonDependencyReader;
 import io.github.slimjar.resolver.reader.MockDependencyData;
 import io.github.slimjar.resolver.reader.ModuleDependencyDataProvider;
 import junit.framework.TestCase;
@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;

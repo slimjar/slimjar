@@ -24,7 +24,8 @@
 
 package io.github.slimjar.app;
 
-import com.google.gson.Gson;
+import io.github.slimjar.app.external.DependencyProvider;
+import io.github.slimjar.app.external.DependencyProviderFactory;
 import io.github.slimjar.app.module.TemporaryModuleExtractor;
 import io.github.slimjar.injector.loader.IsolatedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
@@ -59,10 +60,10 @@ public final class ApplicationFactory {
     }
 
     public Application createIsolatedApplication(final Collection<String> moduleNames, final String fqClassName, final ClassLoader parent, final Object... args) throws ReflectiveOperationException, ClassCastException, IOException {
-        final Gson gson = new Gson();
+        final DependencyProvider dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
         final ModuleExtractor moduleExtractor = new TemporaryModuleExtractor();
         final URL[] extractedModules = findExtractedModules(moduleExtractor, moduleNames);
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(gson);
+        final DependencyDataProviderFactory dependencyDataProviderFactory = dependencyProvider.createDependencyDataProviderFactory();
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(extractedModules, parent, Collections.singleton(Application.class));
         final DependencyInjector dependencyInjector = applicationConfiguration.getDependencyInjector();
 

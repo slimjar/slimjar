@@ -1,6 +1,7 @@
 package io.github.slimjar.resolver.reader.provider;
 
 import com.google.gson.Gson;
+import io.github.slimjar.reader.GsonDependencyReader;
 import io.github.slimjar.resolver.reader.*;
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;

@@ -24,8 +24,8 @@
 
 package io.github.slimjar.app;
 
-import com.google.gson.Gson;
-import io.github.slimjar.relocation.JarFileRelocator;
+import io.github.slimjar.app.external.DependencyProvider;
+import io.github.slimjar.app.external.DependencyProviderFactory;
 import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.resolver.CachingDependencyResolver;
 import io.github.slimjar.resolver.DependencyResolver;
@@ -55,7 +55,6 @@ import java.net.URL;
 import java.util.Collection;
 
 public final class ApplicationConfiguration {
-    private static final Gson GSON = new Gson();
     public static final File DEFAULT_DOWNLOAD_DIRECTORY;
 
     static {
@@ -80,24 +79,26 @@ public final class ApplicationConfiguration {
         return dependencyData;
     }
 
-    public static ApplicationConfiguration createDefault(final String applicationName) throws IOException {
+    public static ApplicationConfiguration createDefault(final String applicationName) throws IOException, ReflectiveOperationException {
         final URL depFileURL = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json");
         if (depFileURL == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
         return createDefault(depFileURL, DEFAULT_DOWNLOAD_DIRECTORY, applicationName);
     }
 
-    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws IOException {
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(GSON);
+    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException {
+        final DependencyProvider dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
+        final DependencyDataProviderFactory dependencyDataProviderFactory = dependencyProvider.createDependencyDataProviderFactory();
         final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
         final DependencyData data = dependencyDataProvider.get();
         return createFrom(data, downloadDirectory, applicationName);
     }
 
-    public static ApplicationConfiguration createFrom(final DependencyData data, final File downloadDirectory, final String applicationName) throws IOException {
+    public static ApplicationConfiguration createFrom(final DependencyData data, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException {
+        final DependencyProvider dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
         final MirrorSelector mirrorSelector = new SimpleMirrorSelector();
         final Collection<Repository> repositories = mirrorSelector.select(data.getRepositories(), data.getMirrors());
 
-        final Relocator relocator = new JarFileRelocator(data.getRelocations());
+        final Relocator relocator = dependencyProvider.createRelocator(data.getRelocations());
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectory);
         final FilePathStrategy relocationFilePathStrategy = FilePathStrategy.createRelocationStrategy(downloadDirectory, applicationName);
         final OutputWriterFactory outputWriterFactory = new DependencyFileOutputWriterFactory(filePathStrategy, relocationFilePathStrategy, relocator);
