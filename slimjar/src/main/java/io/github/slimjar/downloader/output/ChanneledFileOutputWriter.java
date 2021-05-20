@@ -42,7 +42,7 @@ public final class ChanneledFileOutputWriter implements OutputWriter {
     }
 
     @Override
-    public URL writeFrom(final InputStream inputStream, final long length) throws IOException {
+    public File writeFrom(final InputStream inputStream, final long length) throws IOException {
         if (!outputFile.exists()) {
             try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
                 try (final FileOutputStream output = new FileOutputStream(outputFile)) {
@@ -51,6 +51,6 @@ public final class ChanneledFileOutputWriter implements OutputWriter {
             }
         }
         inputStream.close();
-        return outputFile.toURI().toURL();
+        return outputFile;
     }
 }

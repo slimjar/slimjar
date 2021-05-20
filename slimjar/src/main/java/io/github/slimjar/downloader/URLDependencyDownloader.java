@@ -30,6 +30,7 @@ import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.UnresolvedDependencyException;
 import io.github.slimjar.resolver.data.Dependency;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -45,13 +46,13 @@ public final class URLDependencyDownloader implements DependencyDownloader {
     }
 
     @Override
-    public URL download(final Dependency dependency) throws IOException {
+    public File download(final Dependency dependency) throws IOException {
         final URL url = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
         final URLConnection connection = createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
-        final URL result = outputWriter.writeFrom(inputStream, connection.getContentLength());
+        final File result = outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
         return result;
     }
