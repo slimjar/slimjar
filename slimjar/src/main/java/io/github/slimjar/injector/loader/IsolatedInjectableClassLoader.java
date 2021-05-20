@@ -34,7 +34,7 @@ public final class IsolatedInjectableClassLoader extends InjectableClassLoader {
         this(new URL[0]);
     }
 
-    public IsolatedInjectableClassLoader(final URL[] urls) {
+    public IsolatedInjectableClassLoader(final URL... urls) {
         this(urls, Collections.emptySet());
     }
 
