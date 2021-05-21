@@ -44,6 +44,9 @@ public final class TemporaryModuleExtractor implements ModuleExtractor {
         final JarURLConnection jarURLConnection = (JarURLConnection) connection;
         final JarFile jarFile = jarURLConnection.getJarFile();
         final ZipEntry module = jarFile.getJarEntry(name + ".isolated-jar");
+        if (module == null) {
+            throw new ModuleNotFoundException(name);
+        }
         try (final InputStream inputStream = jarFile.getInputStream(module)) {
             Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
