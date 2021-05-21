@@ -43,6 +43,8 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class ApplicationBuilder {
     private static final Path DEFAULT_DOWNLOAD_DIRECTORY;
@@ -122,7 +124,8 @@ public abstract class ApplicationBuilder {
 
     protected final URL getDependencyFileUrl() {
         if (dependencyFileUrl == null) {
-            this.dependencyFileUrl = getClass().getResource("slimjar.json");
+            this.dependencyFileUrl = getClass().getClassLoader().getResource("slimjar.json");
+            Logger.getLogger("SlimJar").log(Level.INFO, String.valueOf(dependencyFileUrl));
         }
         return dependencyFileUrl;
     }

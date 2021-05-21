@@ -33,7 +33,7 @@ public final class Modules {
     }
 
     public static Collection<String> findLocalModules() throws URISyntaxException, IOException {
-        URL url = Modules.class.getResource("/");
+        URL url = Modules.class.getClassLoader().getResource("/");
         Path resourcesPath = Paths.get(url.toURI());
         return Files.walk(resourcesPath, 1)
                 .filter(path -> path.endsWith(".isolated-jar"))

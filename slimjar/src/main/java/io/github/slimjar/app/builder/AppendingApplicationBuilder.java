@@ -24,7 +24,7 @@ public final class AppendingApplicationBuilder extends ApplicationBuilder {
     @Override
     public Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final DependencyDataProviderFactory dataProviderFactory = getDependencyProvider().createDependencyDataProviderFactory();
-        final DependencyData dependencyData = dataProviderFactory.forFile(getClass().getResource("slimjar.json")).get();
+        final DependencyData dependencyData = dataProviderFactory.forFile(getClass().getClassLoader().getResource("slimjar.json")).get();
         final DependencyInjector dependencyInjector = createInjector(dataProviderFactory);
         final Injectable injectable = new WrappedInjectableClassLoader(classLoader);
         dependencyInjector.inject(injectable, dependencyData.getDependencies());
