@@ -17,7 +17,6 @@ import io.github.slimjar.relocation.RelocationHelperFactory;
 import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.VerifyingRelocationHelperFactory;
 import io.github.slimjar.relocation.meta.AttributeMetaMediatorFactory;
-import io.github.slimjar.relocation.meta.MetaMediator;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolverFactory;
 import io.github.slimjar.resolver.DependencyResolver;
@@ -37,7 +36,6 @@ import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
