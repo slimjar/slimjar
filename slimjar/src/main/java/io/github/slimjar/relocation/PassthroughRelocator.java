@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public final class PassthroughRelocator implements Relocator {
     @Override
-    public void relocate(File input, File output) throws IOException {
+    public void relocate(final File input, final File output) throws IOException {
 
     }
 }
