@@ -27,6 +27,8 @@ package io.github.slimjar.app;
 import io.github.slimjar.app.external.DependencyProvider;
 import io.github.slimjar.app.external.DependencyProviderFactory;
 import io.github.slimjar.relocation.Relocator;
+import io.github.slimjar.relocation.VerifyingRelocationHelper;
+import io.github.slimjar.relocation.meta.AttributeMetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolver;
 import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.data.Repository;
@@ -37,10 +39,10 @@ import io.github.slimjar.downloader.DependencyDownloader;
 import io.github.slimjar.downloader.URLDependencyDownloader;
 import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
-import io.github.slimjar.injector.DownloadingDependencyInjector;
+import io.github.slimjar.injector.SimpleDependencyInjector;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
-import io.github.slimjar.resolver.enquirer.SimpleRepositoryEnquirerFactory;
+import io.github.slimjar.resolver.enquirer.PingingRepositoryEnquirerFactory;
 import io.github.slimjar.resolver.mirrors.MirrorSelector;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.resolver.pinger.HttpURLPinger;
@@ -51,9 +53,12 @@ import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
+@Deprecated
 public final class ApplicationConfiguration {
     public static final File DEFAULT_DOWNLOAD_DIRECTORY;
 
@@ -79,13 +84,13 @@ public final class ApplicationConfiguration {
         return dependencyData;
     }
 
-    public static ApplicationConfiguration createDefault(final String applicationName) throws IOException, ReflectiveOperationException {
+    public static ApplicationConfiguration createDefault(final String applicationName) throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final URL depFileURL = ApplicationConfiguration.class.getClassLoader().getResource("slimjar.json");
         if (depFileURL == null) throw new IllegalStateException("Could not find generated slimjar.json! Did you use the slimjar plugin to build?");
         return createDefault(depFileURL, DEFAULT_DOWNLOAD_DIRECTORY, applicationName);
     }
 
-    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException {
+    public static ApplicationConfiguration createDefault(final URL depFileURL, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final DependencyProvider dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
         final DependencyDataProviderFactory dependencyDataProviderFactory = dependencyProvider.createDependencyDataProviderFactory();
         final DependencyDataProvider dependencyDataProvider = dependencyDataProviderFactory.create(depFileURL);
@@ -93,7 +98,7 @@ public final class ApplicationConfiguration {
         return createFrom(data, downloadDirectory, applicationName);
     }
 
-    public static ApplicationConfiguration createFrom(final DependencyData data, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException {
+    public static ApplicationConfiguration createFrom(final DependencyData data, final File downloadDirectory, final String applicationName) throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final DependencyProvider dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
         final MirrorSelector mirrorSelector = new SimpleMirrorSelector();
         final Collection<Repository> repositories = mirrorSelector.select(data.getRepositories(), data.getMirrors());
@@ -101,13 +106,13 @@ public final class ApplicationConfiguration {
         final Relocator relocator = dependencyProvider.createRelocator(data.getRelocations());
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectory);
         final FilePathStrategy relocationFilePathStrategy = FilePathStrategy.createRelocationStrategy(downloadDirectory, applicationName);
-        final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy, relocationFilePathStrategy, relocator);
+        final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy);
         final PathResolutionStrategy pathResolutionStrategy = new MavenPathResolutionStrategy();
         final URLPinger urlPinger = new HttpURLPinger();
-        final RepositoryEnquirerFactory repositoryEnquirerFactory = new SimpleRepositoryEnquirerFactory(pathResolutionStrategy, urlPinger);
+        final RepositoryEnquirerFactory repositoryEnquirerFactory = new PingingRepositoryEnquirerFactory(pathResolutionStrategy, urlPinger);
         final DependencyResolver dependencyResolver = new CachingDependencyResolver(repositories, repositoryEnquirerFactory);
         final DependencyDownloader dependencyDownloader = new URLDependencyDownloader(outputWriterFactory, dependencyResolver);
-        final DependencyInjector dependencyInjector = new DownloadingDependencyInjector(dependencyDownloader);
+        final DependencyInjector dependencyInjector = new SimpleDependencyInjector(dependencyDownloader, new VerifyingRelocationHelper(relocationFilePathStrategy, relocator, new AttributeMetaMediatorFactory()));
         return new ApplicationConfiguration(dependencyInjector, data);
     }
 }

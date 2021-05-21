@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Deprecated
 public final class ApplicationFactory {
     private final ApplicationConfiguration applicationConfiguration;
 
