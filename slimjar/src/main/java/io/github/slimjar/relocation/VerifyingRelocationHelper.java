@@ -2,6 +2,7 @@ package io.github.slimjar.relocation;
 
 import io.github.slimjar.downloader.strategy.FilePathStrategy;
 import io.github.slimjar.relocation.meta.MetaMediator;
+import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
@@ -20,10 +21,10 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
     private final FilePathStrategy outputFilePathStrategy;
     private final Relocator relocator;
     private final String selfHash;
-    private final MetaMediator metaMediator;
+    private final MetaMediatorFactory mediatorFactory;
 
-    public VerifyingRelocationHelper(final FilePathStrategy outputFilePathStrategy, final Relocator relocator, final MetaMediator metaMediator) throws URISyntaxException, NoSuchAlgorithmException, IOException {
-        this.metaMediator = metaMediator;
+    public VerifyingRelocationHelper(final FilePathStrategy outputFilePathStrategy, final Relocator relocator, final MetaMediatorFactory mediatorFactory) throws URISyntaxException, NoSuchAlgorithmException, IOException {
+        this.mediatorFactory = mediatorFactory;
         final URL jarURL = getClass().getProtectionDomain().getCodeSource().getLocation();
 
         this.outputFilePathStrategy = outputFilePathStrategy;
@@ -34,6 +35,7 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
     @Override
     public File relocate(Dependency dependency, File file) throws IOException {
         final File relocatedFile = outputFilePathStrategy.selectFileFor(dependency);
+        final MetaMediator metaMediator = mediatorFactory.create(relocatedFile.toPath());
         if (relocatedFile.exists()) {
             final String ownerHash = metaMediator.readAttribute("slimjar.owner");
             if (selfHash.equals(ownerHash)) {
