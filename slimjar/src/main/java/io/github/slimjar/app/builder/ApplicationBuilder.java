@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -65,8 +66,16 @@ public abstract class ApplicationBuilder {
     private DependencyDownloaderFactory downloaderFactory;
     private MirrorSelector mirrorSelector;
 
-    public ApplicationBuilder(final String applicationName) {
+    protected ApplicationBuilder(final String applicationName) {
         this.applicationName = Objects.requireNonNull(applicationName, "Requires non-null application name!");
+    }
+
+    public static ApplicationBuilder isolated(final String name, final IsolationConfiguration config, Object[] args) {
+        return new IsolatedApplicationBuilder(name, config, args);
+    }
+
+    public static ApplicationBuilder appending(final String name, final URLClassLoader classLoader) {
+        return new AppendingApplicationBuilder(name, classLoader);
     }
 
     public final ApplicationBuilder dependencyFileUrl(final URL dependencyFileUrl) {
