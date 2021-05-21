@@ -1,7 +1,5 @@
 package io.github.slimjar.resolver.reader;
 
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
-
 import java.net.URL;
 
 public interface DependencyDataProviderFactory {
