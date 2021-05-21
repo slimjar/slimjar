@@ -35,11 +35,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
-public final class DownloadingDependencyInjector implements DependencyInjector {
+public final class SimpleDependencyInjector implements DependencyInjector {
     private final DependencyDownloader dependencyDownloader;
     private final RelocationHelper relocationHelper;
 
-    public DownloadingDependencyInjector(final DependencyDownloader dependencyDownloader, final RelocationHelper relocationHelper) {
+    public SimpleDependencyInjector(final DependencyDownloader dependencyDownloader, final RelocationHelper relocationHelper) {
         this.dependencyDownloader = dependencyDownloader;
         this.relocationHelper = relocationHelper;
     }
