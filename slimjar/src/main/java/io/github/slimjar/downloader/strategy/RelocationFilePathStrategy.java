@@ -41,7 +41,6 @@ public final class RelocationFilePathStrategy implements FilePathStrategy {
 
     @Override
     public File selectFileFor(final Dependency dependency) {
-
         final String path = String.format(
                 DEPENDENCY_FILE_FORMAT,
                 rootDirectory.getPath(),
