@@ -30,6 +30,7 @@ import io.github.slimjar.resolver.data.Dependency;
 import java.net.URL;
 import java.util.Optional;
 
+@FunctionalInterface
 public interface DependencyResolver {
     Optional<URL> resolve(final Dependency dependency);
 }
