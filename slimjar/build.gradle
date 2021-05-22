@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'java'
@@ -15,7 +18,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation project(':slimjar-external')
     testImplementation 'me.lucko:jar-relocator:1.4'
     testImplementation 'com.google.code.gson:gson:2.8.6'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
@@ -76,4 +78,21 @@ publishing {
     }
 }
 
-jar.dependsOn project.tasks.getByName("shadowJar")
+tasks.register('copyExternal') {
+    it.dependsOn(':slimjar-external:jar')
+    final File externalJar = project(':slimjar-external').getTasks().getByName("jar").outputs.files.singleFile
+    println(externalJar)
+    println(externalJar.exists())
+
+    if (!externalJar.exists()) return
+    final File resourceModule = layout.buildDirectory.file("resources/main/slimjar-external.isolated-jar").get().asFile
+    resourceModule.getParentFile().mkdirs()
+    if (resourceModule.exists()) {
+        resourceModule.delete()
+    }
+    Files.copy(externalJar.toPath(), resourceModule.toPath())
+}
+
+shadowJar {
+    dependsOn('copyExternal')
+}
