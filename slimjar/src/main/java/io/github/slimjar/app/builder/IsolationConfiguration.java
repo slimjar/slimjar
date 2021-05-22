@@ -1,6 +1,5 @@
 package io.github.slimjar.app.builder;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import io.github.slimjar.app.module.ModuleExtractor;
 import io.github.slimjar.app.module.TemporaryModuleExtractor;
 import io.github.slimjar.util.Modules;
@@ -46,7 +45,7 @@ public final class IsolationConfiguration {
 
     public static final class Builder {
         private String applicationClass;
-        private Collection<String> modules = Collections.emptySet();
+        private Collection<String> modules = new HashSet<>();
         private ClassLoader parentClassloader;
         private ModuleExtractor moduleExtractor;
 
