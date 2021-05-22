@@ -44,4 +44,9 @@ public final class DependencyOutputWriterFactory implements OutputWriterFactory 
         outputFile.getParentFile().mkdirs();
         return new ChanneledFileOutputWriter(outputFile);
     }
+
+    @Override
+    public FilePathStrategy getStrategy() {
+        return outputFilePathStrategy;
+    }
 }
