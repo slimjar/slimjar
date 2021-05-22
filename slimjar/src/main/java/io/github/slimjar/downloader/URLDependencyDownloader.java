@@ -24,7 +24,6 @@
 
 package io.github.slimjar.downloader;
 
-import io.github.slimjar.downloader.output.ChanneledFileOutputWriter;
 import io.github.slimjar.downloader.output.OutputWriter;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
 import io.github.slimjar.resolver.DependencyResolver;
@@ -38,13 +37,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
     private static final Logger LOGGER = Logger.getLogger(URLDependencyDownloader.class.getName());
     private final OutputWriterFactory outputWriterProducer;
     private final DependencyResolver dependencyResolver;
+
     public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver) {
         this.outputWriterProducer = outputWriterProducer;
         this.dependencyResolver = dependencyResolver;
