@@ -46,7 +46,7 @@ public final class DependencyProviderFactory {
         final URL tempModuleURL = moduleExtractor.extractModule(isolatedModule, "slimjar-external");
         final ExposedClassHelper clazzHelper = new ExternalExposedClassHelper();
         final Map<String, Class<?>> mappedRelocations = clazzHelper.fetchRemappedRelocations();
-        final InjectableClassLoader injectableClassLoader = new MappableInjectableClassLoader(new URL[]{tempModuleURL}, clazzHelper.fetchExposedClasses(), mappedRelocations);
+        final InjectableClassLoader injectableClassLoader = new MappableInjectableClassLoader(new URL[]{tempModuleURL}, mappedRelocations);
         injector.inject(injectableClassLoader, getSelfDependencies());
         final String fqClassName = "io.github.slimjar.external.ExternalDependencyProvider";
         final Class<DependencyProvider> providerClass = (Class<DependencyProvider>) Class.forName(fqClassName, true, injectableClassLoader);
