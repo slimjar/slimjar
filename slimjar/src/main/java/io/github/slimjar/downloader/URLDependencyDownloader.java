@@ -24,6 +24,7 @@
 
 package io.github.slimjar.downloader;
 
+import io.github.slimjar.downloader.output.ChanneledFileOutputWriter;
 import io.github.slimjar.downloader.output.OutputWriter;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
 import io.github.slimjar.resolver.DependencyResolver;
@@ -36,8 +37,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
+    private static final Logger LOGGER = Logger.getLogger(URLDependencyDownloader.class.getName());
     private final OutputWriterFactory outputWriterProducer;
     private final DependencyResolver dependencyResolver;
     public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver) {
@@ -49,11 +54,14 @@ public final class URLDependencyDownloader implements DependencyDownloader {
     public File download(final Dependency dependency) throws IOException {
         final URL url = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
+        LOGGER.log(Level.FINE, "Connecting to {0}", url);
         final URLConnection connection = createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
+        LOGGER.log(Level.FINE, "Connection successful! Downloading {0}" ,dependency.getArtifactId() + "...");
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
         final File result = outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
+        LOGGER.log(Level.FINE, "Artifact {0} downloaded successfully!", dependency.getArtifactId());
         return result;
     }
 

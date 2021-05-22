@@ -24,17 +24,15 @@
 
 package io.github.slimjar.downloader.output;
 
-import io.github.slimjar.relocation.Relocator;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ChanneledFileOutputWriter implements OutputWriter {
-
+    private static final Logger LOGGER = Logger.getLogger(ChanneledFileOutputWriter.class.getName());
     private final File outputFile;
 
     public ChanneledFileOutputWriter(final File outputFile) {
@@ -43,7 +41,9 @@ public final class ChanneledFileOutputWriter implements OutputWriter {
 
     @Override
     public File writeFrom(final InputStream inputStream, final long length) throws IOException {
+        LOGGER.log(Level.FINEST, "Attempting to write from inputStream...");
         if (!outputFile.exists()) {
+            LOGGER.log(Level.FINEST, "Writing " + length + " bytes...");
             try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
                 try (final FileOutputStream output = new FileOutputStream(outputFile)) {
                     output.getChannel().transferFrom(channel, 0, length);

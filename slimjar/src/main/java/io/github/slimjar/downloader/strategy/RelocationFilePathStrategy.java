@@ -27,8 +27,11 @@ package io.github.slimjar.downloader.strategy;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class RelocationFilePathStrategy implements FilePathStrategy {
+    private static final Logger LOGGER = Logger.getLogger(FolderedFilePathStrategy.class.getName());
     private static final String DEPENDENCY_FILE_FORMAT = "%s/%s/%s/%s/relocated/%5$s/%3$s-%4$s.jar";
     private final File rootDirectory;
     private final String applicationName;
@@ -49,6 +52,7 @@ public final class RelocationFilePathStrategy implements FilePathStrategy {
                 dependency.getVersion(),
                 applicationName
         );
+        LOGGER.log(Level.FINEST, "Selected file for relocated " + dependency.getArtifactId() + " at " + path);
         return new File(path);
     }
 
