@@ -21,6 +21,8 @@ import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.resolver.pinger.HttpURLPinger;
 import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.slimjar.util.Modules;
+import io.github.slimjar.util.Packages;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -48,7 +50,7 @@ public final class DependencyProviderFactory {
         final Map<String, Class<?>> mappedRelocations = clazzHelper.fetchRemappedRelocations();
         final InjectableClassLoader injectableClassLoader = new MappableInjectableClassLoader(new URL[]{tempModuleURL}, mappedRelocations);
         injector.inject(injectableClassLoader, getSelfDependencies());
-        final String fqClassName = "io.github.slimjar.external.ExternalDependencyProvider";
+        final String fqClassName = Packages.fix("io#github#slimjar#external#ExternalDependencyProvider");
         final Class<DependencyProvider> providerClass = (Class<DependencyProvider>) Class.forName(fqClassName, true, injectableClassLoader);
         return providerClass.newInstance();
     }

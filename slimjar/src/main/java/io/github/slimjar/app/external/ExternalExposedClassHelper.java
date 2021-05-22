@@ -8,6 +8,8 @@ import io.github.slimjar.resolver.reader.*;
 
 import java.util.*;
 
+import static io.github.slimjar.util.Packages.fix;
+
 public class ExternalExposedClassHelper implements ExposedClassHelper {
     private static final Collection<Class<?>> EXPOSED_CLASSES = Arrays.asList(
             Application.class,
@@ -46,12 +48,4 @@ public class ExternalExposedClassHelper implements ExposedClassHelper {
         return Collections.unmodifiableMap(RELOCATION_MAP);
     }
 
-    /**
-     * This exists to bypass relocation so that original classes can be mapped back
-     * @param input package name separated by #
-     * @return proper package name
-     */
-    private static String fix(final String input) {
-        return input.replace('#', '.');
-    }
 }
