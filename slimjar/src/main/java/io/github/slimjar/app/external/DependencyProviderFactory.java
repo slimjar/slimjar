@@ -11,7 +11,7 @@ import io.github.slimjar.downloader.strategy.FilePathStrategy;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.SimpleDependencyInjector;
 import io.github.slimjar.injector.loader.InjectableClassLoader;
-import io.github.slimjar.injector.loader.IsolatedInjectableClassLoader;
+import io.github.slimjar.injector.loader.MappableInjectableClassLoader;
 import io.github.slimjar.resolver.CachingDependencyResolver;
 import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.data.Dependency;
@@ -26,12 +26,15 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 public final class DependencyProviderFactory {
     private static final String EXTERNAL_MODULE = "slimjar-external";
-    private DependencyProviderFactory() {
 
+
+    private DependencyProviderFactory() {
     }
+
     public static DependencyProvider createExternalDependencyProvider() throws IOException, ReflectiveOperationException {
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(ApplicationConfiguration.DEFAULT_DOWNLOAD_DIRECTORY);
         final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy);
@@ -41,7 +44,9 @@ public final class DependencyProviderFactory {
         final URL isolatedModule = Modules.findModule(EXTERNAL_MODULE);
         final ModuleExtractor moduleExtractor = new TemporaryModuleExtractor();
         final URL tempModuleURL = moduleExtractor.extractModule(isolatedModule, "slimjar-external");
-        final InjectableClassLoader injectableClassLoader = new IsolatedInjectableClassLoader(new URL[]{tempModuleURL}, IsolatedInjectableClassLoader.class.getClassLoader(), Collections.emptyList());
+        final ExposedClassHelper clazzHelper = new ExternalExposedClassHelper();
+        final Map<String, Class<?>> mappedRelocations = clazzHelper.fetchRemappedRelocations();
+        final InjectableClassLoader injectableClassLoader = new MappableInjectableClassLoader(new URL[]{tempModuleURL}, clazzHelper.fetchExposedClasses(), mappedRelocations);
         injector.inject(injectableClassLoader, getSelfDependencies());
         final String fqClassName = "io.github.slimjar.external.ExternalDependencyProvider";
         final Class<DependencyProvider> providerClass = (Class<DependencyProvider>) Class.forName(fqClassName, true, injectableClassLoader);
