@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation project(':slimjar-external')
     testImplementation 'me.lucko:jar-relocator:1.4'
     testImplementation 'com.google.code.gson:gson:2.8.6'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
