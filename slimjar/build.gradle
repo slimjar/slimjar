@@ -80,19 +80,18 @@ publishing {
 
 tasks.register('copyExternal') {
     it.dependsOn(':slimjar-external:jar')
-    final File externalJar = project(':slimjar-external').getTasks().getByName("jar").outputs.files.singleFile
-    println(externalJar)
-    println(externalJar.exists())
-
-    if (!externalJar.exists()) return
-    final File resourceModule = layout.buildDirectory.file("resources/main/slimjar-external.isolated-jar").get().asFile
-    resourceModule.getParentFile().mkdirs()
-    if (resourceModule.exists()) {
-        resourceModule.delete()
+    it.doLast {
+        copy {
+            from project(':slimjar-external').getTasks().getByName("jar").outputs.files.singleFile
+            into layout.buildDirectory.file("resources/main/")
+            include('*.jar')
+            rename ('(.*)-(.*)-.*.jar', '$1-$2.isolated-jar')
+        }
     }
-    Files.copy(externalJar.toPath(), resourceModule.toPath())
 }
 
 shadowJar {
     dependsOn('copyExternal')
+    archiveBaseName.value('slimjar')
+    archiveClassifier.value('')
 }
