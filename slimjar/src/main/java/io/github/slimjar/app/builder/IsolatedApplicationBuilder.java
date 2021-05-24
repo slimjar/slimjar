@@ -38,6 +38,10 @@ public final class IsolatedApplicationBuilder extends ApplicationBuilder {
 
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(moduleUrls, isolationConfiguration.getParentClassloader(), Collections.singleton(Application.class));
 
+        final DependencyDataProvider dataProvider = getDataProviderFactory().create(getDependencyFileUrl());
+        final DependencyData selfDependencyData = dataProvider.get();
+        injector.inject(classLoader, selfDependencyData);
+
         for (final URL module : moduleUrls) {
             final DependencyDataProvider moduleDataProvider = getExternalDataProviderFactory().create(module);
             final DependencyData dependencyData = moduleDataProvider.get();
