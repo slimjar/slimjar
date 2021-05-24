@@ -49,7 +49,7 @@ public final class GsonDependencyDataProviderFactory implements DependencyDataPr
 
     public DependencyDataProvider forFile(final URL dependencyFileURL) {
         final DependencyReader dependencyReader = new GsonDependencyReader(gson);
-        return new FileDependencyDataProvider(dependencyReader, dependencyFileURL);
+        return new URLDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
 
     public DependencyDataProvider forModule(final URL dependencyFileURL) {
