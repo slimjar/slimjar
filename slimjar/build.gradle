@@ -15,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation project(':slimjar-external')
     testImplementation 'me.lucko:jar-relocator:1.4'
     testImplementation 'com.google.code.gson:gson:2.8.6'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
@@ -74,22 +73,4 @@ publishing {
             }
         }
     }
-}
-
-tasks.register('copyExternal') {
-    it.dependsOn(':slimjar-external:jar')
-    it.doLast {
-        copy {
-            from project(':slimjar-external').getTasks().getByName("jar").outputs.files.singleFile
-            into layout.buildDirectory.file("resources/main/")
-            include('*.jar')
-            rename ('(.*)-(.*)-.*.jar', '$1-$2.isolated-jar')
-        }
-    }
-}
-
-shadowJar {
-    dependsOn('copyExternal')
-    archiveBaseName.value('slimjar')
-    archiveClassifier.value('')
 }
