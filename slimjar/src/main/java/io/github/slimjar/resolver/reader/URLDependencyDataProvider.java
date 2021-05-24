@@ -30,11 +30,12 @@ import io.github.slimjar.resolver.data.DependencyData;
 import java.io.*;
 import java.net.URL;
 
-public final class FileDependencyDataProvider implements DependencyDataProvider {
+public final class URLDependencyDataProvider implements DependencyDataProvider {
     private final DependencyReader dependencyReader;
     private final URL depFileURL;
+    private DependencyData cachedData = null;
 
-    public FileDependencyDataProvider(final DependencyReader dependencyReader, final URL depFileURL) {
+    public URLDependencyDataProvider(final DependencyReader dependencyReader, final URL depFileURL) {
         this.dependencyReader = dependencyReader;
         this.depFileURL = depFileURL;
     }
@@ -44,12 +45,13 @@ public final class FileDependencyDataProvider implements DependencyDataProvider 
     }
 
     @Override
-    public DependencyData get() {
-        try (InputStream is = depFileURL.openStream()) {
-            return dependencyReader.read(is);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public DependencyData get() throws IOException, ReflectiveOperationException {
+        if (cachedData != null) {
+            return cachedData;
         }
-        return null;
+        try (InputStream is = depFileURL.openStream()) {
+            cachedData = dependencyReader.read(is);
+            return dependencyReader.read(is);
+        }
     }
 }
