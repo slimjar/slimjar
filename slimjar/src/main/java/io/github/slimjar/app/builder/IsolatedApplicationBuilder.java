@@ -11,10 +11,15 @@ import io.github.slimjar.util.Modules;
 import io.github.slimjar.util.Parameters;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 public final class IsolatedApplicationBuilder extends ApplicationBuilder {
     private final IsolationConfiguration isolationConfiguration;
@@ -28,16 +33,15 @@ public final class IsolatedApplicationBuilder extends ApplicationBuilder {
 
     @Override
     public Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
-        final DependencyDataProviderFactory dataProviderFactory = getDependencyProvider().createDependencyDataProviderFactory();
-        final DependencyInjector injector = createInjector(dataProviderFactory);
+        final DependencyInjector injector = createInjector();
         final URL[] moduleUrls = Modules.extract(isolationConfiguration.getModuleExtractor(), isolationConfiguration.getModules());
 
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader(moduleUrls, isolationConfiguration.getParentClassloader(), Collections.singleton(Application.class));
 
         for (final URL module : moduleUrls) {
-            final DependencyDataProvider moduleDataProvider = dataProviderFactory.forModule(module);
+            final DependencyDataProvider moduleDataProvider = getExternalDataProviderFactory().create(module);
             final DependencyData dependencyData = moduleDataProvider.get();
-            injector.inject(classLoader, dependencyData.getDependencies());
+            injector.inject(classLoader, dependencyData);
         }
 
         final Class<Application> applicationClass = (Class<Application>) Class.forName(isolationConfiguration.getApplicationClass(), true, classLoader);
