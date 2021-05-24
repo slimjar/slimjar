@@ -51,7 +51,7 @@ public final class URLDependencyDataProvider implements DependencyDataProvider {
         }
         try (InputStream is = depFileURL.openStream()) {
             cachedData = dependencyReader.read(is);
-            return dependencyReader.read(is);
+            return cachedData;
         }
     }
 }
