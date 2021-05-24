@@ -1,10 +1,11 @@
-package io.github.slimjar.relocation;
+package io.github.slimjar.relocation.helper;
 
+
+import io.github.slimjar.relocation.Relocator;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 
 @FunctionalInterface
 public interface RelocationHelperFactory {
