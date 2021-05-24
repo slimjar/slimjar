@@ -1,13 +1,12 @@
-package io.github.slimjar.relocation;
+package io.github.slimjar.relocation.helper;
 
 import io.github.slimjar.downloader.strategy.FilePathStrategy;
-import io.github.slimjar.relocation.meta.MetaMediator;
+import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 
 public class VerifyingRelocationHelperFactory implements RelocationHelperFactory {
     private final FilePathStrategy relocationFilePathStrategy;

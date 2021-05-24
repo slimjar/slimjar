@@ -1,6 +1,7 @@
-package io.github.slimjar.relocation;
+package io.github.slimjar.relocation.helper;
 
 import io.github.slimjar.downloader.strategy.FilePathStrategy;
+import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.meta.MetaMediator;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.data.Dependency;
@@ -33,7 +34,7 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
     }
 
     @Override
-    public File relocate(Dependency dependency, File file) throws IOException {
+    public File relocate(Dependency dependency, File file) throws IOException, ReflectiveOperationException {
         final File relocatedFile = outputFilePathStrategy.selectFileFor(dependency);
         final MetaMediator metaMediator = mediatorFactory.create(relocatedFile.toPath());
         if (relocatedFile.exists()) {
