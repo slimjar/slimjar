@@ -6,6 +6,7 @@ import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.Injectable;
 import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
+import io.github.slimjar.resolver.reader.DependencyDataProvider;
 import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 
 import java.io.IOException;
@@ -23,11 +24,11 @@ public final class AppendingApplicationBuilder extends ApplicationBuilder {
 
     @Override
     public Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
-        final DependencyDataProviderFactory dataProviderFactory = getDependencyProvider().createDependencyDataProviderFactory();
-        final DependencyData dependencyData = dataProviderFactory.forFile(getClass().getClassLoader().getResource("slimjar.json")).get();
-        final DependencyInjector dependencyInjector = createInjector(dataProviderFactory);
+        final DependencyDataProvider dataProvider = getDataProviderFactory().create(getDependencyFileUrl());
+        final DependencyData dependencyData = dataProvider.get();
+        final DependencyInjector dependencyInjector = createInjector();
         final Injectable injectable = new WrappedInjectableClassLoader(classLoader);
-        dependencyInjector.inject(injectable, dependencyData.getDependencies());
+        dependencyInjector.inject(injectable, dependencyData);
         return new AppendingApplication();
     }
 }
