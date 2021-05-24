@@ -24,34 +24,39 @@
 
 package io.github.slimjar.injector;
 
-import io.github.slimjar.downloader.DependencyDownloader;
+import io.github.slimjar.injector.helper.InjectionHelper;
+import io.github.slimjar.injector.helper.InjectionHelperFactory;
 import io.github.slimjar.injector.loader.Injectable;
-import io.github.slimjar.relocation.RelocationHelper;
-import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.resolver.data.Dependency;
+import io.github.slimjar.resolver.data.DependencyData;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 public final class SimpleDependencyInjector implements DependencyInjector {
-    private final DependencyDownloader dependencyDownloader;
-    private final RelocationHelper relocationHelper;
+    private final InjectionHelperFactory injectionHelperFactory;
 
-    public SimpleDependencyInjector(final DependencyDownloader dependencyDownloader, final RelocationHelper relocationHelper) {
-        this.dependencyDownloader = dependencyDownloader;
-        this.relocationHelper = relocationHelper;
+    public SimpleDependencyInjector(final InjectionHelperFactory injectionHelperFactory) {
+        this.injectionHelperFactory = injectionHelperFactory;
     }
 
     @Override
-    public void inject(final Injectable injectable, final Collection<Dependency> dependencies) {
+    public void inject(final Injectable injectable, final DependencyData data) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        final InjectionHelper helper = injectionHelperFactory.create(data);
+        injectDependencies(injectable, helper, data.getDependencies());
+    }
+
+    private void injectDependencies(final Injectable injectable, final InjectionHelper injectionHelper, final Collection<Dependency> dependencies) throws ReflectiveOperationException {
         for (final Dependency dependency : dependencies) {
             try {
-                final File downloaded = dependencyDownloader.download(dependency);
-                final File relocatedFile = relocationHelper.relocate(dependency, downloaded);
-                injectable.inject(relocatedFile.toURI().toURL());
-                inject(injectable, dependency.getTransitive());
+                final File depJar = injectionHelper.fetch(dependency);
+                System.out.println(depJar);
+                injectable.inject(depJar.toURI().toURL());
+                injectDependencies(injectable, injectionHelper, dependency.getTransitive());
             } catch (final IOException e) {
                 throw new InjectionFailedException(dependency, e);
             } catch (IllegalAccessException | InvocationTargetException e) {
