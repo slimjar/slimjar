@@ -1,6 +1,5 @@
 package io.github.slimjar.resolver.pinger;
 
-import io.github.slimjar.resolver.reader.FileDependencyDataProvider;
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
