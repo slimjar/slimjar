@@ -1,8 +1,6 @@
 package io.github.slimjar.app.builder;
 
 import io.github.slimjar.app.Application;
-import io.github.slimjar.app.external.DependencyProvider;
-import io.github.slimjar.app.external.DependencyProviderFactory;
 import io.github.slimjar.downloader.DependencyDownloader;
 import io.github.slimjar.downloader.DependencyDownloaderFactory;
 import io.github.slimjar.downloader.URLDependencyDownloaderFactory;
@@ -12,10 +10,16 @@ import io.github.slimjar.downloader.strategy.FilePathStrategy;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.injector.SimpleDependencyInjectorFactory;
-import io.github.slimjar.relocation.RelocationHelper;
-import io.github.slimjar.relocation.RelocationHelperFactory;
+import io.github.slimjar.injector.helper.InjectionHelperFactory;
+import io.github.slimjar.injector.loader.Injectable;
+import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
+import io.github.slimjar.relocation.JarFileRelocatorFactory;
+import io.github.slimjar.relocation.RelocatorFactory;
+import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
+import io.github.slimjar.relocation.facade.ReflectiveJarRelocatorFacadeFactory;
+import io.github.slimjar.relocation.helper.RelocationHelperFactory;
 import io.github.slimjar.relocation.Relocator;
-import io.github.slimjar.relocation.VerifyingRelocationHelperFactory;
+import io.github.slimjar.relocation.helper.VerifyingRelocationHelperFactory;
 import io.github.slimjar.relocation.meta.AttributeMetaMediatorFactory;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolverFactory;
@@ -31,6 +35,10 @@ import io.github.slimjar.resolver.pinger.HttpURLPinger;
 import io.github.slimjar.resolver.pinger.URLPinger;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
 import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.ExternalDependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.GsonDependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
+import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
@@ -58,7 +66,9 @@ public abstract class ApplicationBuilder {
     private final String applicationName;
     private URL dependencyFileUrl;
     private Path downloadDirectoryPath;
-    private DependencyProvider dependencyProvider;
+    private RelocatorFactory relocatorFactory;
+    private DependencyDataProviderFactory externalDataProviderFactory;
+    private DependencyDataProviderFactory dataProviderFactory;
     private RelocationHelperFactory relocationHelperFactory;
     private DependencyInjectorFactory injectorFactory;
     private DependencyResolverFactory resolverFactory;
@@ -75,7 +85,11 @@ public abstract class ApplicationBuilder {
     }
 
     public static ApplicationBuilder appending(final String name, final URLClassLoader classLoader) {
-        return new AppendingApplicationBuilder(name, classLoader);
+        return injecting(name, new WrappedInjectableClassLoader(classLoader));
+    }
+
+    public static ApplicationBuilder injecting(final String name, final Injectable injectable) {
+        return new InjectingApplicationBuilder(name, injectable);
     }
 
     public final ApplicationBuilder dependencyFileUrl(final URL dependencyFileUrl) {
@@ -85,6 +99,16 @@ public abstract class ApplicationBuilder {
 
     public final ApplicationBuilder downloadDirectoryPath(final Path downloadDirectoryPath) {
         this.downloadDirectoryPath = downloadDirectoryPath;
+        return this;
+    }
+
+    public final ApplicationBuilder relocatorFactory(final RelocatorFactory relocatorFactory) {
+        this.relocatorFactory = relocatorFactory;
+        return this;
+    }
+
+    public final ApplicationBuilder dataProviderFactory(final DependencyDataProviderFactory dataProviderFactory) {
+        this.dataProviderFactory = dataProviderFactory;
         return this;
     }
 
@@ -137,11 +161,28 @@ public abstract class ApplicationBuilder {
         return downloadDirectoryPath;
     }
 
-    protected final DependencyProvider getDependencyProvider() throws IOException, ReflectiveOperationException {
-        if (downloadDirectoryPath == null) {
-            this.dependencyProvider = DependencyProviderFactory.createExternalDependencyProvider();
+    protected final RelocatorFactory getRelocatorFactory() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        if (relocatorFactory == null) {
+            final JarRelocatorFacadeFactory jarRelocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create();
+            this.relocatorFactory = new JarFileRelocatorFactory(jarRelocatorFacadeFactory);
         }
-        return dependencyProvider;
+        return relocatorFactory;
+    }
+
+    protected final DependencyDataProviderFactory getExternalDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        if (externalDataProviderFactory == null) {
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create();
+            this.externalDataProviderFactory = new ExternalDependencyDataProviderFactory(gsonFacadeFactory);
+        }
+        return externalDataProviderFactory;
+    }
+
+    protected final DependencyDataProviderFactory getDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        if (dataProviderFactory == null) {
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create();
+            this.dataProviderFactory = new GsonDependencyDataProviderFactory(gsonFacadeFactory);
+        }
+        return dataProviderFactory;
     }
 
     protected final RelocationHelperFactory getRelocationHelperFactory() {
@@ -190,20 +231,19 @@ public abstract class ApplicationBuilder {
         return mirrorSelector;
     }
 
-    protected final DependencyInjector createInjector(final DependencyDataProviderFactory dataProviderFactory) throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
-        final DependencyProvider dependencyProvider = getDependencyProvider();
-        final DependencyDataProvider dataProvider = dataProviderFactory.forFile(getDependencyFileUrl());
-        final DependencyData data = dataProvider.get();
-        final Collection<Repository> repositories = getMirrorSelector()
-                .select(data.getRepositories(), data.getMirrors());
-        final Relocator relocator = dependencyProvider.createRelocator(data.getRelocations());
-        final RelocationHelper relocationHelper = getRelocationHelperFactory().create(relocator);
-        final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(getDownloadDirectoryPath().toFile());
-        final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy);
-        final RepositoryEnquirerFactory enquirerFactory = getEnquirerFactory();
-        final DependencyResolver resolver = getResolverFactory().create(repositories, enquirerFactory);
-        final DependencyDownloader downloader = getDownloaderFactory().create(outputWriterFactory, resolver);
-        return getInjectorFactory().create(downloader, relocationHelper);
+    protected final DependencyInjector createInjector() throws IOException, URISyntaxException, NoSuchAlgorithmException, ReflectiveOperationException {
+        final InjectionHelperFactory injectionHelperFactory = new InjectionHelperFactory(
+                getDownloadDirectoryPath(),
+                getRelocatorFactory(),
+                getDataProviderFactory(),
+                getRelocationHelperFactory(),
+                getInjectorFactory(),
+                getResolverFactory(),
+                getEnquirerFactory(),
+                getDownloaderFactory(),
+                getMirrorSelector()
+        );
+        return getInjectorFactory().create(injectionHelperFactory);
     }
 
     public abstract Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException;
