@@ -51,6 +51,7 @@ public final class URLDependencyDownloader implements DependencyDownloader {
 
     @Override
     public File download(final Dependency dependency) throws IOException {
+
         final URL url = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
         LOGGER.log(Level.FINE, "Connecting to {0}", url);
