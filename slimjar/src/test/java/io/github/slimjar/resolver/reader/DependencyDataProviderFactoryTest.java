@@ -14,7 +14,7 @@ public class DependencyDataProviderFactoryTest extends TestCase {
         final DependencyDataProviderFactory dependencyDataProviderFactory = new GsonDependencyDataProviderFactory(new Gson());
         final DependencyDataProvider provider = dependencyDataProviderFactory.create(url);
 
-        assertTrue("create must return a FileDependencyDataProvider", provider instanceof FileDependencyDataProvider);
+        assertTrue("create must return a FileDependencyDataProvider", provider instanceof URLDependencyDataProvider);
     }
 
     public void testCreateFileDataProviderFactory() throws MalformedURLException {
@@ -22,7 +22,7 @@ public class DependencyDataProviderFactoryTest extends TestCase {
         final DependencyDataProviderFactory dependencyDataProviderFactory = new GsonDependencyDataProviderFactory(new Gson());
         final DependencyDataProvider provider = dependencyDataProviderFactory.forFile(url);
 
-        assertTrue("forFile must return a FileDependencyDataProvider", provider instanceof FileDependencyDataProvider);
+        assertTrue("forFile must return a FileDependencyDataProvider", provider instanceof URLDependencyDataProvider);
     }
 
     public void testCreateModuleDataProviderFactory() throws MalformedURLException {
