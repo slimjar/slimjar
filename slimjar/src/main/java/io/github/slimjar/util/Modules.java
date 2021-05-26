@@ -18,18 +18,19 @@ public final class Modules {
     }
 
     public static URL findModule(final String moduleName) {
-        final ClassLoader classLoader = ApplicationFactory.class.getClassLoader();
+        final ClassLoader classLoader = Modules.class.getClassLoader();
         return classLoader.getResource(moduleName + ".isolated-jar");
     }
 
     public static URL[] extract(final ModuleExtractor extractor, final Collection<String> modules) throws IOException {
-        final Collection<URL> result = new HashSet<>();
+        final URL[] urls = new URL[modules.size()];
+        int index = 0;
         for (final String moduleName : modules) {
             final URL modulePath = findModule(moduleName);
             final URL extractedModule = extractor.extractModule(modulePath, moduleName);
-            result.add(extractedModule);
+            urls[index++] = extractedModule;
         }
-        return result.toArray(new URL[0]);
+        return urls;
     }
 
     public static Collection<String> findLocalModules() throws URISyntaxException, IOException {
