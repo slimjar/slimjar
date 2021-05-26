@@ -51,7 +51,7 @@ public final class FolderedFilePathStrategy implements FilePathStrategy {
                 dependency.getArtifactId(),
                 dependency.getVersion()
         );
-        LOGGER.log(Level.FINEST, "Selected file for " + dependency.getArtifactId() + " at " + path);
+        LOGGER.log(Level.FINEST, "Selected jar file for " + dependency.getArtifactId() + " at " + path);
         return new File(path);
     }
 
