@@ -5,6 +5,7 @@ import io.github.slimjar.downloader.DependencyDownloaderFactory;
 import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
 import io.github.slimjar.downloader.strategy.FilePathStrategy;
+import io.github.slimjar.downloader.verify.DependencyVerifierFactory;
 import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.RelocatorFactory;
@@ -19,9 +20,7 @@ import io.github.slimjar.resolver.mirrors.MirrorSelector;
 import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -33,15 +32,17 @@ public final class InjectionHelperFactory {
     private final DependencyResolverFactory resolverFactory;
     private final RepositoryEnquirerFactory enquirerFactory;
     private final DependencyDownloaderFactory downloaderFactory;
+    private final DependencyVerifierFactory verifier;
     private final MirrorSelector mirrorSelector;
 
-    public InjectionHelperFactory(Path downloadDirectoryPath, RelocatorFactory relocatorFactory, DependencyDataProviderFactory dataProviderFactory, RelocationHelperFactory relocationHelperFactory, DependencyInjectorFactory injectorFactory, DependencyResolverFactory resolverFactory, RepositoryEnquirerFactory enquirerFactory, DependencyDownloaderFactory downloaderFactory, MirrorSelector mirrorSelector) {
+    public InjectionHelperFactory(Path downloadDirectoryPath, RelocatorFactory relocatorFactory, DependencyDataProviderFactory dataProviderFactory, RelocationHelperFactory relocationHelperFactory, DependencyInjectorFactory injectorFactory, DependencyResolverFactory resolverFactory, RepositoryEnquirerFactory enquirerFactory, DependencyDownloaderFactory downloaderFactory, DependencyVerifierFactory verifier, MirrorSelector mirrorSelector) {
         this.downloadDirectoryPath = downloadDirectoryPath;
         this.relocatorFactory = relocatorFactory;
         this.relocationHelperFactory = relocationHelperFactory;
         this.resolverFactory = resolverFactory;
         this.enquirerFactory = enquirerFactory;
         this.downloaderFactory = downloaderFactory;
+        this.verifier = verifier;
         this.mirrorSelector = mirrorSelector;
     }
 
@@ -53,7 +54,7 @@ public final class InjectionHelperFactory {
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectoryPath.toFile());
         final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy);
         final DependencyResolver resolver = resolverFactory.create(repositories, enquirerFactory);
-        final DependencyDownloader downloader = downloaderFactory.create(outputWriterFactory, resolver);
+        final DependencyDownloader downloader = downloaderFactory.create(outputWriterFactory, resolver, verifier.create(resolver));
         return new InjectionHelper(downloader, relocationHelper);
     }
 }
