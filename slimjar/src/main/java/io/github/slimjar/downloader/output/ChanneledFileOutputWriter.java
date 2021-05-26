@@ -41,9 +41,9 @@ public final class ChanneledFileOutputWriter implements OutputWriter {
 
     @Override
     public File writeFrom(final InputStream inputStream, final long length) throws IOException {
-        LOGGER.log(Level.FINEST, "Attempting to write from inputStream...");
+        LOGGER.log(Level.FINE, "Attempting to write from inputStream...");
         if (!outputFile.exists()) {
-            LOGGER.log(Level.FINEST, "Writing " + length + " bytes...");
+            LOGGER.log(Level.FINE, "Writing {0} bytes...", length);
             try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
                 try (final FileOutputStream output = new FileOutputStream(outputFile)) {
                     output.getChannel().transferFrom(channel, 0, length);

@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class DependencyOutputWriterFactory implements OutputWriterFactory {
+    private static final Logger LOGGER = Logger.getLogger(DependencyOutputWriterFactory.class.getName());
     private final FilePathStrategy outputFilePathStrategy;
 
     public DependencyOutputWriterFactory(final FilePathStrategy filePathStrategy) {
@@ -40,6 +41,7 @@ public final class DependencyOutputWriterFactory implements OutputWriterFactory 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public OutputWriter create(final Dependency dependency) {
+        LOGGER.log(Level.FINEST, "Creating OutputWriter for {0}", dependency.getArtifactId());
         final File outputFile = outputFilePathStrategy.selectFileFor(dependency);
         outputFile.getParentFile().mkdirs();
         return new ChanneledFileOutputWriter(outputFile);
