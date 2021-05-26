@@ -56,7 +56,7 @@ public final class RelocationFilePathStrategy implements FilePathStrategy {
         return new File(path);
     }
 
-    static FilePathStrategy createStrategy(final File rootDirectory, final String applicationName) throws IllegalArgumentException {
+    public static FilePathStrategy createStrategy(final File rootDirectory, final String applicationName) throws IllegalArgumentException {
         if (!rootDirectory.exists()) {
             boolean created = rootDirectory.mkdirs();
             if (!created) {

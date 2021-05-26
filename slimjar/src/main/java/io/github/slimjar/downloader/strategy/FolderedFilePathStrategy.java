@@ -55,7 +55,7 @@ public final class FolderedFilePathStrategy implements FilePathStrategy {
         return new File(path);
     }
 
-    static FilePathStrategy createStrategy(final File rootDirectory) throws IllegalArgumentException {
+    public static FilePathStrategy createStrategy(final File rootDirectory) throws IllegalArgumentException {
         if (!rootDirectory.exists()) {
             boolean created = rootDirectory.mkdirs();
             if (!created) {
