@@ -1,11 +1,12 @@
 package io.github.slimjar.resolver.reader.provider;
 
-import io.github.slimjar.reader.GsonDependencyReader;
 import com.google.gson.Gson;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.GsonDependencyReader;
 import io.github.slimjar.resolver.reader.MockDependencyData;
 import io.github.slimjar.resolver.reader.ModuleDependencyDataProvider;
+import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -20,7 +21,6 @@ import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.assertEquals;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({URL.class, ModuleDependencyDataProviderTest.class, ModuleDependencyDataProvider.class})
@@ -37,7 +37,7 @@ public class ModuleDependencyDataProviderTest extends TestCase {
         PowerMockito.when(jarURLConnection.getJarFile()).thenReturn(jarFile);
         PowerMockito.when(jarFile.getEntry("slimjar.json")).thenReturn(zipEntry);
         PowerMockito.when(jarFile.getInputStream(zipEntry)).thenReturn(inputStream);
-        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
+        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(ReflectiveGsonFacadeFactory.create().createFacade()), mockUrl);
         assertEquals("Read and provide proper dependencies", mockDependencyData.getExpectedSample(), dependencyDataProvider.get());
     }
 
@@ -56,7 +56,7 @@ public class ModuleDependencyDataProviderTest extends TestCase {
         PowerMockito.when(mockUrl.openConnection()).thenReturn(jarURLConnection);
         PowerMockito.when(jarURLConnection.getJarFile()).thenReturn(jarFile);
         PowerMockito.when(jarFile.getEntry("slimjar.json")).thenReturn(null);
-        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
+        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(ReflectiveGsonFacadeFactory.create().createFacade()), mockUrl);
         assertEquals("Empty dependency if not exists", emptyDependency, dependencyDataProvider.get());
     }
 
@@ -73,7 +73,7 @@ public class ModuleDependencyDataProviderTest extends TestCase {
         );
         PowerMockito.whenNew(URL.class).withAnyArguments().thenReturn(mockUrl);
         PowerMockito.when(mockUrl.openConnection()).thenReturn(urlConnection);
-        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(new Gson()), mockUrl);
+        final DependencyDataProvider dependencyDataProvider = new ModuleDependencyDataProvider(new GsonDependencyReader(ReflectiveGsonFacadeFactory.create().createFacade()), mockUrl);
         Error error = null;
         try {
             dependencyDataProvider.get();
