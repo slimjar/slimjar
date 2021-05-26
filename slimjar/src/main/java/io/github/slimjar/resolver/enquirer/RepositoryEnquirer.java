@@ -24,10 +24,12 @@
 
 package io.github.slimjar.resolver.enquirer;
 
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.Dependency;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public interface RepositoryEnquirer {
-    URL enquire(final Dependency dependency);
+    ResolutionResult enquire(final Dependency dependency);
 }
