@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 public final class CachingDependencyResolver implements DependencyResolver {
     private final Collection<RepositoryEnquirer> repositories;
-    private final Map<Dependency, URL> cachedResults = new HashMap<>();
+    private final Map<Dependency, ResolutionResult> cachedResults = new HashMap<>();
 
     public CachingDependencyResolver(final Collection<Repository> repositories, final RepositoryEnquirerFactory enquirerFactory) {
         this.repositories = repositories.stream()
@@ -45,15 +45,15 @@ public final class CachingDependencyResolver implements DependencyResolver {
     }
 
     @Override
-    public Optional<URL> resolve(final Dependency dependency) {
+    public Optional<ResolutionResult> resolve(final Dependency dependency) {
         return Optional.ofNullable(cachedResults.computeIfAbsent(dependency, this::attemptResolve));
     }
 
-    private URL attemptResolve(final Dependency dependency) {
-        final Optional<URL> resolvedUrl = repositories.stream().parallel()
+    private ResolutionResult attemptResolve(final Dependency dependency) {
+        final Optional<ResolutionResult> result = repositories.stream().parallel()
                 .map(enquirer -> enquirer.enquire(dependency))
                 .filter(Objects::nonNull)
                 .findFirst();
-        return resolvedUrl.orElse(null);
+        return result.orElse(null);
     }
 }
