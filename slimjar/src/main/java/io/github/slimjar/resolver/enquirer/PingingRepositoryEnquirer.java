@@ -51,36 +51,25 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
     @Override
     public ResolutionResult enquire(final Dependency dependency) {
         final String path = dependencyURLCreationStrategy.pathTo(repository, dependency);
-        final URL url;
+        final URL dependencyUrl;
         try {
-            url = new URL(path);
+            dependencyUrl = new URL(path);
         } catch (final MalformedURLException e) {
             return null;
         }
-        if (!urlPinger.ping(url)) {
+        if (!urlPinger.ping(dependencyUrl)) {
             return null;
         }
         final String checkSumPath = checksumURLCreationStrategy.pathTo(repository, dependency);
-        URL checksumURL = null;
+        URL checksumUrl = null;
         try {
-            checksumURL = new URL(checkSumPath);
-            if (!urlPinger.ping(checksumURL)) {
-                checksumURL = null;
+            checksumUrl = new URL(checkSumPath);
+            if (!urlPinger.ping(checksumUrl)) {
+                checksumUrl = null;
             }
         } catch (final MalformedURLException e) {
             e.printStackTrace();
         }
-        try {
-            final URI depURI = url.toURI();
-            final URI checksumURI;
-            if (checksumURL == null) {
-                checksumURI = checksumURL.toURI();
-            } else {
-                checksumURI = null;
-            }
-            return new ResolutionResult(depURI, checksumURI);
-        } catch (final URISyntaxException exception) {
-            return null;
-        }
+        return new ResolutionResult(dependencyUrl, checksumUrl);
     }
 }
