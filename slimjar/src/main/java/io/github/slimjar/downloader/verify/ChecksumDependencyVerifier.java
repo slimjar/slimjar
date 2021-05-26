@@ -6,6 +6,7 @@ import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.util.Connections;
+import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,15 +60,20 @@ public final class ChecksumDependencyVerifier implements DependencyVerifier {
     private boolean prepareChecksumFile(final File checksumFile, final Dependency dependency) throws IOException {
         final Optional<ResolutionResult> result = resolver.resolve(dependency);
         if (!result.isPresent()) {
-            checksumFile.createNewFile();
             return false;
         } else {
             final URL checkSumUrl = result.get().getChecksumURL();
+            LOGGER.log(Level.FINEST, "Resolved checksum URL for {0} as {1}", new Object[] {dependency.getArtifactId(), checkSumUrl});
+            if (checkSumUrl == null) {
+                checksumFile.createNewFile();
+                return true;
+            }
             final URLConnection connection = Connections.createDownloadConnection(checkSumUrl);
             final InputStream inputStream = connection.getInputStream();
             final OutputWriter outputWriter = outputWriterFactory.create(dependency);
             outputWriter.writeFrom(inputStream, connection.getContentLength());
             Connections.tryDisconnect(connection);
+            LOGGER.log(Level.FINEST, "Downloaded checksum for {0}", dependency.getArtifactId());
         }
         return true;
     }
