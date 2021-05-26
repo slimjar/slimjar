@@ -26,14 +26,16 @@ package io.github.slimjar.downloader;
 
 import io.github.slimjar.downloader.output.OutputWriter;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
+import io.github.slimjar.downloader.verify.DependencyVerifier;
 import io.github.slimjar.resolver.DependencyResolver;
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.UnresolvedDependencyException;
 import io.github.slimjar.resolver.data.Dependency;
+import io.github.slimjar.util.Connections;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
@@ -43,42 +45,33 @@ public final class URLDependencyDownloader implements DependencyDownloader {
     private static final Logger LOGGER = Logger.getLogger(URLDependencyDownloader.class.getName());
     private final OutputWriterFactory outputWriterProducer;
     private final DependencyResolver dependencyResolver;
+    private final DependencyVerifier verifier;
 
-    public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver) {
+    public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver, DependencyVerifier verifier) {
         this.outputWriterProducer = outputWriterProducer;
         this.dependencyResolver = dependencyResolver;
+        this.verifier = verifier;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public File download(final Dependency dependency) throws IOException {
-
-        final URL url = dependencyResolver.resolve(dependency)
+        final ResolutionResult result = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
+        final File expectedOutputFile = outputWriterProducer.getStrategy().selectFileFor(dependency);
+        if (verifier.verify(expectedOutputFile, dependency)) {
+            return expectedOutputFile;
+        }
+        expectedOutputFile.delete();
+        final URL url = result.getDependencyURL();
         LOGGER.log(Level.FINE, "Connecting to {0}", url);
-        final URLConnection connection = createDownloadConnection(url);
+        final URLConnection connection = Connections.createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
         LOGGER.log(Level.FINE, "Connection successful! Downloading {0}" ,dependency.getArtifactId() + "...");
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
-        final File result = outputWriter.writeFrom(inputStream, connection.getContentLength());
-        tryDisconnect(connection);
+        final File downloadResult = outputWriter.writeFrom(inputStream, connection.getContentLength());
+        Connections.tryDisconnect(connection);
         LOGGER.log(Level.FINE, "Artifact {0} downloaded successfully!", dependency.getArtifactId());
-        return result;
-    }
-
-    private URLConnection createDownloadConnection(final URL url) throws IOException {
-        final URLConnection connection =  url.openConnection();
-        if (connection instanceof HttpURLConnection) {
-            final HttpURLConnection httpConnection = (HttpURLConnection) connection;
-            final int responseCode = httpConnection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Could not download from" + url);
-            }
-        }
-        return connection;
-    }
-    private void tryDisconnect(final URLConnection urlConnection) {
-        if (urlConnection instanceof HttpURLConnection) {
-            ((HttpURLConnection) urlConnection).disconnect();
-        }
+        return downloadResult;
     }
 }
