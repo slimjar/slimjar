@@ -1,12 +1,13 @@
 package io.github.slimjar.app.builder;
 
 import io.github.slimjar.app.Application;
-import io.github.slimjar.downloader.DependencyDownloader;
 import io.github.slimjar.downloader.DependencyDownloaderFactory;
 import io.github.slimjar.downloader.URLDependencyDownloaderFactory;
 import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.downloader.output.OutputWriterFactory;
+import io.github.slimjar.downloader.strategy.ChecksumFilePathStrategy;
 import io.github.slimjar.downloader.strategy.FilePathStrategy;
+import io.github.slimjar.downloader.verify.*;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.injector.SimpleDependencyInjectorFactory;
@@ -18,27 +19,23 @@ import io.github.slimjar.relocation.RelocatorFactory;
 import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
 import io.github.slimjar.relocation.facade.ReflectiveJarRelocatorFacadeFactory;
 import io.github.slimjar.relocation.helper.RelocationHelperFactory;
-import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.helper.VerifyingRelocationHelperFactory;
 import io.github.slimjar.relocation.meta.AttributeMetaMediatorFactory;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolverFactory;
-import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.DependencyResolverFactory;
-import io.github.slimjar.resolver.data.DependencyData;
-import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.PingingRepositoryEnquirerFactory;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 import io.github.slimjar.resolver.mirrors.MirrorSelector;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.resolver.pinger.HttpURLPinger;
 import io.github.slimjar.resolver.pinger.URLPinger;
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
 import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 import io.github.slimjar.resolver.reader.ExternalDependencyDataProviderFactory;
 import io.github.slimjar.resolver.reader.GsonDependencyDataProviderFactory;
 import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
+import io.github.slimjar.resolver.strategy.MavenChecksumPathResolutionStrategy;
 import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy;
 import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
@@ -49,7 +46,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,6 +70,7 @@ public abstract class ApplicationBuilder {
     private DependencyResolverFactory resolverFactory;
     private RepositoryEnquirerFactory enquirerFactory;
     private DependencyDownloaderFactory downloaderFactory;
+    private DependencyVerifierFactory verifierFactory;
     private MirrorSelector mirrorSelector;
 
     protected ApplicationBuilder(final String applicationName) {
@@ -134,6 +131,11 @@ public abstract class ApplicationBuilder {
 
     public final ApplicationBuilder downloaderFactory(final DependencyDownloaderFactory downloaderFactory) {
         this.downloaderFactory = downloaderFactory;
+        return this;
+    }
+
+    public final ApplicationBuilder verifierFactory(final DependencyVerifierFactory verifierFactory) {
+        this.verifierFactory = verifierFactory;
         return this;
     }
 
@@ -211,8 +213,9 @@ public abstract class ApplicationBuilder {
     protected final RepositoryEnquirerFactory getEnquirerFactory() {
         if (enquirerFactory == null) {
             final PathResolutionStrategy resolutionStrategy = new MavenPathResolutionStrategy();
+            final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-256");
             final URLPinger urlPinger = new HttpURLPinger();
-            this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, urlPinger);
+            this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, checksumResolutionStrategy, urlPinger);
         }
         return enquirerFactory;
     }
@@ -222,6 +225,17 @@ public abstract class ApplicationBuilder {
             this.downloaderFactory = new URLDependencyDownloaderFactory();
         }
         return downloaderFactory;
+    }
+
+    protected final DependencyVerifierFactory getVerifierFactory() throws NoSuchAlgorithmException {
+        if (verifierFactory == null) {
+            final FilePathStrategy filePathStrategy = ChecksumFilePathStrategy.createStrategy(getDownloadDirectoryPath().toFile(), "SHA-256");
+            final OutputWriterFactory checksumOutputFactory = new DependencyOutputWriterFactory(filePathStrategy);
+            final DependencyVerifierFactory fallback = new PassthroughDependencyVerifierFactory();
+            final ChecksumCalculator checksumCalculator = new FileChecksumCalculator("SHA-256");
+            this.verifierFactory = new ChecksumDependencyVerifierFactory(checksumOutputFactory, fallback, checksumCalculator);
+        }
+        return verifierFactory;
     }
 
     protected final MirrorSelector getMirrorSelector() {
@@ -241,6 +255,7 @@ public abstract class ApplicationBuilder {
                 getResolverFactory(),
                 getEnquirerFactory(),
                 getDownloaderFactory(),
+                getVerifierFactory(),
                 getMirrorSelector()
         );
         return getInjectorFactory().create(injectionHelperFactory);
