@@ -13,9 +13,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ChecksumDependencyVerifier implements DependencyVerifier {
+    private static final Logger LOGGER = Logger.getLogger(ChecksumDependencyVerifier.class.getName());
     private final DependencyResolver resolver;
     private final OutputWriterFactory outputWriterFactory;
     private final DependencyVerifier fallbackVerifier;
@@ -33,28 +37,32 @@ public final class ChecksumDependencyVerifier implements DependencyVerifier {
     @Override
     public boolean verify(final File file, final Dependency dependency) throws IOException {
         if (!file.exists()) return false;
+        LOGGER.log(Level.FINE, "Attempting to verify file checksum for {0}", dependency.getArtifactId());
         final File checksumFile = outputWriterFactory.getStrategy().selectFileFor(dependency);
         checksumFile.getParentFile().mkdirs();
         if (!checksumFile.exists() && !prepareChecksumFile(checksumFile, dependency)) {
+            LOGGER.log(Level.FINE, "Unable to resolve on checksum attempt {0}", dependency.getArtifactId());
             return false;
         }
         if (checksumFile.length() == 0L) {
+            LOGGER.log(Level.FINE, "Required checksum not found for {0}, using fallback verifier", dependency.getArtifactId());
+
             return fallbackVerifier.verify(file, dependency);
         }
-        return checksumCalculator.calculate(file).equals(new String(Files.readAllBytes(checksumFile.toPath())));
+        final String actualChecksum = checksumCalculator.calculate(file);
+        final String expectedChecksum = new String(Files.readAllBytes(checksumFile.toPath()));
+        LOGGER.log(Level.FINE, "Actual checksum: {0}; Expected checksum: {1} for {2}", new Object[]{actualChecksum, expectedChecksum, dependency.getArtifactId()});
+        return Objects.equals(actualChecksum, expectedChecksum);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean prepareChecksumFile(final File checksumFile, final Dependency dependency) throws IOException {
         final Optional<ResolutionResult> result = resolver.resolve(dependency);
         if (!result.isPresent()) {
+            checksumFile.createNewFile();
             return false;
         } else {
             final URL checkSumUrl = result.get().getChecksumURL();
-            if (checkSumUrl == null) {
-                checksumFile.createNewFile();
-                return true;
-            }
             final URLConnection connection = Connections.createDownloadConnection(checkSumUrl);
             final InputStream inputStream = connection.getInputStream();
             final OutputWriter outputWriter = outputWriterFactory.create(dependency);
