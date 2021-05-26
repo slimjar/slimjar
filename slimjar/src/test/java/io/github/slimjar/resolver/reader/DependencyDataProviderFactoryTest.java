@@ -1,33 +1,36 @@
 package io.github.slimjar.resolver.reader;
 
-import com.google.gson.Gson;
+import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import junit.framework.TestCase;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
 public class DependencyDataProviderFactoryTest extends TestCase {
 
-    public void testCreateFactory() throws MalformedURLException {
+    public void testCreateFactory() throws IOException, URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException {
         final URL url = new URL("https://a.b.c");
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(new Gson());
+        final DependencyDataProviderFactory dependencyDataProviderFactory = new GsonDependencyDataProviderFactory(ReflectiveGsonFacadeFactory.create());
         final DependencyDataProvider provider = dependencyDataProviderFactory.create(url);
 
-        assertTrue("create must return a FileDependencyDataProvider", provider instanceof FileDependencyDataProvider);
+        assertTrue("create must return a FileDependencyDataProvider", provider instanceof URLDependencyDataProvider);
     }
 
-    public void testCreateFileDataProviderFactory() throws MalformedURLException {
+    public void testCreateFileDataProviderFactory() throws IOException, URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException {
         final URL url = new URL("https://a.b.c");
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(new Gson());
-        final DependencyDataProvider provider = dependencyDataProviderFactory.forFile(url);
+        final DependencyDataProviderFactory dependencyDataProviderFactory = new GsonDependencyDataProviderFactory(ReflectiveGsonFacadeFactory.create());
+        final DependencyDataProvider provider = dependencyDataProviderFactory.create(url);
 
-        assertTrue("forFile must return a FileDependencyDataProvider", provider instanceof FileDependencyDataProvider);
+        assertTrue("forFile must return a FileDependencyDataProvider", provider instanceof URLDependencyDataProvider);
     }
 
-    public void testCreateModuleDataProviderFactory() throws MalformedURLException {
+    public void testCreateModuleDataProviderFactory() throws IOException, URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException {
         final URL url = new URL("https://a.b.c");
-        final DependencyDataProviderFactory dependencyDataProviderFactory = new DependencyDataProviderFactory(new Gson());
-        final DependencyDataProvider provider = dependencyDataProviderFactory.forModule(url);
+
+        final DependencyDataProviderFactory dependencyDataProviderFactory = new ExternalDependencyDataProviderFactory(ReflectiveGsonFacadeFactory.create());
+        final DependencyDataProvider provider = dependencyDataProviderFactory.create(url);
 
         assertTrue("forFile must return a FileDependencyDataProvider", provider instanceof ModuleDependencyDataProvider);
     }

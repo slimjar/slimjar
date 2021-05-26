@@ -25,11 +25,15 @@
 package io.github.slimjar.downloader.strategy;
 
 
+import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class FolderedFilePathStrategy implements FilePathStrategy {
+    private static final Logger LOGGER = Logger.getLogger(FolderedFilePathStrategy.class.getName());
     private static final String DEPENDENCY_FILE_FORMAT = "%s/%s/%s/%s/%3$s-%4$s.jar";
     private final File rootDirectory;
 
@@ -47,6 +51,7 @@ public final class FolderedFilePathStrategy implements FilePathStrategy {
                 dependency.getArtifactId(),
                 dependency.getVersion()
         );
+        LOGGER.log(Level.FINEST, "Selected file for " + dependency.getArtifactId() + " at " + path);
         return new File(path);
     }
 

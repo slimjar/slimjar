@@ -26,10 +26,14 @@ package io.github.slimjar.injector;
 
 import io.github.slimjar.injector.loader.Injectable;
 import io.github.slimjar.resolver.data.Dependency;
+import io.github.slimjar.resolver.data.DependencyData;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 
 public interface DependencyInjector {
-    void inject(final Injectable injectable, final Collection<Dependency> dependencies) throws InjectionFailedException;
+    void inject(final Injectable injectable, final DependencyData data) throws InjectionFailedException, ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException;
 }

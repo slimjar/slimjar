@@ -31,5 +31,5 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface DependencyReader {
-    DependencyData read(InputStream inputStream) throws IOException;
+    DependencyData read(InputStream inputStream) throws IOException, ReflectiveOperationException;
 }

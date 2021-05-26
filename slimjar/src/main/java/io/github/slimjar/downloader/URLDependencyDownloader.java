@@ -30,29 +30,38 @@ import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.UnresolvedDependencyException;
 import io.github.slimjar.resolver.data.Dependency;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
+    private static final Logger LOGGER = Logger.getLogger(URLDependencyDownloader.class.getName());
     private final OutputWriterFactory outputWriterProducer;
     private final DependencyResolver dependencyResolver;
+
     public URLDependencyDownloader(final OutputWriterFactory outputWriterProducer, DependencyResolver dependencyResolver) {
         this.outputWriterProducer = outputWriterProducer;
         this.dependencyResolver = dependencyResolver;
     }
 
     @Override
-    public URL download(final Dependency dependency) throws IOException {
+    public File download(final Dependency dependency) throws IOException {
+
         final URL url = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
+        LOGGER.log(Level.FINE, "Connecting to {0}", url);
         final URLConnection connection = createDownloadConnection(url);
         final InputStream inputStream = connection.getInputStream();
+        LOGGER.log(Level.FINE, "Connection successful! Downloading {0}" ,dependency.getArtifactId() + "...");
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
-        final URL result = outputWriter.writeFrom(inputStream, connection.getContentLength());
+        final File result = outputWriter.writeFrom(inputStream, connection.getContentLength());
         tryDisconnect(connection);
+        LOGGER.log(Level.FINE, "Artifact {0} downloaded successfully!", dependency.getArtifactId());
         return result;
     }
 

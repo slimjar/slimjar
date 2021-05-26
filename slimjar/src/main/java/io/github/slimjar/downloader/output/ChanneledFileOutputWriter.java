@@ -24,30 +24,33 @@
 
 package io.github.slimjar.downloader.output;
 
-import io.github.slimjar.relocation.Relocator;
-import io.github.slimjar.resolver.data.Dependency;
-import io.github.slimjar.downloader.strategy.FilePathStrategy;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public final class DependencyFileOutputWriterFactory implements OutputWriterFactory {
-    private final FilePathStrategy outputFilePathStrategy;
-    private final FilePathStrategy relocationFilePathStrategy;
-    private final Relocator relocator;
+public final class ChanneledFileOutputWriter implements OutputWriter {
+    private static final Logger LOGGER = Logger.getLogger(ChanneledFileOutputWriter.class.getName());
+    private final File outputFile;
 
-    public DependencyFileOutputWriterFactory(final FilePathStrategy filePathStrategy, final FilePathStrategy relocationFilePathStrategy, final Relocator relocator) {
-        this.relocationFilePathStrategy = relocationFilePathStrategy;
-        this.outputFilePathStrategy = filePathStrategy;
-        this.relocator = relocator;
+    public ChanneledFileOutputWriter(final File outputFile) {
+        this.outputFile = outputFile;
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public OutputWriter create(final Dependency dependency) {
-        final File outputFile = outputFilePathStrategy.selectFileFor(dependency);
-        outputFile.getParentFile().mkdirs();
-        final File relocatedFile = relocationFilePathStrategy.selectFileFor(dependency);
-        return new RelocatingFileOutputWriter(outputFile, relocatedFile, relocator);
+    public File writeFrom(final InputStream inputStream, final long length) throws IOException {
+        LOGGER.log(Level.FINEST, "Attempting to write from inputStream...");
+        if (!outputFile.exists()) {
+            LOGGER.log(Level.FINEST, "Writing " + length + " bytes...");
+            try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
+                try (final FileOutputStream output = new FileOutputStream(outputFile)) {
+                    output.getChannel().transferFrom(channel, 0, length);
+                }
+            }
+        }
+        inputStream.close();
+        return outputFile;
     }
 }
