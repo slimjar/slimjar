@@ -11,6 +11,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 
@@ -19,10 +20,14 @@ import java.util.Collections;
 public class RepositoryEnquirerTest extends TestCase {
     public void testPingingEnquirerProvideValidURL() throws Exception {
         final URL mockUrl = PowerMockito.mock(URL.class);
+        final URI mockUri = PowerMockito.mock(URI.class);
+
         final PathResolutionStrategy resolutionStrategy = PowerMockito.mock(PathResolutionStrategy.class);
         final URLPinger pinger = PowerMockito.mock(URLPinger.class);
 
         PowerMockito.whenNew(URL.class).withAnyArguments().thenReturn(mockUrl);
+        PowerMockito.when(mockUrl.toURI()).thenReturn(mockUri);
+        PowerMockito.when(mockUri.toURL()).thenReturn(mockUrl);
         PowerMockito.doReturn("https://a.b.c/repo/dep.jar").when(resolutionStrategy).pathTo(null, null);
         PowerMockito.doReturn(true).when(pinger).ping(mockUrl);
 

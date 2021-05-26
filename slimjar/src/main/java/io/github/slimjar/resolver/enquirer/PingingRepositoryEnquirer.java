@@ -31,6 +31,8 @@ import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 import io.github.slimjar.resolver.pinger.URLPinger;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
@@ -68,6 +70,17 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
         } catch (final MalformedURLException e) {
             e.printStackTrace();
         }
-        return new ResolutionResult(url, checksumURL);
+        try {
+            final URI depURI = url.toURI();
+            final URI checksumURI;
+            if (checksumURL == null) {
+                checksumURI = checksumURL.toURI();
+            } else {
+                checksumURI = null;
+            }
+            return new ResolutionResult(depURI, checksumURI);
+        } catch (final URISyntaxException exception) {
+            return null;
+        }
     }
 }

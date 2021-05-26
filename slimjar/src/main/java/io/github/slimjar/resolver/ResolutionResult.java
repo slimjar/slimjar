@@ -1,23 +1,27 @@
 package io.github.slimjar.resolver;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ResolutionResult {
-    private final URL dependencyURL;
-    private final URL checksumURL;
+    private final URI dependencyURI;
+    private final URI checksumURI;
 
-    public ResolutionResult(final URL dependencyURL, final URL checksumURL) {
-        this.dependencyURL = Objects.requireNonNull(dependencyURL);
-        this.checksumURL = checksumURL;
+    public ResolutionResult(final URI dependencyURI, final URI checksumURI) {
+        this.dependencyURI = Objects.requireNonNull(dependencyURI);
+        this.checksumURI = checksumURI;
     }
 
-    public URL getDependencyURL() {
-        return dependencyURL;
+    public URL getDependencyURL() throws MalformedURLException {
+        return dependencyURI.toURL();
     }
 
-    public URL getChecksumURL() {
-        return checksumURL;
+    public URL getChecksumURL() throws MalformedURLException {
+        return checksumURI.toURL();
     }
 
     @Override
@@ -25,12 +29,12 @@ public final class ResolutionResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResolutionResult that = (ResolutionResult) o;
-        return dependencyURL.equals(that.dependencyURL) &&
-                Objects.equals(checksumURL, that.checksumURL);
+        return dependencyURI.equals(that.dependencyURI) &&
+                Objects.equals(checksumURI, that.checksumURI);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dependencyURL, checksumURL);
+        return Objects.hash(dependencyURI, checksumURI);
     }
 }

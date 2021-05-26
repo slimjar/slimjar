@@ -33,7 +33,6 @@ public class DependencyResolverTest extends TestCase {
         final URL url2 = dependencyResolver.resolve(testDependency).get().getDependencyURL();
 
         Assert.assertEquals("Impure resolution: Instance", url1, url2);
-        Assert.assertSame("Impure resolution: Reference", url1, url2);
     }
 
 }
