@@ -32,5 +32,5 @@ import java.util.Optional;
 
 @FunctionalInterface
 public interface DependencyResolver {
-    Optional<URL> resolve(final Dependency dependency);
+    Optional<ResolutionResult> resolve(final Dependency dependency);
 }

@@ -24,6 +24,7 @@
 
 package io.github.slimjar.resolver.enquirer;
 
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
@@ -34,27 +35,39 @@ import java.net.URL;
 
 public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
     private final Repository repository;
-    private final PathResolutionStrategy urlCreationStrategy;
+    private final PathResolutionStrategy dependencyURLCreationStrategy;
+    private final PathResolutionStrategy checksumURLCreationStrategy;
     private final URLPinger urlPinger;
 
-    public PingingRepositoryEnquirer(final Repository repository, final PathResolutionStrategy urlCreationStratergy, URLPinger urlPinger) {
+    public PingingRepositoryEnquirer(final Repository repository, final PathResolutionStrategy urlCreationStrategy, PathResolutionStrategy checksumURLCreationStrategy, URLPinger urlPinger) {
         this.repository = repository;
-        this.urlCreationStrategy = urlCreationStratergy;
+        this.dependencyURLCreationStrategy = urlCreationStrategy;
+        this.checksumURLCreationStrategy = checksumURLCreationStrategy;
         this.urlPinger = urlPinger;
     }
 
     @Override
-    public URL enquire(final Dependency dependency) {
-        final String path = urlCreationStrategy.pathTo(repository, dependency);
-        URL url;
+    public ResolutionResult enquire(final Dependency dependency) {
+        final String path = dependencyURLCreationStrategy.pathTo(repository, dependency);
+        final URL url;
         try {
             url = new URL(path);
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             return null;
         }
-        if (urlPinger.ping(url)) {
-            return url;
+        if (!urlPinger.ping(url)) {
+            return null;
         }
-        return null;
+        final String checkSumPath = checksumURLCreationStrategy.pathTo(repository, dependency);
+        URL checksumURL = null;
+        try {
+            checksumURL = new URL(checkSumPath);
+            if (!urlPinger.ping(checksumURL)) {
+                checksumURL = null;
+            }
+        } catch (final MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return new ResolutionResult(url, checksumURL);
     }
 }

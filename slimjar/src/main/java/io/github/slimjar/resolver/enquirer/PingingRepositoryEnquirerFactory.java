@@ -30,10 +30,12 @@ import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 
 public final class PingingRepositoryEnquirerFactory implements RepositoryEnquirerFactory {
     private final PathResolutionStrategy pathResolutionStrategy;
+    private final PathResolutionStrategy checksumURLCreationStrategy;
     private final URLPinger urlPinger;
 
-    public PingingRepositoryEnquirerFactory(final PathResolutionStrategy pathResolutionStrategy, final URLPinger urlPinger) {
+    public PingingRepositoryEnquirerFactory(final PathResolutionStrategy pathResolutionStrategy, PathResolutionStrategy checksumURLCreationStrategy, final URLPinger urlPinger) {
         this.pathResolutionStrategy = pathResolutionStrategy;
+        this.checksumURLCreationStrategy = checksumURLCreationStrategy;
         this.urlPinger = urlPinger;
     }
 
@@ -41,8 +43,12 @@ public final class PingingRepositoryEnquirerFactory implements RepositoryEnquire
         return pathResolutionStrategy;
     }
 
+    public PathResolutionStrategy getChecksumURLCreationStrategy() {
+        return checksumURLCreationStrategy;
+    }
+
     @Override
     public RepositoryEnquirer create(final Repository repository) {
-        return new PingingRepositoryEnquirer(repository, pathResolutionStrategy, urlPinger);
+        return new PingingRepositoryEnquirer(repository, pathResolutionStrategy, checksumURLCreationStrategy, urlPinger);
     }
 }
