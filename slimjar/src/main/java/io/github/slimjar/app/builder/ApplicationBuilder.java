@@ -213,7 +213,7 @@ public abstract class ApplicationBuilder {
     protected final RepositoryEnquirerFactory getEnquirerFactory() {
         if (enquirerFactory == null) {
             final PathResolutionStrategy resolutionStrategy = new MavenPathResolutionStrategy();
-            final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-256");
+            final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-1");
             final URLPinger urlPinger = new HttpURLPinger();
             this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, checksumResolutionStrategy, urlPinger);
         }
@@ -229,10 +229,10 @@ public abstract class ApplicationBuilder {
 
     protected final DependencyVerifierFactory getVerifierFactory() throws NoSuchAlgorithmException {
         if (verifierFactory == null) {
-            final FilePathStrategy filePathStrategy = ChecksumFilePathStrategy.createStrategy(getDownloadDirectoryPath().toFile(), "SHA-256");
+            final FilePathStrategy filePathStrategy = ChecksumFilePathStrategy.createStrategy(getDownloadDirectoryPath().toFile(), "SHA-1");
             final OutputWriterFactory checksumOutputFactory = new DependencyOutputWriterFactory(filePathStrategy);
             final DependencyVerifierFactory fallback = new PassthroughDependencyVerifierFactory();
-            final ChecksumCalculator checksumCalculator = new FileChecksumCalculator("SHA-256");
+            final ChecksumCalculator checksumCalculator = new FileChecksumCalculator("SHA-1");
             this.verifierFactory = new ChecksumDependencyVerifierFactory(checksumOutputFactory, fallback, checksumCalculator);
         }
         return verifierFactory;
