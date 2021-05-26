@@ -54,7 +54,6 @@ public final class SimpleDependencyInjector implements DependencyInjector {
         for (final Dependency dependency : dependencies) {
             try {
                 final File depJar = injectionHelper.fetch(dependency);
-                System.out.println(depJar);
                 injectable.inject(depJar.toURI().toURL());
                 injectDependencies(injectable, injectionHelper, dependency.getTransitive());
             } catch (final IOException e) {

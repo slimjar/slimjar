@@ -151,7 +151,6 @@ public abstract class ApplicationBuilder {
     protected final URL getDependencyFileUrl() {
         if (dependencyFileUrl == null) {
             this.dependencyFileUrl = getClass().getClassLoader().getResource("slimjar.json");
-            Logger.getLogger("SlimJar").log(Level.INFO, String.valueOf(dependencyFileUrl));
         }
         return dependencyFileUrl;
     }
