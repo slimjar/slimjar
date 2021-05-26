@@ -47,8 +47,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class ApplicationBuilder {
     private static final Path DEFAULT_DOWNLOAD_DIRECTORY;
@@ -63,7 +61,7 @@ public abstract class ApplicationBuilder {
     private URL dependencyFileUrl;
     private Path downloadDirectoryPath;
     private RelocatorFactory relocatorFactory;
-    private DependencyDataProviderFactory externalDataProviderFactory;
+    private DependencyDataProviderFactory moduleDataProviderFactory;
     private DependencyDataProviderFactory dataProviderFactory;
     private RelocationHelperFactory relocationHelperFactory;
     private DependencyInjectorFactory injectorFactory;
@@ -101,6 +99,11 @@ public abstract class ApplicationBuilder {
 
     public final ApplicationBuilder relocatorFactory(final RelocatorFactory relocatorFactory) {
         this.relocatorFactory = relocatorFactory;
+        return this;
+    }
+
+    public final ApplicationBuilder moduleDataProviderFactory(final DependencyDataProviderFactory moduleDataProviderFactory) {
+        this.moduleDataProviderFactory = moduleDataProviderFactory;
         return this;
     }
 
@@ -170,12 +173,12 @@ public abstract class ApplicationBuilder {
         return relocatorFactory;
     }
 
-    protected final DependencyDataProviderFactory getExternalDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
-        if (externalDataProviderFactory == null) {
+    protected final DependencyDataProviderFactory getModuleDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        if (moduleDataProviderFactory == null) {
             final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create();
-            this.externalDataProviderFactory = new ExternalDependencyDataProviderFactory(gsonFacadeFactory);
+            this.moduleDataProviderFactory = new ExternalDependencyDataProviderFactory(gsonFacadeFactory);
         }
-        return externalDataProviderFactory;
+        return moduleDataProviderFactory;
     }
 
     protected final DependencyDataProviderFactory getDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {

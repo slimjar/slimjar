@@ -6,20 +6,14 @@ import io.github.slimjar.injector.loader.InjectableClassLoader;
 import io.github.slimjar.injector.loader.IsolatedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
-import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 import io.github.slimjar.util.Modules;
 import io.github.slimjar.util.Parameters;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 public final class IsolatedApplicationBuilder extends ApplicationBuilder {
     private final IsolationConfiguration isolationConfiguration;
@@ -43,7 +37,7 @@ public final class IsolatedApplicationBuilder extends ApplicationBuilder {
         injector.inject(classLoader, selfDependencyData);
 
         for (final URL module : moduleUrls) {
-            final DependencyDataProvider moduleDataProvider = getExternalDataProviderFactory().create(module);
+            final DependencyDataProvider moduleDataProvider = getModuleDataProviderFactory().create(module);
             final DependencyData dependencyData = moduleDataProvider.get();
             injector.inject(classLoader, dependencyData);
         }
