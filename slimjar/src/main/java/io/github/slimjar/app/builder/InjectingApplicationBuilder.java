@@ -4,6 +4,7 @@ import io.github.slimjar.app.AppendingApplication;
 import io.github.slimjar.app.Application;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.Injectable;
+import io.github.slimjar.injector.loader.InstrumentationInjectable;
 import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
@@ -31,8 +32,8 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
         return new AppendingApplication();
     }
 
-    public static ApplicationBuilder createAppending(final String applicationName) {
-        final String version = Runtime.class.getPackage().getSpecificationVersion();
+    public static ApplicationBuilder createAppending(final String applicationName) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        final String version = System.getProperty("java.version");
         final String[] parts = version.split("\\.");
         if (parts.length < 2) {
             throw new IllegalStateException("Could not find proper JVM version! Found " + version);
@@ -48,8 +49,8 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
         return new InjectingApplicationBuilder(applicationName, injectable);
     }
 
-    private static Injectable createInstrumentationInjectable() {
-        return null;
+    private static Injectable createInstrumentationInjectable() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        return InstrumentationInjectable.create();
     }
 }
 
