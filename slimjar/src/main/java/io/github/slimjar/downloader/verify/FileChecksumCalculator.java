@@ -22,13 +22,13 @@ public final class FileChecksumCalculator implements ChecksumCalculator {
     public String calculate(final File file) throws IOException {
         LOGGER.log(Level.FINEST, "Calculating hash for {0}", file.getPath());
         digest.reset();
-        final FileInputStream fis = new FileInputStream(file);
-        byte[] byteArray = new byte[1024];
-        int bytesCount;
-        while ((bytesCount = fis.read(byteArray)) != -1) {
-            digest.update(byteArray, 0, bytesCount);
+        try (final FileInputStream fis = new FileInputStream(file)) {
+            byte[] byteArray = new byte[1024];
+            int bytesCount;
+            while ((bytesCount = fis.read(byteArray)) != -1) {
+                digest.update(byteArray, 0, bytesCount);
+            }
         }
-        fis.close();
         byte[] bytes = digest.digest();
 
         StringBuilder sb = new StringBuilder();

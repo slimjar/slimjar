@@ -79,8 +79,8 @@ public abstract class ApplicationBuilder {
         return new IsolatedApplicationBuilder(name, config, args);
     }
 
-    public static ApplicationBuilder appending(final String name, final URLClassLoader classLoader) {
-        return injecting(name, new WrappedInjectableClassLoader(classLoader));
+    public static ApplicationBuilder appending(final String name) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        return InjectingApplicationBuilder.createAppending(name);
     }
 
     public static ApplicationBuilder injecting(final String name, final Injectable injectable) {

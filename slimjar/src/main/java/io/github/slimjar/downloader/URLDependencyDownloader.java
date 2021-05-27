@@ -56,12 +56,13 @@ public final class URLDependencyDownloader implements DependencyDownloader {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public File download(final Dependency dependency) throws IOException {
-        final ResolutionResult result = dependencyResolver.resolve(dependency)
-                .orElseThrow(() -> new UnresolvedDependencyException(dependency));
         final File expectedOutputFile = outputWriterProducer.getStrategy().selectFileFor(dependency);
         if (verifier.verify(expectedOutputFile, dependency)) {
             return expectedOutputFile;
         }
+        final ResolutionResult result = dependencyResolver.resolve(dependency)
+                .orElseThrow(() -> new UnresolvedDependencyException(dependency));
+
         expectedOutputFile.delete();
         final URL url = result.getDependencyURL();
         LOGGER.log(Level.FINE, "Connecting to {0}", url);

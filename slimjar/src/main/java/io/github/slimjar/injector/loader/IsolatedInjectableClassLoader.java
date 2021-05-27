@@ -67,11 +67,4 @@ public final class IsolatedInjectableClassLoader extends InjectableClassLoader {
         return super.loadClass(name, resolve);
     }
 
-
-    private Class<?> handleResolution(Class<?> clazz, boolean resolve) {
-        if (resolve) {
-            resolveClass(clazz);
-        }
-        return clazz;
-    }
 }
