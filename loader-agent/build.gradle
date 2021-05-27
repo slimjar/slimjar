@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'io.github.slimjar'
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Agent-Class': 'io.github.slimjar.injector.agent.ClassLoaderAgent'
+        )
+    }
+}
