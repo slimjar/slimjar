@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'io.github.slimjar'
-version 'unspecified'
+version '1.2.0'
 
 repositories {
     mavenCentral()
