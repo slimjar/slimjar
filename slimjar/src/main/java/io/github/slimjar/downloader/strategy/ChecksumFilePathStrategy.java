@@ -3,6 +3,7 @@ package io.github.slimjar.downloader.strategy;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +16,7 @@ public final class ChecksumFilePathStrategy implements FilePathStrategy {
 
     private ChecksumFilePathStrategy(final File rootDirectory, final String algorithm) {
         this.rootDirectory = rootDirectory;
-        this.algorithm = algorithm.replaceAll("[ -]", "").toLowerCase();
+        this.algorithm = algorithm.replaceAll("[ -]", "").toLowerCase(Locale.ENGLISH);
     }
 
     @Override

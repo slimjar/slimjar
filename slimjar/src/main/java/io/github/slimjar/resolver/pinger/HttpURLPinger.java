@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Objects;
 
 public final class HttpURLPinger implements URLPinger {
@@ -47,15 +48,16 @@ public final class HttpURLPinger implements URLPinger {
             connection.connect();
             return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
-            // Handled outside to please Coverage
+            return false;
         } finally {
-            Objects.requireNonNull(connection).disconnect();
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-        return false;
     }
 
     public boolean isSupported(final URL url) {
-        final String protocol = url.getProtocol().toUpperCase();
+        final String protocol = url.getProtocol().toUpperCase(Locale.ENGLISH);
         return SUPPORTED_PROTOCOLS.contains(protocol);
     }
 }

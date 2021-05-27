@@ -22,7 +22,7 @@ public final class IsolatedApplicationBuilder extends ApplicationBuilder {
     public IsolatedApplicationBuilder(final String applicationName, final IsolationConfiguration isolationConfiguration, final Object[] arguments) {
         super(applicationName);
         this.isolationConfiguration = isolationConfiguration;
-        this.arguments = arguments;
+        this.arguments = arguments.clone();
     }
 
     @Override

@@ -32,7 +32,7 @@ public final class JarManifestGenerator implements ManifestGenerator {
             Files.createDirectories(nf.getParent());
             try (final Writer writer = Files.newBufferedWriter(nf, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
                for (Map.Entry<String, String> entry : attributes.entrySet()) {
-                   writer.write(String.format("%s: %s\n", entry.getKey(), entry.getValue()));
+                   writer.write(String.format("%s: %s%n", entry.getKey(), entry.getValue()));
                }
             }
         }
