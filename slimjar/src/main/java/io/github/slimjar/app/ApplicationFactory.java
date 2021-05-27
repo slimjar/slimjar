@@ -44,7 +44,7 @@ public final class ApplicationFactory {
         return ApplicationBuilder.isolated(applicationName, config, args).build();
     }
 
-    public Application createAppendingApplication(final String applicationName, final URLClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
-        return ApplicationBuilder.appending(applicationName, classLoader).build();
+    public Application createAppendingApplication(final String applicationName) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+        return ApplicationBuilder.appending(applicationName).build();
     }
 }
