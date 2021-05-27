@@ -12,11 +12,3 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
-
-jar {
-    manifest {
-        attributes(
-                'Agent-Class': 'io.github.slimjar.injector.agent.ClassLoaderAgent'
-        )
-    }
-}
