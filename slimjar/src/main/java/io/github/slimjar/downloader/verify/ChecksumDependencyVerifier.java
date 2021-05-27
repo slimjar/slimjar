@@ -6,7 +6,6 @@ import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.util.Connections;
-import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.io.IOException;
