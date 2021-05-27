@@ -59,9 +59,7 @@ import io.github.slimjar.resolver.reader.ExternalDependencyDataProviderFactory;
 import io.github.slimjar.resolver.reader.GsonDependencyDataProviderFactory;
 import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
-import io.github.slimjar.resolver.strategy.MavenChecksumPathResolutionStrategy;
-import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy;
-import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
+import io.github.slimjar.resolver.strategy.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -238,8 +236,10 @@ public abstract class ApplicationBuilder {
 
     protected final RepositoryEnquirerFactory getEnquirerFactory() {
         if (enquirerFactory == null) {
-            final PathResolutionStrategy resolutionStrategy = new MavenPathResolutionStrategy();
-            final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-1");
+            final PathResolutionStrategy releaseStrategy = new MavenPathResolutionStrategy();
+            final PathResolutionStrategy snapshotStrategy = new MavenSnapshotPathResolutionStrategy();
+            final PathResolutionStrategy resolutionStrategy = new MediatingPathResolutionStrategy(releaseStrategy, snapshotStrategy);
+            final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-1", resolutionStrategy);
             final URLPinger urlPinger = new HttpURLPinger();
             this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, checksumResolutionStrategy, urlPinger);
         }

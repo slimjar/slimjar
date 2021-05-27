@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
     private final Repository repository;
@@ -50,26 +51,27 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
 
     @Override
     public ResolutionResult enquire(final Dependency dependency) {
-        final String path = dependencyURLCreationStrategy.pathTo(repository, dependency);
-        final URL dependencyUrl;
-        try {
-            dependencyUrl = new URL(path);
-        } catch (final MalformedURLException e) {
+        final Optional<URL> resolvedDependency = dependencyURLCreationStrategy.pathTo(repository, dependency)
+                .stream().map((path) -> {
+                    try {
+                        return new URL(path);
+                    } catch (MalformedURLException e) {
+                        return null;
+                    }
+                }).filter(urlPinger::ping)
+                .findFirst();
+        if (!resolvedDependency.isPresent()) {
             return null;
         }
-        if (!urlPinger.ping(dependencyUrl)) {
-            return null;
-        }
-        final String checkSumPath = checksumURLCreationStrategy.pathTo(repository, dependency);
-        URL checksumUrl = null;
-        try {
-            checksumUrl = new URL(checkSumPath);
-            if (!urlPinger.ping(checksumUrl)) {
-                checksumUrl = null;
-            }
-        } catch (final MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return new ResolutionResult(dependencyUrl, checksumUrl);
+        final Optional<URL> resolvedChecksum = checksumURLCreationStrategy.pathTo(repository, dependency)
+                .stream().map((path) -> {
+                    try {
+                        return new URL(path);
+                    } catch (MalformedURLException e) {
+                        return null;
+                    }
+                }).filter(urlPinger::ping)
+                .findFirst();
+        return new ResolutionResult(resolvedDependency.get(), resolvedChecksum.orElse(null));
     }
 }
