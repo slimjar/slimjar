@@ -72,6 +72,7 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         final OutputWriter outputWriter = outputWriterProducer.create(dependency);
         final File downloadResult = outputWriter.writeFrom(inputStream, connection.getContentLength());
         Connections.tryDisconnect(connection);
+        verifier.verify(downloadResult, dependency);
         LOGGER.log(Level.FINE, "Artifact {0} downloaded successfully!", dependency.getArtifactId());
         return downloadResult;
     }
