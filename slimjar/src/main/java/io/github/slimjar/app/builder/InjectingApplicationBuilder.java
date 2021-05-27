@@ -11,6 +11,7 @@ import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.security.NoSuchAlgorithmException;
 
 public final class InjectingApplicationBuilder extends ApplicationBuilder {
@@ -28,6 +29,27 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
         final DependencyInjector dependencyInjector = createInjector();
         dependencyInjector.inject(classLoader, dependencyData);
         return new AppendingApplication();
+    }
+
+    public static ApplicationBuilder createAppending(final String applicationName) {
+        final String version = Runtime.class.getPackage().getSpecificationVersion();
+        final String[] parts = version.split("\\.");
+        if (parts.length < 2) {
+            throw new IllegalStateException("Could not find proper JVM version! Found " + version);
+        }
+        final int major = Integer.parseInt(parts[0]);
+        final int minor = Integer.parseInt(parts[1]);
+        final Injectable injectable;
+        if (major > 1 || minor > 8) {
+            injectable = createInstrumentationInjectable();
+        } else {
+            injectable = new WrappedInjectableClassLoader((URLClassLoader) ApplicationBuilder.class.getClassLoader());
+        }
+        return new InjectingApplicationBuilder(applicationName, injectable);
+    }
+
+    private static Injectable createInstrumentationInjectable() {
+        return null;
     }
 }
 
