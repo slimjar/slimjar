@@ -37,6 +37,7 @@ public final class TemporaryModuleExtractor implements ModuleExtractor {
     @Override
     public URL extractModule(URL url, String name) throws IOException {
         final File tempFile = File.createTempFile(name, ".jar");
+        tempFile.deleteOnExit();
         final URLConnection connection = url.openConnection();
         if (!(connection instanceof JarURLConnection)) {
             throw new AssertionError("Invalid Module URL provided(Non-Jar File)");
