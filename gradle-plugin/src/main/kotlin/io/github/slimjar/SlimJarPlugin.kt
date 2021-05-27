@@ -51,16 +51,12 @@ class SlimJarPlugin : Plugin<Project> {
             throw ShadowNotFoundException("SlimJar depends on the Shadow plugin, please apply the plugin. For more information visit: https://imperceptiblethoughts.com/shadow/")
         }
 
-        val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME)
+        val slimConfig = createConfig(SLIM_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME, JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME)
         if (plugins.hasPlugin("java-library")) {
-            createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME)
+            createConfig(SLIM_API_CONFIGURATION_NAME, JavaPlugin.COMPILE_ONLY_API_CONFIGURATION_NAME, JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME)
         }
 
         val slimJar = tasks.create(SLIM_JAR_TASK_NAME, SlimJar::class.java, slimConfig)
-
-        slimJar.doFirst {
-
-        }
         // Auto adds the slimJar lib dependency
         afterEvaluate {
             if (slimDefaultDependency) {

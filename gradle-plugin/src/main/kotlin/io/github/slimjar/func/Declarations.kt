@@ -55,12 +55,13 @@ fun Project.applySlimLib(configuration: String = "implementation", version: Stri
 /**
  * Utility for creating a configuration that extends another
  */
-fun Project.createConfig(configName: String, extends: String): Configuration {
-    val compileOnlyConfig = configurations.findByName(extends)
-        ?: throw ConfigurationNotFoundException("Could not find `$extends` configuration!")
+fun Project.createConfig(configName: String, vararg extends: String): Configuration {
+    val compileOnlyConfig = extends.map {
+        configurations.findByName(it) ?: throw ConfigurationNotFoundException("Could not find `$extends` configuration!")
+    }
 
     val slimConfig = configurations.create(configName)
-    compileOnlyConfig.extendsFrom(slimConfig)
+    compileOnlyConfig.forEach { it.extendsFrom(slimConfig)}
     slimConfig.isTransitive = true
 
     return slimConfig

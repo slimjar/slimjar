@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '1.1.2-LOCAL'
+version '1.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
