@@ -53,25 +53,4 @@ public final class InstrumentationInjectable implements Injectable {
     public static Injectable create(final InstrumentationFactory factory) throws IOException, NoSuchAlgorithmException, ReflectiveOperationException, URISyntaxException {
         return new InstrumentationInjectable(factory.create());
     }
-
-    public static DependencyData getDependency() throws MalformedURLException {
-        final Dependency byteBuddy = new Dependency(
-                "net.bytebuddy",
-                "byte-buddy-agent",
-                "1.11.0",
-                null,
-                Collections.emptyList()
-        );
-        final Repository centralRepository = new Repository(new URL(SimpleMirrorSelector.CENTRAL_URL));
-        return new DependencyData(
-                Collections.emptySet(),
-                Collections.singleton(centralRepository),
-                Collections.singleton(byteBuddy),
-                Collections.emptyList()
-        );
-    }
-
-    private static String generatePattern() {
-        return String.format("slimjar.%s", UUID.randomUUID().toString());
-    }
 }
