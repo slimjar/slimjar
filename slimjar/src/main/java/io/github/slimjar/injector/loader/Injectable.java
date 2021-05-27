@@ -24,12 +24,13 @@
 
 package io.github.slimjar.injector.loader;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 public interface Injectable {
-    void inject(final URL url) throws InvocationTargetException, IllegalAccessException;
+    void inject(final URL url) throws InvocationTargetException, IllegalAccessException, IOException;
     
     static WrappedInjectableClassLoader wrap(final URLClassLoader classLoader) {
         return new WrappedInjectableClassLoader(classLoader);
