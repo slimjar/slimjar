@@ -27,25 +27,21 @@ package io.github.slimjar.resolver.strategy;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.Repository;
 
+import java.util.Collection;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public final class MavenChecksumPathResolutionStrategy implements PathResolutionStrategy {
-    private static final String PATH_FORMAT = "%s%s/%s/%s/%3$s-%4$s.jar.%5$s";
+    private final PathResolutionStrategy resolutionStrategy;
     private final String algorithm;
 
-    public MavenChecksumPathResolutionStrategy(final String algorithm) {
+    public MavenChecksumPathResolutionStrategy(final String algorithm, final PathResolutionStrategy resolutionStrategy) {
         this.algorithm = algorithm.replaceAll("[ -]", "").toLowerCase(Locale.ENGLISH);
+        this.resolutionStrategy = resolutionStrategy;
     }
 
     @Override
-    public String pathTo(Repository repository, Dependency dependency) {
-        return String.format(
-                PATH_FORMAT,
-                repository.getUrl(),
-                dependency.getGroupId().replace('.', '/'),
-                dependency.getArtifactId(),
-                dependency.getVersion(),
-                algorithm
-        );
+    public Collection<String> pathTo(final Repository repository, final Dependency dependency) {
+        return resolutionStrategy.pathTo(repository, dependency).stream().map(path -> path + "." + algorithm).collect(Collectors.toSet());
     }
 }
