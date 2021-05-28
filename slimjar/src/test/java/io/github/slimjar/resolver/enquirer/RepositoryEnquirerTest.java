@@ -16,22 +16,19 @@ import java.net.URL;
 import java.util.Collections;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({URL.class, PingingRepositoryEnquirer.class})
+@PrepareForTest({URL.class, PingingRepositoryEnquirer.class, URLPinger.class})
 public class RepositoryEnquirerTest extends TestCase {
     public void testPingingEnquirerProvideValidURL() throws Exception {
         final URL mockUrl = PowerMockito.mock(URL.class);
-        final URI mockUri = PowerMockito.mock(URI.class);
 
         final PathResolutionStrategy resolutionStrategy = PowerMockito.mock(PathResolutionStrategy.class);
         final URLPinger pinger = PowerMockito.mock(URLPinger.class);
 
         PowerMockito.whenNew(URL.class).withAnyArguments().thenReturn(mockUrl);
-        PowerMockito.when(mockUrl.toURI()).thenReturn(mockUri);
-        PowerMockito.when(mockUri.toURL()).thenReturn(mockUrl);
-        PowerMockito.doReturn("https://a.b.c/repo/dep.jar").when(resolutionStrategy).pathTo(null, null);
+        PowerMockito.doReturn(Collections.singleton("https://a.b.c/repo/dep.jar")).when(resolutionStrategy).pathTo(new Repository(mockUrl), new Dependency("a.b.c","d","", null, Collections.emptySet()));
         PowerMockito.doReturn(true).when(pinger).ping(mockUrl);
 
-        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(new Repository(mockUrl), resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256"), pinger);
+        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(new Repository(mockUrl), resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256", resolutionStrategy), pinger);
         assertNotNull("Valid repo & dep should return non-null URL", repositoryEnquirer.enquire(new Dependency("a.b.c","d","", null, Collections.emptySet())));
     }
 
@@ -41,10 +38,10 @@ public class RepositoryEnquirerTest extends TestCase {
         final URLPinger pinger = PowerMockito.mock(URLPinger.class);
 
         PowerMockito.whenNew(URL.class).withAnyArguments().thenReturn(mockUrl);
-        PowerMockito.doReturn("https://a.b.c/repo/dep.jar").when(resolutionStrategy).pathTo(null, null);
+        PowerMockito.doReturn(Collections.singleton("https://a.b.c/repo/dep.jar")).when(resolutionStrategy).pathTo(null, null);
         PowerMockito.doReturn(false).when(pinger).ping(mockUrl);
 
-        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(null, resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256"), pinger);
+        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(null, resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256", resolutionStrategy), pinger);
         assertNull("Invalid repo or dep should return null URL", repositoryEnquirer.enquire(null));
     }
 
@@ -52,9 +49,9 @@ public class RepositoryEnquirerTest extends TestCase {
         final PathResolutionStrategy resolutionStrategy = PowerMockito.mock(PathResolutionStrategy.class);
         final URLPinger pinger = PowerMockito.mock(URLPinger.class);
 
-        PowerMockito.doReturn("some_malformed_url").when(resolutionStrategy).pathTo(null, null);
+        PowerMockito.doReturn(Collections.singleton("some_malformed_url")).when(resolutionStrategy).pathTo(null, null);
 
-        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(null, resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256"), pinger);
+        final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(null, resolutionStrategy, new MavenChecksumPathResolutionStrategy("SHA-256", resolutionStrategy), pinger);
         assertNull("Malformed URL should return null URL", repositoryEnquirer.enquire(null));
     }
 }

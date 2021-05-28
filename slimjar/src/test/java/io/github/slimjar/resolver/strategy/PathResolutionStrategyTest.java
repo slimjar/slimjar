@@ -6,7 +6,9 @@ import junit.framework.TestCase;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class PathResolutionStrategyTest extends TestCase {
 
@@ -15,9 +17,9 @@ public class PathResolutionStrategyTest extends TestCase {
         final Repository repository = new Repository(new URL(repoString));
         final Dependency dependency = new Dependency("a.b.c", "d", "1.0", null, Collections.emptySet());
         final PathResolutionStrategy pathResolutionStrategy = new MavenPathResolutionStrategy();
-        final String resolvedPath = pathResolutionStrategy.pathTo(repository, dependency);
+        final Collection<String> resolvedPath = pathResolutionStrategy.pathTo(repository, dependency);
 
-        assertEquals("Maven Path Resolution (LOCAL)", resolvedPath, "https://repo.tld/a/b/c/d/1.0/d-1.0.jar");
+        assertEquals("Maven Path Resolution (LOCAL)", new HashSet<>(resolvedPath), new HashSet<>(Collections.singleton("https://repo.tld/a/b/c/d/1.0/d-1.0.jar")));
     }
 
 }
