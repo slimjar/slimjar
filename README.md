@@ -28,99 +28,20 @@ SlimJar makes the process of switching out jars easier by providing jars that ar
 <hr>
 
 <h2 align="center">Usage Example</h2>
+<h4 align="center">Note: Use the shadowJar task to compile your project</h4>
 <br><br>
 
-SlimJar provides 2 major ways to inject dependencies to your applications, Appending Applications and Isolated Module Applications: <br>
 
-<br><br>
-
-#### Isolated Module Application
-Isolated module applications use a bootstrap module to inject required dependencies to another module(s). This requires you to have a separate module that serves as a bootstrap module, the recommended module name is simply `bootstrap`.
-<br><br>
-*Module: bootstrap*<br>
-*ApplicationBootstrap.class*<br>
 ```java
-public final class MyApplication {
-  public static void main(String[] args) {
-    final ApplicationConfiguration config = ApplicationConfiguration.createDefault("MyApplication");
-    final ApplicationFactory appFactory = new ApplicationFactory(config);
-
-    final Collection<String> modules = Collections.singleton("hello-world");
-
-    final Application app = appFactory.createIsolatedApplication(modules, "example.project.ExampleApplication", args);
-    app.start();
-    // call app.stop() in a similar manner when needed to alert the application to stop (depends on how you handle the call).
-  }
-}
-```
-*build.gradle*
-```groovy
-plugins {
-  id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.1.0'
-}
-slimJar {
-  isolate project(':hello-world')
-}
-```
-
-*Module: hello-world*<br>
-*ExampleApplication.class*<br>
-```java
-package example.project;
-
-public final class ExampleApplication extends Application {
-  private final String[] args;
-  private ExampleApplication(final String[] args) {
-    this.args = args;
-  }
-  
-  @Override
-  public void start() {
-    // Start up your application from here
-  }
-  
-  @Override
-  public void stop() {
-    // Stop your application here
-  }
-}
-```
-*build.gradle*
-```groovy
-plugins {
-  id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.1.0'
-}
-dependencies {
-  slim 'group.id:artifact.id:version'
-}
-```
-
-<br><br>
-
-#### Appending application
-Appending applications require you to provide a URLClassLoader to which slimjar would append the dependency URLs to. This generally is NOT recommended and would not be useful above Java 8 as the application classloader provided is not a URLClassLoader, the exception to this would be if you are using a framework which does use a URLClassLoader to load your application. Even in that case, newer versions of Java enforce strong encapsulation to stop deep reflection and hence this would not work from Java 16 onwards.
-<br><br>
-*MyApplication.class*
-```java
-public final class MyApplication {
-  public static void main(String[] args) {
-    final ApplicationConfiguration config = ApplicationConfiguration.createDefault("MyApplication");
-    final ApplicationFactory appFactory = new ApplicationFactory(config);
-    final Application app = appFactory.createAppendingApplication((URLClassLoader)MyApplication.class.getClassLoader());
-    // The dependencies are now available in the classloader provided, in this case, the application classloader
-    final SomeLibrary library = new SomeLibrary();
-    library.test();
-  }
-}
+// this needs to be ran before you reference your dependencies
+ApplicationBuilder.appending("MyApplicationName").build()
 ```
 (NOTE: If you have specified relocations and are running in a IDE or any environment that does not use the shadowjar-ed build file, use the `ignoreRelocation` flag while running by using `-DignoreRelocation` in your runner arguments)
 *build.gradle*
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.1.0'
+  id 'io.github.slimjar' version '1.2.0'
 }
 dependencies {
   slim 'group.id:artifact.id:version'
@@ -129,7 +50,6 @@ dependencies {
 slimJar {
   relocate 'a.b.c' 'm.n.o'
 }
-
 ```
 <br>
 <br>
@@ -145,7 +65,7 @@ gradlew test
 <h2 align="center">Releases</h2>
 
 * https://plugins.gradle.org/plugin/io.github.slimjar
-* https://repo.vshnv.tech/releases/io/github/slimjar/slimjar/1.0.0
+* https://repo.vshnv.tech/releases/io/github/slimjar/slimjar/1.2.0
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
