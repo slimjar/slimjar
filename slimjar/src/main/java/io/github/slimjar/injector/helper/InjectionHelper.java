@@ -43,6 +43,9 @@ public final class InjectionHelper {
 
     public File fetch(final Dependency dependency) throws IOException, ReflectiveOperationException {
         final File downloaded = dependencyDownloader.download(dependency);
+        if (downloaded == null) {
+            return null;
+        }
         return relocationHelper.relocate(dependency, downloaded);
     }
 }

@@ -37,7 +37,6 @@ import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.injector.SimpleDependencyInjectorFactory;
 import io.github.slimjar.injector.helper.InjectionHelperFactory;
 import io.github.slimjar.injector.loader.Injectable;
-import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
 import io.github.slimjar.relocation.JarFileRelocatorFactory;
 import io.github.slimjar.relocation.RelocatorFactory;
 import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
@@ -65,7 +64,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -239,9 +237,10 @@ public abstract class ApplicationBuilder {
             final PathResolutionStrategy releaseStrategy = new MavenPathResolutionStrategy();
             final PathResolutionStrategy snapshotStrategy = new MavenSnapshotPathResolutionStrategy();
             final PathResolutionStrategy resolutionStrategy = new MediatingPathResolutionStrategy(releaseStrategy, snapshotStrategy);
+            final PathResolutionStrategy pomURLCreationStrategy = new MavenPomPathResolutionStrategy();
             final PathResolutionStrategy checksumResolutionStrategy = new MavenChecksumPathResolutionStrategy("SHA-1", resolutionStrategy);
             final URLPinger urlPinger = new HttpURLPinger();
-            this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, checksumResolutionStrategy, urlPinger);
+            this.enquirerFactory = new PingingRepositoryEnquirerFactory(resolutionStrategy, checksumResolutionStrategy, pomURLCreationStrategy, urlPinger);
         }
         return enquirerFactory;
     }

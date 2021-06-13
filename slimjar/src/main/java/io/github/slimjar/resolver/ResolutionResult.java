@@ -30,10 +30,15 @@ import java.util.Objects;
 public final class ResolutionResult {
     private final URL dependencyURL;
     private final URL checksumURL;
+    private final boolean isAggregator;
 
-    public ResolutionResult(final URL dependencyURL, final URL checksumURL) {
-        this.dependencyURL = Objects.requireNonNull(dependencyURL);
+    public ResolutionResult(final URL dependencyURL, final URL checksumURL, final boolean isAggregator) {
+        this.dependencyURL = dependencyURL;
         this.checksumURL = checksumURL;
+        this.isAggregator = isAggregator;
+        if (!isAggregator) {
+            Objects.requireNonNull(dependencyURL, "Resolved URL must not be null for non-aggregator dependencies");
+        }
     }
 
     public URL getDependencyURL() {
@@ -44,6 +49,10 @@ public final class ResolutionResult {
         return checksumURL;
     }
 
+    public boolean isAggregator() {
+        return isAggregator;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -51,11 +60,12 @@ public final class ResolutionResult {
         ResolutionResult that = (ResolutionResult) o;
         // String comparison to avoid all blocking calls
         return dependencyURL.toString().equals(that.toString()) &&
-                Objects.equals(checksumURL.toString(), that.getChecksumURL().toString());
+                Objects.equals(checksumURL.toString(), that.getChecksumURL().toString()) &&
+                isAggregator == that.isAggregator;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dependencyURL.toString(), checksumURL.toString());
+        return Objects.hash(dependencyURL.toString(), checksumURL.toString(), isAggregator);
     }
 }

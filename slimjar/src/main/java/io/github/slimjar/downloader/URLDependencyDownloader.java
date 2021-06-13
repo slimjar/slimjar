@@ -63,6 +63,10 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         final ResolutionResult result = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
 
+        if (result.isAggregator()) {
+            return null;
+        }
+
         expectedOutputFile.delete();
         final URL url = result.getDependencyURL();
         LOGGER.log(Level.FINE, "Connecting to {0}", url);
