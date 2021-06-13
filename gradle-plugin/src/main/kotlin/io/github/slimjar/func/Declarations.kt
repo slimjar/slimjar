@@ -42,7 +42,7 @@ val Project.slimInjectToIsolated: Boolean
     get() = findProperty("slimjar.default.isolated.inject")?.toString()?.toBoolean() ?: true
 
 val Project.slimVersion: String
-    get() = findProperty("slimjar.version")?.toString() ?: "1.2.0"
+    get() = findProperty("slimjar.version")?.toString() ?: "1.2.1"
 
 /**
  * Adds the slimJar dependency to the project

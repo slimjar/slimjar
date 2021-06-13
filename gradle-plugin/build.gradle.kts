@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.slimjar"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     maven("https://plugins.gradle.org/m2/")
