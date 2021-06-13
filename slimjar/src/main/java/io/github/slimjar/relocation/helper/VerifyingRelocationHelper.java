@@ -31,6 +31,7 @@ import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,9 +63,16 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
         final File relocatedFile = outputFilePathStrategy.selectFileFor(dependency);
         final MetaMediator metaMediator = mediatorFactory.create(relocatedFile.toPath());
         if (relocatedFile.exists()) {
-            final String ownerHash = metaMediator.readAttribute("slimjar.owner");
-            if (selfHash.equals(ownerHash)) {
-                return relocatedFile;
+            try {
+                final String ownerHash = metaMediator.readAttribute("slimjar.owner");
+                if (selfHash.equals(ownerHash)) {
+                    return relocatedFile;
+                }
+            } catch (final FileNotFoundException exception) {
+                // Possible incomplete relocation present.
+                // todo: Log incident
+                //noinspection ResultOfMethodCallIgnored
+                relocatedFile.delete();
             }
         }
         relocator.relocate(file, relocatedFile);
