@@ -41,7 +41,7 @@ ApplicationBuilder.appending("MyApplicationName").build()
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.2.0'
+  id 'io.github.slimjar' version '1.2.1'
 }
 dependencies {
   slim 'group.id:artifact.id:version'
@@ -65,7 +65,7 @@ gradlew test
 <h2 align="center">Releases</h2>
 
 * https://plugins.gradle.org/plugin/io.github.slimjar
-* https://repo.vshnv.tech/releases/io/github/slimjar/slimjar/1.2.0
+* https://repo.vshnv.tech/releases/io/github/slimjar/slimjar/1.2.1
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
