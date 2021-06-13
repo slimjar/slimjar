@@ -31,8 +31,6 @@ import io.github.slimjar.resolver.strategy.PathResolutionStrategy;
 import io.github.slimjar.resolver.pinger.URLPinger;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -40,12 +38,14 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
     private final Repository repository;
     private final PathResolutionStrategy dependencyURLCreationStrategy;
     private final PathResolutionStrategy checksumURLCreationStrategy;
+    private final PathResolutionStrategy pomURLCreationStrategy;
     private final URLPinger urlPinger;
 
-    public PingingRepositoryEnquirer(final Repository repository, final PathResolutionStrategy urlCreationStrategy, PathResolutionStrategy checksumURLCreationStrategy, URLPinger urlPinger) {
+    public PingingRepositoryEnquirer(final Repository repository, final PathResolutionStrategy urlCreationStrategy, final PathResolutionStrategy checksumURLCreationStrategy, final PathResolutionStrategy pomURLCreationStrategy, final URLPinger urlPinger) {
         this.repository = repository;
         this.dependencyURLCreationStrategy = urlCreationStrategy;
         this.checksumURLCreationStrategy = checksumURLCreationStrategy;
+        this.pomURLCreationStrategy = pomURLCreationStrategy;
         this.urlPinger = urlPinger;
     }
 
@@ -61,7 +61,16 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
                 }).filter(urlPinger::ping)
                 .findFirst();
         if (!resolvedDependency.isPresent()) {
-            return null;
+            return pomURLCreationStrategy.pathTo(repository, dependency).stream().map((path) -> {
+                try {
+                    return new URL(path);
+                } catch (MalformedURLException e) {
+                    return null;
+                }
+            }).filter(urlPinger::ping)
+                    .findFirst()
+                    .map(url -> new ResolutionResult(null, null, true))
+                    .orElse(null);
         }
         final Optional<URL> resolvedChecksum = checksumURLCreationStrategy.pathTo(repository, dependency)
                 .stream().map((path) -> {
@@ -72,6 +81,6 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
                     }
                 }).filter(urlPinger::ping)
                 .findFirst();
-        return new ResolutionResult(resolvedDependency.get(), resolvedChecksum.orElse(null));
+        return new ResolutionResult(resolvedDependency.get(), resolvedChecksum.orElse(null), false);
     }
 }
