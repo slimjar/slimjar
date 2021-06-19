@@ -30,7 +30,7 @@ import io.github.slimjar.resolver.DependencyResolver;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ChecksumDependencyVerifierFactory implements DependencyVerifierFactory {
+public final class ChecksumDependencyVerifierFactory implements DependencyVerifierFactory {
     private static final Logger LOGGER = Logger.getLogger(ChecksumDependencyVerifierFactory.class.getName());
     private final OutputWriterFactory outputWriterFactory;
     private final DependencyVerifierFactory fallbackVerifierFactory;
