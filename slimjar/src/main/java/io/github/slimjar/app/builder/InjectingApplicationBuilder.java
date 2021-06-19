@@ -58,8 +58,6 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     public static ApplicationBuilder createAppending(final String applicationName) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         final boolean legacy = isOnLegacyJVM();
         final ClassLoader classLoader = ApplicationBuilder.class.getClassLoader();
-
-
         Injectable injectable = null;
 
         if (legacy && classLoader instanceof URLClassLoader) {
@@ -82,12 +80,20 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     private static boolean isOnLegacyJVM() {
         final String version = System.getProperty("java.version");
         final String[] parts = version.split("\\.");
-        if (parts.length < 2) {
-            throw new IllegalStateException("Could not find proper JVM version! Found " + version);
+
+        final int jvmLevel;
+        switch (parts.length) {
+            case 1:
+                jvmLevel = Integer.parseInt(parts[0]);
+                break;
+            case 2:
+                jvmLevel = Integer.parseInt(parts[1]);
+                break;
+            default:
+                jvmLevel = 16; // Assume highest if not found.
+                break;
         }
-        final int major = Integer.parseInt(parts[0]);
-        final int minor = Integer.parseInt(parts[1]);
-        return !(major > 1 || minor > 8);
+        return jvmLevel < 9;
     }
 
     private static boolean isUnsafeAvailable() {
