@@ -29,11 +29,10 @@ import io.github.slimjar.app.Application;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.Injectable;
 import io.github.slimjar.injector.loader.InstrumentationInjectable;
+import io.github.slimjar.injector.loader.UnsafeInjectable;
 import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
-import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLClassLoader;
@@ -57,24 +56,53 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     }
 
     public static ApplicationBuilder createAppending(final String applicationName) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
-        final String version = System.getProperty("java.version");
-        final String[] parts = version.split("\\.");
-        if (parts.length < 2) {
-            throw new IllegalStateException("Could not find proper JVM version! Found " + version);
-        }
-        final int major = Integer.parseInt(parts[0]);
-        final int minor = Integer.parseInt(parts[1]);
-        final Injectable injectable;
-        if (major > 1 || minor > 8) {
-            injectable = createInstrumentationInjectable();
-        } else {
+        final boolean legacy = isOnLegacyJVM();
+        final ClassLoader classLoader = ApplicationBuilder.class.getClassLoader();
+        Injectable injectable = null;
+
+        if (legacy && classLoader instanceof URLClassLoader) {
             injectable = new WrappedInjectableClassLoader((URLClassLoader) ApplicationBuilder.class.getClassLoader());
+        } else if (isUnsafeAvailable() && classLoader instanceof URLClassLoader) {
+            try {
+                injectable = UnsafeInjectable.create((URLClassLoader) classLoader);
+            } catch (final Exception exception) {
+                // ignored
+            }
         }
+
+        if (injectable == null) {
+            injectable = InstrumentationInjectable.create();
+        }
+
         return new InjectingApplicationBuilder(applicationName, injectable);
     }
 
-    private static Injectable createInstrumentationInjectable() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
-        return InstrumentationInjectable.create();
+    private static boolean isOnLegacyJVM() {
+        final String version = System.getProperty("java.version");
+        final String[] parts = version.split("\\.");
+
+        final int jvmLevel;
+        switch (parts.length) {
+            case 1:
+                jvmLevel = Integer.parseInt(parts[0]);
+                break;
+            case 2:
+                jvmLevel = Integer.parseInt(parts[1]);
+                break;
+            default:
+                jvmLevel = 16; // Assume highest if not found.
+                break;
+        }
+        return jvmLevel < 9;
+    }
+
+    private static boolean isUnsafeAvailable() {
+        try {
+            Class.forName("sun.misc.Unsafe");
+        } catch (final ClassNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }
 

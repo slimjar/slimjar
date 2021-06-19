@@ -17,7 +17,6 @@ public final class MediatingPathResolutionStrategy implements PathResolutionStra
     @Override
     public Collection<String> pathTo(final Repository repository, final Dependency dependency) {
         if (dependency.getSnapshotId() != null) {
-            System.out.println(snapshotStrategy.pathTo(repository, dependency));
             return snapshotStrategy.pathTo(repository, dependency);
         }
         return releaseStrategy.pathTo(repository, dependency);
