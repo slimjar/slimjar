@@ -29,7 +29,7 @@ import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 
 import java.util.Collection;
 
-public class CachingDependencyResolverFactory implements DependencyResolverFactory {
+public final class CachingDependencyResolverFactory implements DependencyResolverFactory {
     @Override
     public DependencyResolver create(final Collection<Repository> repositories, final RepositoryEnquirerFactory enquirerFactory) {
         return new CachingDependencyResolver(repositories, enquirerFactory);
