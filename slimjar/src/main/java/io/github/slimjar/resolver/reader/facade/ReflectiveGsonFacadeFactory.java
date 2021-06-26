@@ -80,7 +80,7 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
 
     private static DependencyData getGsonDependency() throws MalformedURLException {
         final Dependency gson = new Dependency(
-                "com.google.code.gson",
+                Packages.fix("com#google#code#gson"),
                 "gson",
                 "2.8.6",
                 null,
