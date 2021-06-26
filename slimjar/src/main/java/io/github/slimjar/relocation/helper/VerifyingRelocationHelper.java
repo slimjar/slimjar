@@ -38,6 +38,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -68,7 +69,7 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
                 if (selfHash.equals(ownerHash)) {
                     return relocatedFile;
                 }
-            } catch (final FileNotFoundException exception) {
+            } catch (final FileNotFoundException | NoSuchFileException exception) {
                 // Possible incomplete relocation present.
                 // todo: Log incident
                 //noinspection ResultOfMethodCallIgnored
