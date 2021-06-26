@@ -29,6 +29,7 @@ import io.github.slimjar.downloader.output.DependencyOutputWriterFactory;
 import io.github.slimjar.resolver.data.Dependency;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,12 +45,13 @@ public final class FolderedFilePathStrategy implements FilePathStrategy {
 
     @Override
     public File selectFileFor(Dependency dependency) {
+        final String extendedVersion = Optional.ofNullable(dependency.getSnapshotId()).map(s -> "-" + s).orElse("");
         final String path = String.format(
                 DEPENDENCY_FILE_FORMAT,
                 rootDirectory.getPath(),
                 dependency.getGroupId().replace('.','/'),
                 dependency.getArtifactId(),
-                dependency.getVersion()
+                dependency.getVersion() + extendedVersion
         );
         LOGGER.log(Level.FINEST, "Selected jar file for " + dependency.getArtifactId() + " at " + path);
         return new File(path);
