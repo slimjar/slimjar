@@ -83,14 +83,14 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
 
         final int jvmLevel;
         switch (parts.length) {
+            case 0:
+                jvmLevel = 16; // Assume highest if not found.
+                break;
             case 1:
                 jvmLevel = Integer.parseInt(parts[0]);
                 break;
-            case 2:
-                jvmLevel = Integer.parseInt(parts[1]);
-                break;
             default:
-                jvmLevel = 16; // Assume highest if not found.
+                jvmLevel = Integer.parseInt(parts[1]);
                 break;
         }
         return jvmLevel < 9;
