@@ -66,8 +66,8 @@ public final class InstrumentationInjectable implements Injectable {
     }
 
     @Override
-    public void inject(final URL url) throws IOException {
-        instrumentation.appendToSystemClassLoaderSearch(new JarFile(url.getPath()));
+    public void inject(final URL url) throws IOException, URISyntaxException {
+        instrumentation.appendToSystemClassLoaderSearch(new JarFile(new File(url.toURI())));
     }
 
     public static Injectable create() throws IOException, NoSuchAlgorithmException, ReflectiveOperationException, URISyntaxException {

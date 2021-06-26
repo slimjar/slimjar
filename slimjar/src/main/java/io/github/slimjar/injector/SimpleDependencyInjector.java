@@ -61,7 +61,7 @@ public final class SimpleDependencyInjector implements DependencyInjector {
                 injectDependencies(injectable, injectionHelper, dependency.getTransitive());
             } catch (final IOException e) {
                 throw new InjectionFailedException(dependency, e);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }
