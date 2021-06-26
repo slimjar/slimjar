@@ -86,7 +86,7 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
         final String relocatedAgentClass = String.format("%s.%s", pattern, AGENT_CLASS);
         final RelocationRule relocationRule = new RelocationRule(Packages.fix(AGENT_PACKAGE), pattern, Collections.emptySet(), Collections.emptySet());
         final Relocator relocator = new JarFileRelocator(Collections.singleton(relocationRule), relocatorFacadeFactory);
-        final File inputFile = new File(extractedURL.getPath());
+        final File inputFile = new File(extractedURL.toURI());
         final File relocatedFile = File.createTempFile("slimjar-agent", ".jar");
 
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader();
