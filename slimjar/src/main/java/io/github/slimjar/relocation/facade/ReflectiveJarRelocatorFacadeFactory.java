@@ -84,21 +84,21 @@ public final class ReflectiveJarRelocatorFacadeFactory implements JarRelocatorFa
 
     private static DependencyData getJarRelocatorDependency() throws MalformedURLException {
         final Dependency asm = new Dependency(
-                "org.ow2.asm",
+                Packages.fix("org#ow2#asm"),
                 "asm",
                 "9.1",
                 null,
                 Collections.emptyList()
         );
         final Dependency asmCommons = new Dependency(
-                "org.ow2.asm",
+                Packages.fix("org#ow2#asm"),
                 "asm-commons",
                 "9.1",
                 null,
                 Collections.emptyList()
         );
         final Dependency jarRelocator = new Dependency(
-                "me.lucko",
+                Packages.fix("me#lucko"),
                 "jar-relocator",
                 "1.4",
                 null,
