@@ -16,10 +16,10 @@ public final class InjectableFactory {
     }
 
     public static Injectable create(final ClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
-        final boolean legacy = isOnLegacyJVM();
+        final boolean isJigsawActive = isJigsawActive();
         Injectable injectable = null;
 
-        if (legacy && classLoader instanceof URLClassLoader) {
+        if (isJigsawActive && classLoader instanceof URLClassLoader) {
             injectable = new WrappedInjectableClassLoader((URLClassLoader) ApplicationBuilder.class.getClassLoader());
         } else if (isUnsafeAvailable() && classLoader instanceof URLClassLoader) {
             try {
@@ -35,23 +35,13 @@ public final class InjectableFactory {
         return injectable;
     }
 
-    private static boolean isOnLegacyJVM() {
-        final String version = System.getProperty("java.version");
-        final String[] parts = version.split("\\.");
-
-        final int jvmLevel;
-        switch (parts.length) {
-            case 0:
-                jvmLevel = 16; // Assume highest if not found.
-                break;
-            case 1:
-                jvmLevel = Integer.parseInt(parts[0]);
-                break;
-            default:
-                jvmLevel = Integer.parseInt(parts[1]);
-                break;
+    private static boolean isJigsawActive() {
+        try {
+            Class.forName("java.lang.Module");
+        } catch (final ClassNotFoundException e) {
+            return true;
         }
-        return jvmLevel < 9;
+        return false;
     }
 
     private static boolean isUnsafeAvailable() {
