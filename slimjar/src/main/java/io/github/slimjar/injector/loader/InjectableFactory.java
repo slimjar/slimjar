@@ -11,6 +11,10 @@ public final class InjectableFactory {
     private InjectableFactory() {
     }
 
+    public static Injectable create() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        return create(InjectableFactory.class.getClassLoader());
+    }
+
     public static Injectable create(final ClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         final boolean legacy = isOnLegacyJVM();
         Injectable injectable = null;
