@@ -25,7 +25,7 @@ public final class InjectableFactory {
             try {
                 injectable = UnsafeInjectable.create((URLClassLoader) classLoader);
             } catch (final Exception exception) {
-                // ignored
+                // failed to prepare injectable with unsafe, ignored exception to let it silently switch to fallback agent injection
             }
         }
 
