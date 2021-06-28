@@ -27,10 +27,7 @@ package io.github.slimjar.app.builder;
 import io.github.slimjar.app.AppendingApplication;
 import io.github.slimjar.app.Application;
 import io.github.slimjar.injector.DependencyInjector;
-import io.github.slimjar.injector.loader.Injectable;
-import io.github.slimjar.injector.loader.InstrumentationInjectable;
-import io.github.slimjar.injector.loader.UnsafeInjectable;
-import io.github.slimjar.injector.loader.WrappedInjectableClassLoader;
+import io.github.slimjar.injector.loader.*;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
 import java.io.IOException;
@@ -56,53 +53,9 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     }
 
     public static ApplicationBuilder createAppending(final String applicationName) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
-        final boolean legacy = isOnLegacyJVM();
         final ClassLoader classLoader = ApplicationBuilder.class.getClassLoader();
-        Injectable injectable = null;
-
-        if (legacy && classLoader instanceof URLClassLoader) {
-            injectable = new WrappedInjectableClassLoader((URLClassLoader) ApplicationBuilder.class.getClassLoader());
-        } else if (isUnsafeAvailable() && classLoader instanceof URLClassLoader) {
-            try {
-                injectable = UnsafeInjectable.create((URLClassLoader) classLoader);
-            } catch (final Exception exception) {
-                // ignored
-            }
-        }
-
-        if (injectable == null) {
-            injectable = InstrumentationInjectable.create();
-        }
-
+        final Injectable injectable = InjectableFactory.create(classLoader);
         return new InjectingApplicationBuilder(applicationName, injectable);
-    }
-
-    private static boolean isOnLegacyJVM() {
-        final String version = System.getProperty("java.version");
-        final String[] parts = version.split("\\.");
-
-        final int jvmLevel;
-        switch (parts.length) {
-            case 0:
-                jvmLevel = 16; // Assume highest if not found.
-                break;
-            case 1:
-                jvmLevel = Integer.parseInt(parts[0]);
-                break;
-            default:
-                jvmLevel = Integer.parseInt(parts[1]);
-                break;
-        }
-        return jvmLevel < 9;
-    }
-
-    private static boolean isUnsafeAvailable() {
-        try {
-            Class.forName("sun.misc.Unsafe");
-        } catch (final ClassNotFoundException e) {
-            return false;
-        }
-        return true;
     }
 }
 
