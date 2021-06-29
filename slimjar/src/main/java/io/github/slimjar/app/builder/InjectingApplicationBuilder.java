@@ -54,6 +54,10 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
 
     public static ApplicationBuilder createAppending(final String applicationName) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         final ClassLoader classLoader = ApplicationBuilder.class.getClassLoader();
+        return createAppending(applicationName, classLoader);
+    }
+
+    public static ApplicationBuilder createAppending(final String applicationName, final ClassLoader classLoader) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         final Injectable injectable = InjectableFactory.create(classLoader);
         return new InjectingApplicationBuilder(applicationName, injectable);
     }
