@@ -47,6 +47,7 @@ import io.github.slimjar.relocation.meta.FlatFileMetaMediatorFactory;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolverFactory;
 import io.github.slimjar.resolver.DependencyResolverFactory;
+import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.PingingRepositoryEnquirerFactory;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 import io.github.slimjar.resolver.mirrors.MirrorSelector;
@@ -62,10 +63,13 @@ import io.github.slimjar.resolver.strategy.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 public abstract class ApplicationBuilder {
@@ -90,6 +94,7 @@ public abstract class ApplicationBuilder {
     private DependencyDownloaderFactory downloaderFactory;
     private DependencyVerifierFactory verifierFactory;
     private MirrorSelector mirrorSelector;
+    private Collection<Repository> internalRepositories;
 
     protected ApplicationBuilder(final String applicationName) {
         this.applicationName = Objects.requireNonNull(applicationName, "Requires non-null application name!");
@@ -167,6 +172,11 @@ public abstract class ApplicationBuilder {
         return this;
     }
 
+    public final ApplicationBuilder internalRepositories(final Collection<Repository> repositories) {
+        this.internalRepositories = repositories;
+        return this;
+    }
+
     protected final String getApplicationName() {
         return applicationName;
     }
@@ -187,7 +197,7 @@ public abstract class ApplicationBuilder {
 
     protected final RelocatorFactory getRelocatorFactory() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         if (relocatorFactory == null) {
-            final JarRelocatorFacadeFactory jarRelocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create();
+            final JarRelocatorFacadeFactory jarRelocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.relocatorFactory = new JarFileRelocatorFactory(jarRelocatorFacadeFactory);
         }
         return relocatorFactory;
@@ -195,7 +205,7 @@ public abstract class ApplicationBuilder {
 
     protected final DependencyDataProviderFactory getModuleDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         if (moduleDataProviderFactory == null) {
-            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create();
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.moduleDataProviderFactory = new ExternalDependencyDataProviderFactory(gsonFacadeFactory);
         }
         return moduleDataProviderFactory;
@@ -203,7 +213,7 @@ public abstract class ApplicationBuilder {
 
     protected final DependencyDataProviderFactory getDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         if (dataProviderFactory == null) {
-            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create();
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.dataProviderFactory = new GsonDependencyDataProviderFactory(gsonFacadeFactory);
         }
         return dataProviderFactory;
@@ -268,6 +278,13 @@ public abstract class ApplicationBuilder {
             mirrorSelector = new SimpleMirrorSelector();
         }
         return mirrorSelector;
+    }
+
+    public Collection<Repository> getInternalRepositories() throws MalformedURLException {
+        if (internalRepositories == null) {
+            internalRepositories = Collections.singleton(new Repository(new URL(SimpleMirrorSelector.DEFAULT_CENTRAL_MIRROR_URL)));
+        }
+        return internalRepositories;
     }
 
     protected final DependencyInjector createInjector() throws IOException, URISyntaxException, NoSuchAlgorithmException, ReflectiveOperationException {
