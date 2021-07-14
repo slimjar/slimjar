@@ -6,10 +6,14 @@ import java.nio.file.Path;
 
 public final class FlatFileMetaMediatorFactory implements MetaMediatorFactory {
     @Override
-    public MetaMediator create(final Path path) throws IOException {
+    public MetaMediator create(final Path path) {
         final Path metaPath = path.getParent().resolve(path.getFileName().toString() + ".slimjar_meta");
         if (!Files.exists(metaPath)) {
-            Files.createDirectories(metaPath);
+            try {
+                Files.createDirectories(metaPath);
+            } catch (final IOException exception) {
+                exception.printStackTrace();
+            }
         }
         return new FlatFileMetaMediator(metaPath);
     }
