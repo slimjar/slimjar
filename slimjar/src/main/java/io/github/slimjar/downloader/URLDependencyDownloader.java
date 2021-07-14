@@ -38,10 +38,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class URLDependencyDownloader implements DependencyDownloader {
+    private static final byte[] BOM_BYTES = "bom-file".getBytes();
     private static final Logger LOGGER = Logger.getLogger(URLDependencyDownloader.class.getName());
     private final OutputWriterFactory outputWriterProducer;
     private final DependencyResolver dependencyResolver;
@@ -57,13 +60,24 @@ public final class URLDependencyDownloader implements DependencyDownloader {
     @Override
     public File download(final Dependency dependency) throws IOException {
         final File expectedOutputFile = outputWriterProducer.getStrategy().selectFileFor(dependency);
+        if (
+                expectedOutputFile.exists()
+            &&  expectedOutputFile.length() == BOM_BYTES.length
+            &&  Arrays.equals(Files.readAllBytes(expectedOutputFile.toPath()), BOM_BYTES)
+        ) {
+            return null;
+        }
         if (verifier.verify(expectedOutputFile, dependency)) {
             return expectedOutputFile;
         }
+
         final ResolutionResult result = dependencyResolver.resolve(dependency)
                 .orElseThrow(() -> new UnresolvedDependencyException(dependency));
 
         if (result.isAggregator()) {
+            expectedOutputFile.getParentFile().mkdirs();
+            expectedOutputFile.createNewFile();
+            Files.write(expectedOutputFile.toPath(), BOM_BYTES);
             return null;
         }
 
