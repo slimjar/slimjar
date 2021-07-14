@@ -43,7 +43,7 @@ import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
 import io.github.slimjar.relocation.facade.ReflectiveJarRelocatorFacadeFactory;
 import io.github.slimjar.relocation.helper.RelocationHelperFactory;
 import io.github.slimjar.relocation.helper.VerifyingRelocationHelperFactory;
-import io.github.slimjar.relocation.meta.AttributeMetaMediatorFactory;
+import io.github.slimjar.relocation.meta.FlatFileMetaMediatorFactory;
 import io.github.slimjar.relocation.meta.MetaMediatorFactory;
 import io.github.slimjar.resolver.CachingDependencyResolverFactory;
 import io.github.slimjar.resolver.DependencyResolverFactory;
@@ -212,7 +212,7 @@ public abstract class ApplicationBuilder {
     protected final RelocationHelperFactory getRelocationHelperFactory() {
         if (relocationHelperFactory == null) {
             final FilePathStrategy pathStrategy = FilePathStrategy.createRelocationStrategy(getDownloadDirectoryPath().toFile(), getApplicationName());
-            final MetaMediatorFactory mediatorFactory = new AttributeMetaMediatorFactory();
+            final MetaMediatorFactory mediatorFactory = new FlatFileMetaMediatorFactory();
             this.relocationHelperFactory = new VerifyingRelocationHelperFactory(pathStrategy, mediatorFactory);
         }
         return relocationHelperFactory;
