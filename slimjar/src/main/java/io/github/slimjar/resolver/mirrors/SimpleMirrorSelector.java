@@ -24,6 +24,7 @@
 
 package io.github.slimjar.resolver.mirrors;
 
+import com.sun.org.apache.regexp.internal.RE;
 import io.github.slimjar.resolver.data.Mirror;
 import io.github.slimjar.resolver.data.Repository;
 
@@ -37,13 +38,11 @@ public final class SimpleMirrorSelector implements MirrorSelector {
     public static final String DEFAULT_CENTRAL_MIRROR_URL = "https://repo.vshnv.tech/";
     public static final String CENTRAL_URL = "https://repo.maven.apache.org/maven2/";
     public static final String ALT_CENTRAL_URL = "https://repo1.maven.org/maven2/";
-    private static final Collection<String> CENTRAL_REPO;
+    private static final Collection<String> CENTRAL_REPO = Arrays.asList(CENTRAL_URL, ALT_CENTRAL_URL);
+    private final Collection<Repository> centralMirrors;
 
-    static {
-        final Set<String> central = new HashSet<>();
-        central.add(CENTRAL_URL);
-        central.add(ALT_CENTRAL_URL);
-        CENTRAL_REPO = Collections.unmodifiableSet(central);
+    public SimpleMirrorSelector(final Collection<Repository> centralMirrors) {
+        this.centralMirrors = centralMirrors;
     }
 
     @Override
@@ -60,9 +59,7 @@ public final class SimpleMirrorSelector implements MirrorSelector {
                 .map(Repository::new)
                 .collect(Collectors.toSet());
         resolved.addAll(mirrored);
-        resolved.add(new Repository(
-                new URL(DEFAULT_CENTRAL_MIRROR_URL)
-        ));
+        resolved.addAll(centralMirrors);
         return resolved;
     }
 
