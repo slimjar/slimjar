@@ -41,7 +41,9 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Collections;
 
 public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
@@ -61,14 +63,15 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
         return new ReflectiveGsonFacade(gson, gsonFromJsonMethod);
     }
 
-    public static GsonFacadeFactory create() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+    public static GsonFacadeFactory create(final Path downloadPath, final Collection<Repository> repositories) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader();
-        return create(classLoader);
+        return create(downloadPath, repositories, classLoader);
     }
 
-    public static GsonFacadeFactory create(final InjectableClassLoader classLoader) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+    public static GsonFacadeFactory create(final Path downloadPath, final Collection<Repository> repositories, final InjectableClassLoader classLoader) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         ApplicationBuilder.injecting("SlimJar", classLoader)
-                .dataProviderFactory((url) -> ReflectiveGsonFacadeFactory::getGsonDependency)
+                .downloadDirectoryPath(downloadPath)
+                .dataProviderFactory((url) -> () -> ReflectiveGsonFacadeFactory.getGsonDependency(repositories))
                 .relocatorFactory((rules) -> new PassthroughRelocator())
                 .relocationHelperFactory((relocator) -> (dependency,file) -> file)
                 .build();
@@ -78,7 +81,7 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
         return new ReflectiveGsonFacadeFactory(gsonConstructor, gsonFromJsonMethod);
     }
 
-    private static DependencyData getGsonDependency() throws MalformedURLException {
+    private static DependencyData getGsonDependency(final Collection<Repository> repositories) throws MalformedURLException {
         final Dependency gson = new Dependency(
                 Packages.fix("com#google#code#gson"),
                 "gson",
@@ -86,10 +89,9 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
                 null,
                 Collections.emptyList()
         );
-        final Repository centralRepository = new Repository(new URL(SimpleMirrorSelector.CENTRAL_URL));
         return new DependencyData(
                 Collections.emptySet(),
-                Collections.singleton(centralRepository),
+                repositories,
                 Collections.singleton(gson),
                 Collections.emptyList()
         );

@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -82,7 +83,7 @@ public final class ReflectiveJarRelocatorFacadeFactory implements JarRelocatorFa
         return jarRelocatorConstructor.newInstance(input, output, rules);
     }
 
-    private static DependencyData getJarRelocatorDependency() throws MalformedURLException {
+    private static DependencyData getJarRelocatorDependency(final Collection<Repository> repositories) throws MalformedURLException {
         final Dependency asm = new Dependency(
                 Packages.fix("org#ow2#asm"),
                 "asm",
@@ -104,23 +105,23 @@ public final class ReflectiveJarRelocatorFacadeFactory implements JarRelocatorFa
                 null,
                 Arrays.asList(asm, asmCommons)
         );
-        final Repository centralRepository = new Repository(new URL(SimpleMirrorSelector.CENTRAL_URL));
         return new DependencyData(
                 Collections.emptySet(),
-                Collections.singleton(centralRepository),
+                repositories,
                 Collections.singleton(jarRelocator),
                 Collections.emptyList()
         );
     }
 
-    public static JarRelocatorFacadeFactory create() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+    public static JarRelocatorFacadeFactory create(final Path downloadPath, final Collection<Repository> repositories) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         final InjectableClassLoader classLoader = new IsolatedInjectableClassLoader();
-        return create(classLoader);
+        return create(downloadPath, repositories, classLoader);
     }
 
-    public static JarRelocatorFacadeFactory create(final InjectableClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+    public static JarRelocatorFacadeFactory create(final Path downloadPath, final Collection<Repository> repositories, final InjectableClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         ApplicationBuilder.injecting("SlimJar", classLoader)
-                .dataProviderFactory((url) -> ReflectiveJarRelocatorFacadeFactory::getJarRelocatorDependency)
+                .downloadDirectoryPath(downloadPath)
+                .dataProviderFactory((url) -> () -> ReflectiveJarRelocatorFacadeFactory.getJarRelocatorDependency(repositories))
                 .relocatorFactory((rules) -> new PassthroughRelocator())
                 .relocationHelperFactory((relocator) -> (dependency,file) -> file)
                 .build();

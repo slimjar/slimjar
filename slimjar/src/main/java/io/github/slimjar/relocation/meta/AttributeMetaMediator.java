@@ -39,15 +39,22 @@ public final class AttributeMetaMediator implements MetaMediator {
     }
 
     @Override
-    public String readAttribute(String name) throws IOException {
-        final ByteBuffer buf = ByteBuffer.allocate(view.size(name));
-        view.read(name, buf);
-        buf.flip();
-        return Charset.defaultCharset().decode(buf).toString();
+    public String readAttribute(final String name) {
+        try {
+            final ByteBuffer buf = ByteBuffer.allocate(view.size(name));
+            view.read(name, buf);
+            buf.flip();
+            return Charset.defaultCharset().decode(buf).toString();
+        } catch (final Exception exception) {
+            return null;
+        }
     }
 
     @Override
-    public void writeAttribute(String name, String value) throws IOException {
-        view.write(name, Charset.defaultCharset().encode(value));
+    public void writeAttribute(final String name, final String value) {
+        try {
+            view.write(name, Charset.defaultCharset().encode(value));
+        } catch (final Exception ignored) {
+        }
     }
 }

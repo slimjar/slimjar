@@ -1,21 +1,24 @@
 package io.github.slimjar.injector.loader;
 
 import io.github.slimjar.app.builder.ApplicationBuilder;
+import io.github.slimjar.resolver.data.Repository;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 public final class InjectableFactory {
     private InjectableFactory() {
     }
 
-    public static Injectable create() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
-        return create(InjectableFactory.class.getClassLoader());
+    public static Injectable create(final Path downloadPath, final Collection<Repository> repositories) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        return create(downloadPath, repositories, InjectableFactory.class.getClassLoader());
     }
 
-    public static Injectable create(final ClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
+    public static Injectable create(final Path downloadPath, final Collection<Repository> repositories, final ClassLoader classLoader) throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         final boolean isJigsawActive = isJigsawActive();
         Injectable injectable = null;
 
@@ -30,7 +33,7 @@ public final class InjectableFactory {
         }
 
         if (injectable == null) {
-            injectable = InstrumentationInjectable.create();
+            injectable = InstrumentationInjectable.create(downloadPath, repositories);
         }
         return injectable;
     }

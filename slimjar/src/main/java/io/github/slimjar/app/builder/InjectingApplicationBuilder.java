@@ -32,15 +32,20 @@ import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.DependencyDataProvider;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URLClassLoader;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class InjectingApplicationBuilder extends ApplicationBuilder {
-    private final Injectable classLoader;
+    private final Function<ApplicationBuilder, Injectable> injectableSupplier;
 
-    public InjectingApplicationBuilder(final String applicationName, final Injectable classLoader) {
+    public InjectingApplicationBuilder(final String applicationName, final Injectable injectable) {
+        this(applicationName, (it) -> injectable);
+    }
+
+    public InjectingApplicationBuilder(final String applicationName, final Function<ApplicationBuilder, Injectable> injectableSupplier) {
         super(applicationName);
-        this.classLoader = classLoader;
+        this.injectableSupplier = injectableSupplier;
     }
 
     @Override
@@ -48,7 +53,7 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
         final DependencyDataProvider dataProvider = getDataProviderFactory().create(getDependencyFileUrl());
         final DependencyData dependencyData = dataProvider.get();
         final DependencyInjector dependencyInjector = createInjector();
-        dependencyInjector.inject(classLoader, dependencyData);
+        dependencyInjector.inject(injectableSupplier.apply(this), dependencyData);
         return new AppendingApplication();
     }
 
@@ -58,8 +63,14 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     }
 
     public static ApplicationBuilder createAppending(final String applicationName, final ClassLoader classLoader) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
-        final Injectable injectable = InjectableFactory.create(classLoader);
-        return new InjectingApplicationBuilder(applicationName, injectable);
+        return new InjectingApplicationBuilder(applicationName, (ApplicationBuilder builder) -> {
+            try {
+                return InjectableFactory.create(builder.getDownloadDirectoryPath(), builder.getInternalRepositories(), classLoader);
+            } catch (URISyntaxException | ReflectiveOperationException | NoSuchAlgorithmException | IOException exception) {
+                exception.printStackTrace();
+            }
+            return null;
+        });
     }
 }
 

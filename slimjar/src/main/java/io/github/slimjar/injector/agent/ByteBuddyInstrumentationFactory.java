@@ -36,7 +36,6 @@ import io.github.slimjar.relocation.PassthroughRelocator;
 import io.github.slimjar.relocation.RelocationRule;
 import io.github.slimjar.relocation.Relocator;
 import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
-import io.github.slimjar.relocation.facade.ReflectiveJarRelocatorFacadeFactory;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
@@ -64,11 +63,10 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
     private final ModuleExtractor extractor;
     private final JarRelocatorFacadeFactory relocatorFacadeFactory;
 
-    public ByteBuddyInstrumentationFactory() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+    public ByteBuddyInstrumentationFactory(final JarRelocatorFacadeFactory relocatorFacadeFactory) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
+        this.relocatorFacadeFactory = relocatorFacadeFactory;
         this.agentJarUrl = InstrumentationInjectable.class.getClassLoader().getResource(AGENT_JAR);
-
         this.extractor = new TemporaryModuleExtractor();
-        this.relocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create();
     }
 
 
