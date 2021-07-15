@@ -273,9 +273,9 @@ public abstract class ApplicationBuilder {
         return verifierFactory;
     }
 
-    protected final MirrorSelector getMirrorSelector() {
+    protected final MirrorSelector getMirrorSelector() throws MalformedURLException {
         if (mirrorSelector == null) {
-            mirrorSelector = new SimpleMirrorSelector();
+            mirrorSelector = new SimpleMirrorSelector(getInternalRepositories());
         }
         return mirrorSelector;
     }
