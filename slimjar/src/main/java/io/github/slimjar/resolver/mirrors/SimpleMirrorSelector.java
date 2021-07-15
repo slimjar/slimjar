@@ -24,7 +24,6 @@
 
 package io.github.slimjar.resolver.mirrors;
 
-import com.sun.org.apache.regexp.internal.RE;
 import io.github.slimjar.resolver.data.Mirror;
 import io.github.slimjar.resolver.data.Repository;
 
