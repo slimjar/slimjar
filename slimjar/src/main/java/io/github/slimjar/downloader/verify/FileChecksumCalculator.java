@@ -26,15 +26,14 @@ package io.github.slimjar.downloader.verify;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class FileChecksumCalculator implements ChecksumCalculator {
+    private static final String DIRECTORY_HASH = "DIRECTORY";
     private static final Logger LOGGER = Logger.getLogger(FileChecksumCalculator.class.getName());
     private final MessageDigest digest;
 
@@ -45,6 +44,10 @@ public final class FileChecksumCalculator implements ChecksumCalculator {
     @Override
     public String calculate(final File file) throws IOException {
         LOGGER.log(Level.FINEST, "Calculating hash for {0}", file.getPath());
+        // This helps run IDE environment as a special case
+        if (file.isDirectory()) {
+            return DIRECTORY_HASH;
+        }
         digest.reset();
         try (final FileInputStream fis = new FileInputStream(file)) {
             byte[] byteArray = new byte[1024];
