@@ -303,11 +303,12 @@ public abstract class ApplicationBuilder {
         return dataProviderFactory;
     }
 
-    protected final RelocationHelperFactory getRelocationHelperFactory() {
+    protected final RelocationHelperFactory getRelocationHelperFactory() throws NoSuchAlgorithmException, IOException, URISyntaxException {
         if (relocationHelperFactory == null) {
+            final FileChecksumCalculator checksumCalculator = new FileChecksumCalculator("SHA-256");
             final FilePathStrategy pathStrategy = FilePathStrategy.createRelocationStrategy(getDownloadDirectoryPath().toFile(), getApplicationName());
             final MetaMediatorFactory mediatorFactory = new FlatFileMetaMediatorFactory();
-            this.relocationHelperFactory = new VerifyingRelocationHelperFactory(pathStrategy, mediatorFactory);
+            this.relocationHelperFactory = new VerifyingRelocationHelperFactory(checksumCalculator, pathStrategy, mediatorFactory);
         }
         return relocationHelperFactory;
     }
