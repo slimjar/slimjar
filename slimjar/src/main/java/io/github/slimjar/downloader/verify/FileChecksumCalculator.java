@@ -62,6 +62,7 @@ public final class FileChecksumCalculator implements ChecksumCalculator {
         for (byte b : bytes) {
             sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
         }
+        sb.trimToSize();
         final String result = sb.toString();
         LOGGER.log(Level.FINEST, "Hash for {0} -> {1}", new Object[]{file.getPath(), result});
         return result;

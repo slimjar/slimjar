@@ -74,7 +74,7 @@ public final class ChecksumDependencyVerifier implements DependencyVerifier {
             return fallbackVerifier.verify(file, dependency);
         }
         final String actualChecksum = checksumCalculator.calculate(file);
-        final String expectedChecksum = new String(Files.readAllBytes(checksumFile.toPath()));
+        final String expectedChecksum = new String(Files.readAllBytes(checksumFile.toPath())).trim();
         LOGGER.log(Level.FINE, "Actual checksum: {0}; Expected checksum: {1} for {2}", new Object[]{actualChecksum, expectedChecksum, dependency.getArtifactId()});
         return Objects.equals(actualChecksum, expectedChecksum);
     }
