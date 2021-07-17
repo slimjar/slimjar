@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '1.2.4'
+version '1.2.5-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -63,7 +63,12 @@ publishing {
     }
     repositories {
         maven {
-            url "https://repo.vshnv.tech/"
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "https://repo.vshnv.tech/snapshots/"
+            } else {
+                url "https://repo.vshnv.tech/releases/"
+            }
+
             credentials {
                 username = project.findProperty("reposiliteAlias") ?: ""
                 password = project.findProperty("reposiliteToken") ?: ""
