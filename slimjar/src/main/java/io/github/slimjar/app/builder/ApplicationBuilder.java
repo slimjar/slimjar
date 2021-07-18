@@ -173,6 +173,8 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory class that defines the construction of {@link io.github.slimjar.relocation.Relocator}
+     * This deals with the actual relocation process.
+     * The default implementation uses lucko/JarRelocator
      * @param relocatorFactory Factory class to create Relocator
      * @return <code>this</code>
      */
@@ -183,6 +185,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces DataProvider for modules in jar-in-jar classloading. Ignored if not using jar-in-jar/isolated(...)
+     * Used to fetch the `slimjar.json` file of each submodule.
      * @param moduleDataProviderFactory Factory that produces DataProvider for modules in jar-in-jar
      * @return <code>this</code>
      */
@@ -193,6 +196,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces {@link io.github.slimjar.resolver.reader.DependencyDataProvider} to handle `dependencyFileUrl` (by default slimjar.json)
+     * Used to fetch the `slimjar.json` file of current jar-file.
      * @param dataProviderFactory Factory that produces DataProvider to handle `dependencyFileUrl`
      * @return <code>this</code>
      */
@@ -203,6 +207,8 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link io.github.slimjar.relocation.helper.RelocationHelper} using <code>relocator</code>
+     * This is an abstraction over {@link io.github.slimjar.relocation.Relocator}.
+     * It decides the output file for relocation and includes extra steps such as jar verification.
      * @param relocationHelperFactory Factory that produces a RelocationHelper
      * @return <code>this</code>
      */
@@ -213,6 +219,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link DependencyInjector} using <code>relocator</code>
+     * {@link DependencyInjector} decides how any given {@link io.github.slimjar.resolver.data.DependencyData} is injected into an {@link Injectable}
      * @param injectorFactory Factory that produces a DependencyInjector
      * @return <code>this</code>
      */
@@ -223,6 +230,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link DependencyResolverFactory}
+     * {@link io.github.slimjar.resolver.DependencyResolver} deals with resolving the URLs to a given dependency from a given collection of repositories
      * @param resolverFactory Factory that produces a DependencyResolverFactory
      * @return <code>this</code>
      */
