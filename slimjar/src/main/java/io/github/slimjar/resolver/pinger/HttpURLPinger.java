@@ -24,6 +24,9 @@
 
 package io.github.slimjar.resolver.pinger;
 
+import io.github.slimjar.logging.LogDispatcher;
+import io.github.slimjar.logging.ProcessLogger;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -33,12 +36,16 @@ import java.util.Locale;
 import java.util.Objects;
 
 public final class HttpURLPinger implements URLPinger {
+    private static final ProcessLogger LOGGER = LogDispatcher.getMediatingLogger();
     private static final String SLIMJAR_USER_AGENT = "SlimjarApplication/* URL Validation Ping";
     private static final Collection<String> SUPPORTED_PROTOCOLS = Arrays.asList("HTTP", "HTTPS");
 
     @Override
     public boolean ping(final URL url) {
+        final String urlStr = url.toString();
+        LOGGER.debug("Pinging {0}", urlStr);
         if (!isSupported(url)) {
+            LOGGER.debug("Protocol not supported for {0}", url.toString());
             return false;
         }
         HttpURLConnection connection = null;
@@ -46,8 +53,11 @@ public final class HttpURLPinger implements URLPinger {
             connection = (HttpURLConnection) url.openConnection();
             connection.addRequestProperty("User-Agent", SLIMJAR_USER_AGENT);
             connection.connect();
+            final boolean result = connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+            LOGGER.debug("Ping {1} for {0}", url.toString(), result ? "successful" : "failed");
             return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
+            LOGGER.debug("Ping failed for {0}", url.toString());
             return false;
         } finally {
             if (connection != null) {
