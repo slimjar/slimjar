@@ -37,6 +37,9 @@ import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.injector.SimpleDependencyInjectorFactory;
 import io.github.slimjar.injector.helper.InjectionHelperFactory;
 import io.github.slimjar.injector.loader.Injectable;
+import io.github.slimjar.logging.LogDispatcher;
+import io.github.slimjar.logging.MediatingProcessLogger;
+import io.github.slimjar.logging.ProcessLogger;
 import io.github.slimjar.relocation.JarFileRelocatorFactory;
 import io.github.slimjar.relocation.RelocatorFactory;
 import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
@@ -71,6 +74,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * Serves as a configuration for different components slimjar will use during injection.
@@ -101,6 +105,7 @@ public abstract class ApplicationBuilder {
     private DependencyVerifierFactory verifierFactory;
     private MirrorSelector mirrorSelector;
     private Collection<Repository> internalRepositories;
+    private ProcessLogger logger;
 
     /**
      * Generate a application builder for an application with given name.
@@ -261,6 +266,11 @@ public abstract class ApplicationBuilder {
         return this;
     }
 
+    public final ApplicationBuilder logger(final ProcessLogger logger) {
+        this.logger = logger;
+        return this;
+    }
+
     protected final String getApplicationName() {
         return applicationName;
     }
@@ -365,11 +375,18 @@ public abstract class ApplicationBuilder {
         return mirrorSelector;
     }
 
-    public Collection<Repository> getInternalRepositories() throws MalformedURLException {
+    protected final Collection<Repository> getInternalRepositories() throws MalformedURLException {
         if (internalRepositories == null) {
             internalRepositories = Collections.singleton(new Repository(new URL(SimpleMirrorSelector.DEFAULT_CENTRAL_MIRROR_URL)));
         }
         return internalRepositories;
+    }
+
+    protected final ProcessLogger getLogger() {
+        if (logger == null) {
+            logger = (msg, args) -> {};
+        }
+        return logger;
     }
 
     protected final DependencyInjector createInjector() throws IOException, URISyntaxException, NoSuchAlgorithmException, ReflectiveOperationException {
@@ -388,5 +405,15 @@ public abstract class ApplicationBuilder {
         return getInjectorFactory().create(injectionHelperFactory);
     }
 
-    public abstract Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException;
+    public final Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
+        final MediatingProcessLogger mediatingLogger = LogDispatcher.getMediatingLogger();
+        final ProcessLogger logger = getLogger();
+        mediatingLogger.addLogger(logger);
+        final Application result = buildApplication();
+        mediatingLogger.removeLogger(logger);
+        return result;
+    }
+
+    protected abstract Application buildApplication() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException;
+
 }

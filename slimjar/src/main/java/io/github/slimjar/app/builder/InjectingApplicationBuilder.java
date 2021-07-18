@@ -49,7 +49,7 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     }
 
     @Override
-    public Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
+    public Application buildApplication() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final DependencyDataProvider dataProvider = getDataProviderFactory().create(getDependencyFileUrl());
         final DependencyData dependencyData = dataProvider.get();
         final DependencyInjector dependencyInjector = createInjector();
