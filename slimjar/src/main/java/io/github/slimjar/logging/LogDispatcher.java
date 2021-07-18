@@ -1,9 +1,9 @@
 package io.github.slimjar.logging;
 
-import java.util.Collections;
+import java.util.HashSet;
 
 public final class LogDispatcher {
-    private static final MediatingProcessLogger mediatingLogger = new MediatingProcessLogger(Collections.emptySet());
+    private static final MediatingProcessLogger mediatingLogger = new MediatingProcessLogger(new HashSet<>());
 
     private LogDispatcher() {
     }
