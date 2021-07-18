@@ -25,6 +25,8 @@
 package io.github.slimjar.resolver;
 
 
+import io.github.slimjar.logging.LogDispatcher;
+import io.github.slimjar.logging.ProcessLogger;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirer;
@@ -35,6 +37,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CachingDependencyResolver implements DependencyResolver {
+    private static final String FAILED_RESOLUTION_MESSAGE = "[FAILED TO RESOLVE]";
+    private static final ProcessLogger LOGGER = LogDispatcher.getMediatingLogger();
     private final Collection<RepositoryEnquirer> repositories;
     private final Map<Dependency, ResolutionResult> cachedResults = new HashMap<>();
 
@@ -54,6 +58,7 @@ public final class CachingDependencyResolver implements DependencyResolver {
                 .map(enquirer -> enquirer.enquire(dependency))
                 .filter(Objects::nonNull)
                 .findFirst();
+        LOGGER.log("Resolved {0} @ {1}", dependency.getArtifactId(), result.map(Objects::toString).orElse(FAILED_RESOLUTION_MESSAGE));
         return result.orElse(null);
     }
 }
