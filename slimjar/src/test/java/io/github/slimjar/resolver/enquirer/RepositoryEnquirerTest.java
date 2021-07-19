@@ -67,7 +67,7 @@ public class RepositoryEnquirerTest extends TestCase {
         PowerMockito.doReturn(false).when(pinger).ping(mockUrl);
 
         final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(null, resolutionStrategy, resolutionStrategy, resolutionStrategy, pinger);
-        assertNull("Invalid repo or dep should return null URL", repositoryEnquirer.enquire(null));
+        assertNull("Invalid repo or dep should return null URL", repositoryEnquirer.enquire(new Dependency("", "", "", null, Collections.emptySet())));
     }
 
     public void testPingingEnquirerProvideMalformedURL() throws Exception {
@@ -79,6 +79,6 @@ public class RepositoryEnquirerTest extends TestCase {
         PowerMockito.doReturn(Collections.singleton("some_malformed_url")).when(resolutionStrategy).pathTo(repository, null);
 
         final RepositoryEnquirer repositoryEnquirer = new PingingRepositoryEnquirer(repository, resolutionStrategy, resolutionStrategy, resolutionStrategy, pinger);
-        assertNull("Malformed URL should return null URL", repositoryEnquirer.enquire(null));
+        assertNull("Malformed URL should return null URL", repositoryEnquirer.enquire(new Dependency("", "", "", null, Collections.emptySet())));
     }
 }
