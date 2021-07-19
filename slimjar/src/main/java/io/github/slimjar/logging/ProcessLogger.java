@@ -22,20 +22,10 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.util;
+package io.github.slimjar.logging;
 
-import io.github.slimjar.resolver.data.Repository;
-
-public final class Repositories {
-    private Repositories() {
-
-    }
-
-    public static String fetchFormattedUrl(final Repository repository) {
-        String repoUrl = repository.getUrl().toString();
-        if (!repoUrl.endsWith("/")) {
-            repoUrl += "/";
-        }
-        return repoUrl;
-    }
+@FunctionalInterface
+public interface ProcessLogger {
+    void log(final String message, final Object... args);
+    default void debug(final String message, final Object... args) { }
 }

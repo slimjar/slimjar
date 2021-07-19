@@ -50,7 +50,7 @@ public final class IsolatedApplicationBuilder extends ApplicationBuilder {
     }
 
     @Override
-    public Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
+    public Application buildApplication() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
         final DependencyInjector injector = createInjector();
         final URL[] moduleUrls = Modules.extract(isolationConfiguration.getModuleExtractor(), isolationConfiguration.getModules());
 

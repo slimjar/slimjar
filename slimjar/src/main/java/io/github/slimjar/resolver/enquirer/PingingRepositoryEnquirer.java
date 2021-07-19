@@ -24,6 +24,8 @@
 
 package io.github.slimjar.resolver.enquirer;
 
+import io.github.slimjar.logging.LogDispatcher;
+import io.github.slimjar.logging.ProcessLogger;
 import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.Repository;
@@ -35,6 +37,7 @@ import java.net.URL;
 import java.util.Optional;
 
 public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
+    private static final ProcessLogger LOGGER = LogDispatcher.getMediatingLogger();
     private final Repository repository;
     private final PathResolutionStrategy dependencyURLCreationStrategy;
     private final PathResolutionStrategy checksumURLCreationStrategy;
@@ -51,6 +54,7 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
 
     @Override
     public ResolutionResult enquire(final Dependency dependency) {
+        LOGGER.debug("Enquiring repositories to find {0}", dependency.getArtifactId());
         final Optional<URL> resolvedDependency = dependencyURLCreationStrategy.pathTo(repository, dependency)
                 .stream().map((path) -> {
                     try {

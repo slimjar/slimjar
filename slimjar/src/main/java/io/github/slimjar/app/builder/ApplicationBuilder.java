@@ -37,6 +37,9 @@ import io.github.slimjar.injector.DependencyInjectorFactory;
 import io.github.slimjar.injector.SimpleDependencyInjectorFactory;
 import io.github.slimjar.injector.helper.InjectionHelperFactory;
 import io.github.slimjar.injector.loader.Injectable;
+import io.github.slimjar.logging.LogDispatcher;
+import io.github.slimjar.logging.MediatingProcessLogger;
+import io.github.slimjar.logging.ProcessLogger;
 import io.github.slimjar.relocation.JarFileRelocatorFactory;
 import io.github.slimjar.relocation.RelocatorFactory;
 import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
@@ -71,6 +74,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * Serves as a configuration for different components slimjar will use during injection.
@@ -101,6 +105,7 @@ public abstract class ApplicationBuilder {
     private DependencyVerifierFactory verifierFactory;
     private MirrorSelector mirrorSelector;
     private Collection<Repository> internalRepositories;
+    private ProcessLogger logger;
 
     /**
      * Generate a application builder for an application with given name.
@@ -168,6 +173,8 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory class that defines the construction of {@link io.github.slimjar.relocation.Relocator}
+     * This deals with the actual relocation process.
+     * The default implementation uses lucko/JarRelocator
      * @param relocatorFactory Factory class to create Relocator
      * @return <code>this</code>
      */
@@ -178,6 +185,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces DataProvider for modules in jar-in-jar classloading. Ignored if not using jar-in-jar/isolated(...)
+     * Used to fetch the `slimjar.json` file of each submodule.
      * @param moduleDataProviderFactory Factory that produces DataProvider for modules in jar-in-jar
      * @return <code>this</code>
      */
@@ -188,6 +196,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces {@link io.github.slimjar.resolver.reader.DependencyDataProvider} to handle `dependencyFileUrl` (by default slimjar.json)
+     * Used to fetch the `slimjar.json` file of current jar-file.
      * @param dataProviderFactory Factory that produces DataProvider to handle `dependencyFileUrl`
      * @return <code>this</code>
      */
@@ -198,6 +207,8 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link io.github.slimjar.relocation.helper.RelocationHelper} using <code>relocator</code>
+     * This is an abstraction over {@link io.github.slimjar.relocation.Relocator}.
+     * It decides the output file for relocation and includes extra steps such as jar verification.
      * @param relocationHelperFactory Factory that produces a RelocationHelper
      * @return <code>this</code>
      */
@@ -208,6 +219,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link DependencyInjector} using <code>relocator</code>
+     * {@link DependencyInjector} decides how any given {@link io.github.slimjar.resolver.data.DependencyData} is injected into an {@link Injectable}
      * @param injectorFactory Factory that produces a DependencyInjector
      * @return <code>this</code>
      */
@@ -218,6 +230,7 @@ public abstract class ApplicationBuilder {
 
     /**
      * Factory that produces a {@link DependencyResolverFactory}
+     * {@link io.github.slimjar.resolver.DependencyResolver} deals with resolving the URLs to a given dependency from a given collection of repositories
      * @param resolverFactory Factory that produces a DependencyResolverFactory
      * @return <code>this</code>
      */
@@ -258,6 +271,11 @@ public abstract class ApplicationBuilder {
 
     public final ApplicationBuilder internalRepositories(final Collection<Repository> repositories) {
         this.internalRepositories = repositories;
+        return this;
+    }
+
+    public final ApplicationBuilder logger(final ProcessLogger logger) {
+        this.logger = logger;
         return this;
     }
 
@@ -365,11 +383,18 @@ public abstract class ApplicationBuilder {
         return mirrorSelector;
     }
 
-    public Collection<Repository> getInternalRepositories() throws MalformedURLException {
+    protected final Collection<Repository> getInternalRepositories() throws MalformedURLException {
         if (internalRepositories == null) {
             internalRepositories = Collections.singleton(new Repository(new URL(SimpleMirrorSelector.DEFAULT_CENTRAL_MIRROR_URL)));
         }
         return internalRepositories;
+    }
+
+    protected final ProcessLogger getLogger() {
+        if (logger == null) {
+            logger = (msg, args) -> {};
+        }
+        return logger;
     }
 
     protected final DependencyInjector createInjector() throws IOException, URISyntaxException, NoSuchAlgorithmException, ReflectiveOperationException {
@@ -388,5 +413,15 @@ public abstract class ApplicationBuilder {
         return getInjectorFactory().create(injectionHelperFactory);
     }
 
-    public abstract Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException;
+    public final Application build() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException {
+        final MediatingProcessLogger mediatingLogger = LogDispatcher.getMediatingLogger();
+        final ProcessLogger logger = getLogger();
+        mediatingLogger.addLogger(logger);
+        final Application result = buildApplication();
+        mediatingLogger.removeLogger(logger);
+        return result;
+    }
+
+    protected abstract Application buildApplication() throws IOException, ReflectiveOperationException, URISyntaxException, NoSuchAlgorithmException;
+
 }

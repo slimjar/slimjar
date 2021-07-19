@@ -22,20 +22,17 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.util;
+package io.github.slimjar.logging;
 
-import io.github.slimjar.resolver.data.Repository;
+import java.util.HashSet;
 
-public final class Repositories {
-    private Repositories() {
+public final class LogDispatcher {
+    private static final MediatingProcessLogger mediatingLogger = new MediatingProcessLogger(new HashSet<>());
 
+    private LogDispatcher() {
     }
 
-    public static String fetchFormattedUrl(final Repository repository) {
-        String repoUrl = repository.getUrl().toString();
-        if (!repoUrl.endsWith("/")) {
-            repoUrl += "/";
-        }
-        return repoUrl;
+    public static MediatingProcessLogger getMediatingLogger() {
+        return mediatingLogger;
     }
 }
