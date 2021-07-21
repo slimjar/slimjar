@@ -6,4 +6,6 @@ gradle-plugin/build/
 
 slimjar/build/
 
+loader-agent/build/
+
 gradle.properties
