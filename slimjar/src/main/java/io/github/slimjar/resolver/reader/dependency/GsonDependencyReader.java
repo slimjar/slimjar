@@ -22,27 +22,24 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.resolver.reader;
+package io.github.slimjar.resolver.reader.dependency;
 
+import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.facade.GsonFacade;
-import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
 
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-public final class ExternalDependencyDataProviderFactory implements DependencyDataProviderFactory {
+public final class GsonDependencyReader implements DependencyReader {
     private final GsonFacade gson;
 
-    public ExternalDependencyDataProviderFactory(final GsonFacadeFactory gsonFactory) throws ReflectiveOperationException {
-        this.gson = gsonFactory.createFacade();
-    }
-
-    public ExternalDependencyDataProviderFactory(final GsonFacade gson) {
+    public GsonDependencyReader(final GsonFacade gson) {
         this.gson = gson;
     }
 
-
-    public DependencyDataProvider create(final URL dependencyFileURL) {
-        final DependencyReader dependencyReader = new GsonDependencyReader(gson);
-        return new ModuleDependencyDataProvider(dependencyReader, dependencyFileURL);
+    @Override
+    public DependencyData read(final InputStream inputStream) throws ReflectiveOperationException {
+        final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        return gson.fromJson(inputStreamReader, DependencyData.class);
     }
 }

@@ -57,9 +57,10 @@ import io.github.slimjar.resolver.mirrors.MirrorSelector;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.resolver.pinger.HttpURLPinger;
 import io.github.slimjar.resolver.pinger.URLPinger;
-import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
-import io.github.slimjar.resolver.reader.ExternalDependencyDataProviderFactory;
-import io.github.slimjar.resolver.reader.GsonDependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.ExternalDependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.GsonDependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
 import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import io.github.slimjar.resolver.strategy.*;
@@ -74,7 +75,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * Serves as a configuration for different components slimjar will use during injection.
@@ -195,7 +195,7 @@ public abstract class ApplicationBuilder {
     }
 
     /**
-     * Factory that produces {@link io.github.slimjar.resolver.reader.DependencyDataProvider} to handle `dependencyFileUrl` (by default slimjar.json)
+     * Factory that produces {@link DependencyDataProvider} to handle `dependencyFileUrl` (by default slimjar.json)
      * Used to fetch the `slimjar.json` file of current jar-file.
      * @param dataProviderFactory Factory that produces DataProvider to handle `dependencyFileUrl`
      * @return <code>this</code>

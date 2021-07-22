@@ -22,36 +22,27 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.resolver.reader;
+package io.github.slimjar.resolver.reader.dependency;
 
+import io.github.slimjar.resolver.reader.facade.GsonFacade;
+import io.github.slimjar.resolver.reader.facade.GsonFacadeFactory;
 
-import io.github.slimjar.resolver.data.DependencyData;
-
-import java.io.*;
 import java.net.URL;
 
-public final class URLDependencyDataProvider implements DependencyDataProvider {
-    private final DependencyReader dependencyReader;
-    private final URL depFileURL;
-    private DependencyData cachedData = null;
+public final class GsonDependencyDataProviderFactory implements DependencyDataProviderFactory {
+    private final GsonFacade gson;
 
-    public URLDependencyDataProvider(final DependencyReader dependencyReader, final URL depFileURL) {
-        this.dependencyReader = dependencyReader;
-        this.depFileURL = depFileURL;
+    public GsonDependencyDataProviderFactory(final GsonFacadeFactory gsonFactory) throws ReflectiveOperationException {
+        this.gson = gsonFactory.createFacade();
     }
 
-    public DependencyReader getDependencyReader() {
-        return dependencyReader;
+    public GsonDependencyDataProviderFactory(final GsonFacade gson) {
+        this.gson = gson;
     }
 
-    @Override
-    public DependencyData get() throws IOException, ReflectiveOperationException {
-        if (cachedData != null) {
-            return cachedData;
-        }
-        try (InputStream is = depFileURL.openStream()) {
-            cachedData = dependencyReader.read(is);
-            return cachedData;
-        }
+
+    public DependencyDataProvider create(final URL dependencyFileURL) {
+        final DependencyReader dependencyReader = new GsonDependencyReader(gson);
+        return new URLDependencyDataProvider(dependencyReader, dependencyFileURL);
     }
 }

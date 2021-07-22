@@ -22,11 +22,15 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.resolver.reader;
+package io.github.slimjar.resolver.reader.dependency;
 
-import java.net.URL;
+
+import io.github.slimjar.resolver.data.DependencyData;
+
+import java.io.IOException;
+
 
 @FunctionalInterface
-public interface DependencyDataProviderFactory {
-    DependencyDataProvider create(final URL dependencyFileURL);
+public interface DependencyDataProvider {
+    DependencyData get() throws IOException, ReflectiveOperationException;
 }

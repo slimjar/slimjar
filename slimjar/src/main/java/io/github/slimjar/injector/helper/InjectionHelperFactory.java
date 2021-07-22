@@ -41,7 +41,7 @@ import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 import io.github.slimjar.resolver.mirrors.MirrorSelector;
-import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProviderFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

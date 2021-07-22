@@ -29,12 +29,11 @@ import io.github.slimjar.app.Application;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.*;
 import io.github.slimjar.resolver.data.DependencyData;
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class InjectingApplicationBuilder extends ApplicationBuilder {
     private final Function<ApplicationBuilder, Injectable> injectableSupplier;

@@ -29,7 +29,7 @@ import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.InjectableClassLoader;
 import io.github.slimjar.injector.loader.IsolatedInjectableClassLoader;
 import io.github.slimjar.resolver.data.DependencyData;
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
 import io.github.slimjar.util.Modules;
 import io.github.slimjar.util.Parameters;
 
