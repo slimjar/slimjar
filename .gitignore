@@ -2,6 +2,8 @@
 /.gradle/
 .idea/
 
+build/
+
 gradle-plugin/build/
 
 slimjar/build/
