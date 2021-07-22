@@ -3,16 +3,16 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.20"
     `java-gradle-plugin`
     `kotlin-dsl`
+    kotlin("jvm") version "1.4.20"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     `maven-publish`
 }
 
 group = "io.github.slimjar"
-version = "1.2.1"
+version = "1.2.2-DEV13"
 
 repositories {
     maven("https://plugins.gradle.org/m2/")
@@ -59,6 +59,10 @@ tasks.whenTaskAdded {
 
 // Disabling default jar task as it is overridden by shadowJar
 tasks.named("jar").configure {
+    enabled = false
+}
+
+tasks.withType<GenerateModuleMetadata> {
     enabled = false
 }
 
