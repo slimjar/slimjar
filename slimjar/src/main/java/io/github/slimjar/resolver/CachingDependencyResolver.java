@@ -34,13 +34,14 @@ import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class CachingDependencyResolver implements DependencyResolver {
     private static final String FAILED_RESOLUTION_MESSAGE = "[FAILED TO RESOLVE]";
     private static final ProcessLogger LOGGER = LogDispatcher.getMediatingLogger();
     private final Collection<RepositoryEnquirer> repositories;
-    private final Map<Dependency, ResolutionResult> cachedResults = new HashMap<>();
+    private final Map<Dependency, ResolutionResult> cachedResults = new ConcurrentHashMap<>();
 
     public CachingDependencyResolver(final Collection<Repository> repositories, final RepositoryEnquirerFactory enquirerFactory) {
         this.repositories = repositories.stream()
