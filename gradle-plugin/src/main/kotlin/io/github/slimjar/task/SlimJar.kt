@@ -26,18 +26,22 @@ package io.github.slimjar.task
 
 import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
-import io.github.slimjar.func.applySlimLib
-import io.github.slimjar.func.slimDefaultDependency
 import io.github.slimjar.func.slimInjectToIsolated
-import io.github.slimjar.func.slimVersion
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
+import io.github.slimjar.resolver.CachingDependencyResolver
 import io.github.slimjar.resolver.data.Dependency
 import io.github.slimjar.resolver.data.DependencyData
 import io.github.slimjar.resolver.data.Mirror
 import io.github.slimjar.resolver.data.Repository
+import io.github.slimjar.resolver.enquirer.PingingRepositoryEnquirerFactory
+import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector
+import io.github.slimjar.resolver.pinger.HttpURLPinger
+import io.github.slimjar.resolver.pinger.URLPinger
+import io.github.slimjar.resolver.strategy.*
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -49,8 +53,12 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
+import java.lang.reflect.Type
 import java.net.URL
+import java.util.function.Function
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 @CacheableTask
@@ -163,6 +171,75 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         }
     }
 
+    // Finds jars to be isolated and adds them to final jar
+    @TaskAction
+    internal fun generateResolvedDependenciesFile() = with(project) {
+        fun Collection<Dependency>.flatten(): MutableSet<Dependency> {
+            return this.flatMap{ it.transitive.flatten() + it }.toMutableSet()
+        }
+        val gson = GsonBuilder()
+            .setPrettyPrinting()
+            .create()
+
+        val folder = File("${buildDir}/resources/main/")
+        val file = File(folder, "slimjar-resolutions.json")
+        val mapType: Type = object : TypeToken<MutableMap<String, String>>() {}.type
+        val preResolved: MutableMap<String, String> = if (file.exists()) {
+            gson.fromJson(FileReader(file), mapType)
+        } else {
+            mutableMapOf()
+        }
+        val dependencies =
+            RenderableModuleResult(config.incoming.resolutionResult.root)
+                .children
+                .mapNotNull {
+                    it.toSlimDependency()
+                }.toMutableSet().flatten()
+        val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
+            .filterNot { it.url.toString().startsWith("file") }
+            .toSet()
+            .map { Repository(it.url.toURL()) }
+        val releaseStrategy: PathResolutionStrategy = MavenPathResolutionStrategy()
+        val snapshotStrategy: PathResolutionStrategy = MavenSnapshotPathResolutionStrategy()
+        val resolutionStrategy: PathResolutionStrategy =
+            MediatingPathResolutionStrategy(releaseStrategy, snapshotStrategy)
+        val pomURLCreationStrategy: PathResolutionStrategy = MavenPomPathResolutionStrategy()
+        val checksumResolutionStrategy: PathResolutionStrategy =
+            MavenChecksumPathResolutionStrategy("SHA-1", resolutionStrategy)
+        val urlPinger: URLPinger = HttpURLPinger()
+        val enquirerFactory = PingingRepositoryEnquirerFactory(
+            resolutionStrategy,
+            checksumResolutionStrategy,
+            pomURLCreationStrategy,
+            urlPinger
+        )
+        val mirrorSelector = SimpleMirrorSelector(setOf(Repository(URL("https://repo.vshnv.tech/"))))
+        val resolver = CachingDependencyResolver(mirrorSelector.select(repositories, mirrors), enquirerFactory)
+        val result: MutableMap<String, String> = dependencies
+            // Filter to enforce incremental resolution
+            .filter {
+                preResolved[it.toString()]?.let { pre ->
+                    repositories.none { r ->
+                        pre.startsWith(r.url.toString())
+                    }
+                } ?: true
+            }
+            .parallelStream()
+            .map { it.toString() to resolver.resolve(it).orElse(null) }
+            .filter { it.second != null }
+            .collect(Collectors.toMap({ e -> e.first }, { e -> e.second.dependencyURL.toString() }))
+        preResolved.forEach {
+            result.putIfAbsent(it.key, it.value)
+        }
+        if (folder.exists().not()) folder.mkdirs()
+        FileWriter(File(folder, "slimjar-resolutions.json")).use {
+            GsonBuilder()
+                .setPrettyPrinting()
+                .create()
+                .toJson(result, it)
+        }
+    }
+
 
     /**
      * Internal getter required because Gradle will think an internal property is an action
@@ -186,39 +263,39 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         return this
     }
 
-}
 
-/**
- * Turns a [RenderableDependency] into a [Dependency]] with all its transitives
- */
-private fun RenderableDependency.toSlimDependency(): Dependency? {
-    val transitive = mutableSetOf<Dependency>()
-    collectTransitive(transitive, children)
-    return id.toString().toDependency(transitive)
-}
-
-/**
- * Recursively flattens the transitive dependencies
- */
-private fun collectTransitive(transitive: MutableSet<Dependency>, dependencies: Set<RenderableDependency>) {
-    for (dependency in dependencies) {
-        val dep = dependency.id.toString().toDependency(emptySet()) ?: continue
-        if (dep in transitive) continue
-        transitive.add(dep)
-        collectTransitive(transitive, dependency.children)
+    /**
+     * Turns a [RenderableDependency] into a [Dependency]] with all its transitives
+     */
+    private fun RenderableDependency.toSlimDependency(): Dependency? {
+        val transitive = mutableSetOf<Dependency>()
+        collectTransitive(transitive, children)
+        return id.toString().toDependency(transitive)
     }
-}
 
-/**
- * Creates a [Dependency] based on a string
- * group:artifact:version:snapshot - The snapshot is the only nullable value
- */
-private fun String.toDependency(transitive: Set<Dependency>): Dependency? {
-    val values = split(":")
-    val group = values.getOrNull(0) ?: return null
-    val artifact = values.getOrNull(1) ?: return null
-    val version = values.getOrNull(2) ?: return null
-    val snapshot = values.getOrNull(3)
+    /**
+     * Recursively flattens the transitive dependencies
+     */
+    private fun collectTransitive(transitive: MutableSet<Dependency>, dependencies: Set<RenderableDependency>) {
+        for (dependency in dependencies) {
+            val dep = dependency.id.toString().toDependency(emptySet()) ?: continue
+            if (dep in transitive) continue
+            transitive.add(dep)
+            collectTransitive(transitive, dependency.children)
+        }
+    }
 
-    return Dependency(group, artifact, version, snapshot, transitive)
+    /**
+     * Creates a [Dependency] based on a string
+     * group:artifact:version:snapshot - The snapshot is the only nullable value
+     */
+    private fun String.toDependency(transitive: Set<Dependency>): Dependency? {
+        val values = split(":")
+        val group = values.getOrNull(0) ?: return null
+        val artifact = values.getOrNull(1) ?: return null
+        val version = values.getOrNull(2) ?: return null
+        val snapshot = values.getOrNull(3)
+
+        return Dependency(group, artifact, version, snapshot, transitive)
+    }
 }
