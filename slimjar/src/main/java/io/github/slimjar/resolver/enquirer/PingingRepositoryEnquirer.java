@@ -73,7 +73,7 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
                 }
             }).filter(urlPinger::ping)
                     .findFirst()
-                    .map(url -> new ResolutionResult(null, null, true))
+                    .map(url -> new ResolutionResult(repository, null, null, true))
                     .orElse(null);
         }
         final Optional<URL> resolvedChecksum = checksumURLCreationStrategy.pathTo(repository, dependency)
@@ -85,6 +85,6 @@ public final class PingingRepositoryEnquirer implements RepositoryEnquirer {
                     }
                 }).filter(urlPinger::ping)
                 .findFirst();
-        return new ResolutionResult(resolvedDependency.get(), resolvedChecksum.orElse(null), false);
+        return new ResolutionResult(repository, resolvedDependency.get(), resolvedChecksum.orElse(null), false);
     }
 }
