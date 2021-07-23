@@ -1,5 +1,6 @@
 package io.github.slimjar.resolver.reader.resolution;
 
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.reader.facade.GsonFacade;
 import io.github.slimjar.resolver.reader.facade.TypeToken;
 
@@ -19,9 +20,9 @@ public final class GsonPreResolutionDataReader implements PreResolutionDataReade
     }
 
     @Override
-    public Map<String, URL> read(final InputStream inputStream) throws IOException, ReflectiveOperationException {
+    public Map<String, ResolutionResult> read(final InputStream inputStream) throws IOException, ReflectiveOperationException {
         final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        final Type rawType = new TypeToken<Map<String, URL>>().getRawType();
+        final Type rawType = new TypeToken<Map<String, ResolutionResult>>(){}.getRawType();
         return gson.fromJson(inputStreamReader, rawType);
     }
 }
