@@ -24,21 +24,29 @@
 
 package io.github.slimjar.resolver;
 
+import io.github.slimjar.resolver.data.Repository;
+
 import java.net.URL;
 import java.util.Objects;
 
 public final class ResolutionResult {
+    private final Repository repository;
     private final URL dependencyURL;
     private final URL checksumURL;
     private final boolean isAggregator;
 
-    public ResolutionResult(final URL dependencyURL, final URL checksumURL, final boolean isAggregator) {
+    public ResolutionResult(final Repository repository, final URL dependencyURL, final URL checksumURL, final boolean isAggregator) {
+        this.repository = repository;
         this.dependencyURL = dependencyURL;
         this.checksumURL = checksumURL;
         this.isAggregator = isAggregator;
         if (!isAggregator) {
             Objects.requireNonNull(dependencyURL, "Resolved URL must not be null for non-aggregator dependencies");
         }
+    }
+
+    public Repository getRepository() {
+        return repository;
     }
 
     public URL getDependencyURL() {
