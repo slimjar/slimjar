@@ -77,6 +77,7 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
                 .downloadDirectoryPath(downloadPath)
                 .dataProviderFactory((url) -> () -> ReflectiveGsonFacadeFactory.getGsonDependency(repositories))
                 .relocatorFactory((rules) -> new PassthroughRelocator())
+                .preResolutionDataProviderFactory(a -> Collections::emptyMap)
                 .relocationHelperFactory((relocator) -> (dependency,file) -> file)
                 .build();
         final Class<?> gsonClass = Class.forName(Packages.fix(GSON_PACKAGE), true, classLoader);
