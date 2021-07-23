@@ -4,6 +4,7 @@ import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.reader.dependency.DependencyReader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
@@ -19,6 +20,12 @@ public final class GsonPreResolutionDataProvider implements PreResolutionDataPro
 
     @Override
     public Map<String, URL> get() throws IOException, ReflectiveOperationException {
-        return null;
+        if (cachedData != null) {
+            return cachedData;
+        }
+        try (InputStream is = resolutionFileURL.openStream()) {
+            cachedData = resolutionDataReader.read(is);
+            return cachedData;
+        }
     }
 }
