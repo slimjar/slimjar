@@ -31,16 +31,15 @@ import io.github.slimjar.relocation.PassthroughRelocator;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
-import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.util.Packages;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -48,19 +47,24 @@ import java.util.Collections;
 
 public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
     private static final String GSON_PACKAGE = "com#google#gson#Gson";
+    private static final String GSON_TYPES_PACKAGE = "com#google#gson#internal#$Gson$Types";
 
     private final Constructor<?> gsonConstructor;
     private final Method gsonFromJsonMethod;
+    private final Method gsonFromJsonTypeMethod;
+    private final Method canonicalizeMethod;
 
-    private ReflectiveGsonFacadeFactory(Constructor<?> gsonConstructor, Method gsonFromJsonMethod) {
+    private ReflectiveGsonFacadeFactory(final Constructor<?> gsonConstructor, final Method gsonFromJsonMethod, final Method gsonFromJsonTypeMethod, final Method canonicalizeMethod) {
         this.gsonConstructor = gsonConstructor;
         this.gsonFromJsonMethod = gsonFromJsonMethod;
+        this.gsonFromJsonTypeMethod = gsonFromJsonTypeMethod;
+        this.canonicalizeMethod = canonicalizeMethod;
     }
 
     @Override
     public GsonFacade createFacade() throws ReflectiveOperationException {
         final Object gson = gsonConstructor.newInstance();
-        return new ReflectiveGsonFacade(gson, gsonFromJsonMethod);
+        return new ReflectiveGsonFacade(gson, gsonFromJsonMethod, gsonFromJsonTypeMethod, canonicalizeMethod);
     }
 
     public static GsonFacadeFactory create(final Path downloadPath, final Collection<Repository> repositories) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
@@ -78,7 +82,12 @@ public final class ReflectiveGsonFacadeFactory implements GsonFacadeFactory {
         final Class<?> gsonClass = Class.forName(Packages.fix(GSON_PACKAGE), true, classLoader);
         final Constructor<?> gsonConstructor = gsonClass.getConstructor();
         final Method gsonFromJsonMethod = gsonClass.getMethod("fromJson", Reader.class, Class.class);
-        return new ReflectiveGsonFacadeFactory(gsonConstructor, gsonFromJsonMethod);
+        final Method gsonFromJsonTypeMethod = gsonClass.getMethod("fromJson", Reader.class, Type.class);
+
+        final Class<?> gsonTypesClass = Class.forName(Packages.fix(GSON_TYPES_PACKAGE), true, classLoader);
+
+        final Method canonicalizeMethod = gsonTypesClass.getMethod("canonicalize", Type.class);
+        return new ReflectiveGsonFacadeFactory(gsonConstructor, gsonFromJsonMethod, gsonFromJsonTypeMethod, canonicalizeMethod);
     }
 
     private static DependencyData getGsonDependency(final Collection<Repository> repositories) throws MalformedURLException {
