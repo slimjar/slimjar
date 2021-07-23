@@ -25,6 +25,7 @@
 package io.github.slimjar.resolver;
 
 import io.github.slimjar.resolver.data.Dependency;
+import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirer;
 
 import java.net.MalformedURLException;
@@ -35,7 +36,7 @@ public final class DummyRepositoryEnquirer implements RepositoryEnquirer {
     public ResolutionResult enquire(final Dependency dependency) {
         final String groupPath = dependency.getGroupId().replace('.', '/');
         try {
-            return new ResolutionResult(new URL(String.format("https://repo.tld/%s/%s/%s/%2$s-%3$s.jar", groupPath, dependency.getArtifactId(), dependency.getVersion())), null, false);
+            return new ResolutionResult(new Repository(new URL("https://repo.tld")), new URL(String.format("https://repo.tld/%s/%s/%s/%2$s-%3$s.jar", groupPath, dependency.getArtifactId(), dependency.getVersion())), null, false);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
