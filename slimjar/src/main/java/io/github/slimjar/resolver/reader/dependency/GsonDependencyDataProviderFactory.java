@@ -33,7 +33,7 @@ public final class GsonDependencyDataProviderFactory implements DependencyDataPr
     private final GsonFacade gson;
 
     public GsonDependencyDataProviderFactory(final GsonFacadeFactory gsonFactory) throws ReflectiveOperationException {
-        this.gson = gsonFactory.createFacade();
+        this(gsonFactory.createFacade());
     }
 
     public GsonDependencyDataProviderFactory(final GsonFacade gson) {
