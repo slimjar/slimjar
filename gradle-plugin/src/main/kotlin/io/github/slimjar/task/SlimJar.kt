@@ -33,6 +33,7 @@ import io.github.slimjar.func.slimInjectToIsolated
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
 import io.github.slimjar.resolver.CachingDependencyResolver
+import io.github.slimjar.resolver.ResolutionResult
 import io.github.slimjar.resolver.data.Dependency
 import io.github.slimjar.resolver.data.DependencyData
 import io.github.slimjar.resolver.data.Mirror
@@ -57,7 +58,6 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.lang.reflect.Type
 import java.net.URL
-import java.util.function.Function
 import java.util.stream.Collectors
 import javax.inject.Inject
 
@@ -183,8 +183,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
 
         val folder = File("${buildDir}/resources/main/")
         val file = File(folder, "slimjar-resolutions.json")
-        val mapType: Type = object : TypeToken<MutableMap<String, String>>() {}.type
-        val preResolved: MutableMap<String, String> = if (file.exists()) {
+        val mapType: Type = object : TypeToken<MutableMap<String, ResolutionResult>>() {}.type
+        val preResolved: MutableMap<String, ResolutionResult> = if (file.exists()) {
             gson.fromJson(FileReader(file), mapType)
         } else {
             mutableMapOf()
@@ -214,20 +214,25 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             urlPinger
         )
         val mirrorSelector = SimpleMirrorSelector(setOf(Repository(URL("https://repo.vshnv.tech/"))))
-        val resolver = CachingDependencyResolver(mirrorSelector.select(repositories, mirrors), enquirerFactory)
-        val result: MutableMap<String, String> = dependencies
+        val resolver = CachingDependencyResolver(
+            urlPinger,
+            mirrorSelector.select(repositories, mirrors),
+            enquirerFactory,
+            mapOf()
+        )
+        val result: MutableMap<String, ResolutionResult> = dependencies
             // Filter to enforce incremental resolution
             .filter {
                 preResolved[it.toString()]?.let { pre ->
                     repositories.none { r ->
-                        pre.startsWith(r.url.toString())
+                        pre.repository.url.toString() == r.url.toString()
                     }
                 } ?: true
             }
             .parallelStream()
             .map { it.toString() to resolver.resolve(it).orElse(null) }
             .filter { it.second != null }
-            .collect(Collectors.toMap({ e -> e.first }, { e -> e.second.dependencyURL.toString() }))
+            .collect(Collectors.toMap({ e -> e.first }, { e -> e.second }))
         preResolved.forEach {
             result.putIfAbsent(it.key, it.value)
         }
