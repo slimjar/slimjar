@@ -26,6 +26,7 @@ package io.github.slimjar.injector.loader;
 
 import io.github.slimjar.injector.agent.ByteBuddyInstrumentationFactory;
 import io.github.slimjar.injector.agent.InstrumentationFactory;
+import io.github.slimjar.logging.LogDispatcher;
 import io.github.slimjar.relocation.facade.ReflectiveJarRelocatorFacadeFactory;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
