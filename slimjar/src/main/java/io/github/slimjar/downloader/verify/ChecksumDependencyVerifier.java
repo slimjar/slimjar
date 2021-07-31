@@ -83,6 +83,13 @@ public final class ChecksumDependencyVerifier implements DependencyVerifier {
         return Objects.equals(actualChecksum, expectedChecksum);
     }
 
+    @Override
+    public File getChecksumFile(final Dependency dependency) {
+        final File checksumFile = outputWriterFactory.getStrategy().selectFileFor(dependency);
+        checksumFile.getParentFile().mkdirs();
+        return checksumFile;
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean prepareChecksumFile(final File checksumFile, final Dependency dependency) throws IOException {
         final Optional<ResolutionResult> result = resolver.resolve(dependency);
