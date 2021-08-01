@@ -27,13 +27,21 @@ package io.github.slimjar.func
 import io.github.slimjar.exceptions.ConfigurationNotFoundException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.maven
 
 /**
- * Checks in the gradle.properties if should or not add the slimJar dependency by default
+ * Checks in the gradle.properties if should or not add the slimJar repo by default
  */
-val Project.slimDefaultDependency: Boolean
-    get() = findProperty("slimjar.default.dependency")?.toString()?.toBoolean() ?: true
+val Project.applyReleaseRepo: Boolean
+    get() = findProperty("slimjar.default.repo.releases.apply")?.toString()?.toBoolean() ?: true
+
+
+/**
+ * Checks in the gradle.properties if should or not add the slimJar snapshot repo by default
+ */
+val Project.applySnapshotRepo: Boolean
+    get() = findProperty("slimjar.default.repo.snapshot.apply")?.toString()?.toBoolean() ?: false
 
 /**
  * Checks in the gradle.properties if should or not add the slimJar plugin to isolated projects by default
@@ -41,15 +49,11 @@ val Project.slimDefaultDependency: Boolean
 val Project.slimInjectToIsolated: Boolean
     get() = findProperty("slimjar.default.isolated.inject")?.toString()?.toBoolean() ?: true
 
-val Project.slimVersion: String
-    get() = findProperty("slimjar.version")?.toString() ?: "1.2.3"
-
 /**
- * Adds the slimJar dependency to the project
+ * Provides the configuration string for the dependency
  */
-fun Project.applySlimLib(configuration: String = "implementation", version: String) {
-    repositories.maven("https://repo.vshnv.tech/")
-    dependencies.add(configuration, "io.github.slimjar:slimjar:$version")
+fun DependencyHandler.slimJar(version: String = "latest"): Any {
+    return "io.github.slimjar:slimjar:$version"
 }
 
 /**
