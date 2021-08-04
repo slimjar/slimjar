@@ -31,8 +31,8 @@ import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.maven
-
 const val SLIM_CONFIGURATION_NAME = "slim"
 const val SLIM_API_CONFIGURATION_NAME = "slimApi"
 const val SLIM_JAR_TASK_NAME = "slimJar"
@@ -64,7 +64,7 @@ class SlimJarPlugin : Plugin<Project> {
                 repositories.maven("https://repo.vshnv.tech/snapshots/")
             }
         }
-
+        project.dependencies.extra.set("slimjar", asGroovyClosure("+"){ version -> "io.github.slimjar:slimjar:$version"})
         // Hooks into shadow to inject relocations
         val shadowTask = tasks.withType(ShadowJar::class.java).firstOrNull() ?: return
         shadowTask.doFirst {
