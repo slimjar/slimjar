@@ -49,12 +49,6 @@ val Project.applySnapshotRepo: Boolean
 val Project.slimInjectToIsolated: Boolean
     get() = findProperty("slimjar.default.isolated.inject")?.toString()?.toBoolean() ?: true
 
-/**
- * Provides the configuration string for the dependency
- */
-fun DependencyHandler.slimJar(version: String = "latest"): Any {
-    return "io.github.slimjar:slimjar:$version"
-}
 
 /**
  * Utility for creating a configuration that extends another
