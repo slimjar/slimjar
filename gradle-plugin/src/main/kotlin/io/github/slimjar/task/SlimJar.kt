@@ -119,14 +119,12 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
      */
     @TaskAction
     internal fun createJson() = with(project) {
-
         val dependencies =
             RenderableModuleResult(config.incoming.resolutionResult.root)
                 .children
                 .mapNotNull {
                     it.toSlimDependency()
                 }.toMutableSet()
-
         // If api config is present map dependencies from it as well
         apiConfig?.let { config ->
             dependencies.addAll(
