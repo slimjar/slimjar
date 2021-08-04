@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
+    `groovy`
     kotlin("jvm") version "1.4.20"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.johnrengelman.shadow") version "6.1.0"
@@ -12,18 +13,20 @@ plugins {
 }
 
 group = "io.github.slimjar"
-version = "1.2.2-DEV13"
+version = "1.2.2-DEV16"
 
 repositories {
     maven("https://plugins.gradle.org/m2/")
 }
+
+
 
 val shadowImplementation: Configuration by configurations.creating
 configurations["compileOnly"].extendsFrom(shadowImplementation)
 configurations["testImplementation"].extendsFrom(shadowImplementation)
 
 dependencies {
-    shadowImplementation(kotlin("stdlib"))
+    shadowImplementation(kotlin("stdlib", "1.4.20"))
     shadowImplementation(project(":slimjar"))
     shadowImplementation("com.google.code.gson:gson:2.8.6")
 
@@ -106,11 +109,11 @@ tasks {
 
     withType<ShadowJar> {
         mapOf(
-            "kotlin" to ".kotlin",
             "io.github.slimjar" to "",
             "me.lucko.jarrelocator" to ".jarrelocator",
             "com.google.gson" to ".gson"
         ).forEach { relocate(it.key, "io.github.slimjar${it.value}") }
+        relocate("kotlin", "kotlin")
     }
 
     test {
@@ -147,4 +150,8 @@ pluginBundle {
     vcsUrl = "https://github.com/SlimJar/slimjar"
     tags = listOf("runtime dependency", "relocation")
     description = "Very easy to setup and downloads any public dependency at runtime!"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    languageVersion = "1.4"
 }
