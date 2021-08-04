@@ -31,6 +31,12 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.maven
 
 /**
+ * Checks in the gradle.properties if should or not resolve dependencies at compile time
+ */
+val Project.performCompileTimeResolution: Boolean
+    get() = findProperty("slimjar.default.resolution.compile_time")?.toString()?.toBoolean() ?: true
+
+/**
  * Checks in the gradle.properties if should or not add the slimJar repo by default
  */
 val Project.applyReleaseRepo: Boolean

@@ -29,6 +29,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.github.slimjar.SLIM_API_CONFIGURATION_NAME
 import io.github.slimjar.SlimJarPlugin
+import io.github.slimjar.func.performCompileTimeResolution
 import io.github.slimjar.func.slimInjectToIsolated
 import io.github.slimjar.relocation.RelocationConfig
 import io.github.slimjar.relocation.RelocationRule
@@ -174,6 +175,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     // Finds jars to be isolated and adds them to final jar
     @TaskAction
     internal fun generateResolvedDependenciesFile() = with(project) {
+        if (project.performCompileTimeResolution.not()) return@with
+
         fun Collection<Dependency>.flatten(): MutableSet<Dependency> {
             return this.flatMap{ it.transitive.flatten() + it }.toMutableSet()
         }
