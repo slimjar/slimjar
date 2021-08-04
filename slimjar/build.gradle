@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '1.2.5-DEBUG-A'
+version '1.2.5'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
