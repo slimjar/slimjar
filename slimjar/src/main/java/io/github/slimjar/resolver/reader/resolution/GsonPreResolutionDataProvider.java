@@ -5,6 +5,7 @@ import io.github.slimjar.resolver.ResolutionResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 
 public final class GsonPreResolutionDataProvider implements PreResolutionDataProvider {
@@ -25,6 +26,8 @@ public final class GsonPreResolutionDataProvider implements PreResolutionDataPro
         try (InputStream is = resolutionFileURL.openStream()) {
             cachedData = resolutionDataReader.read(is);
             return cachedData;
+        } catch (final Exception exception) {
+            return Collections.emptyMap();
         }
     }
 }
