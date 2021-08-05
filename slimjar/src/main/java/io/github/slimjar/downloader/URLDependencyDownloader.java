@@ -83,6 +83,10 @@ public final class URLDependencyDownloader implements DependencyDownloader {
         }
 
         expectedOutputFile.delete();
+        final File checksumFile = verifier.getChecksumFile(dependency);
+        if (checksumFile != null) {
+            checksumFile.delete();
+        }
 
         LOGGER.log("Downloading {0}...", dependency.getArtifactId());
 

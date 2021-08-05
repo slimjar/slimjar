@@ -64,13 +64,9 @@ public final class Dependency {
 
     @Override
     public String toString() {
-        return "Dependency{" +
-                "groupId='" + groupId + '\'' +
-                ", artifactId='" + artifactId + '\'' +
-                ", version='" + version + '\'' +
-                ", snapshotId='" + snapshotId + '\'' +
-                ", transitive=" + transitive +
-                '}';
+        final String snapshotId = getSnapshotId();
+        final String suffix = (snapshotId != null && snapshotId.length() > 0) ? (":" + snapshotId): "";
+        return getGroupId() + ":" + getArtifactId() + ":" + getVersion() + suffix;
     }
 
     @Override

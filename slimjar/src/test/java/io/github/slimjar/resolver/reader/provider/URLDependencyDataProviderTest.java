@@ -24,10 +24,13 @@
 
 package io.github.slimjar.resolver.reader.provider;
 
-import com.google.gson.Gson;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.resolver.reader.*;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.DependencyReader;
+import io.github.slimjar.resolver.reader.dependency.GsonDependencyReader;
+import io.github.slimjar.resolver.reader.dependency.URLDependencyDataProvider;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;
@@ -38,7 +41,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -58,7 +60,9 @@ public class URLDependencyDataProviderTest extends TestCase {
         }
         final String userHome = System.getProperty("user.home");
         final String defaultPath = String.format("%s/.slimjar", userHome);
-        DEFAULT_DOWNLOAD_DIRECTORY = new File(defaultPath).toPath();
+        final File file = new File(defaultPath);
+        final Path path = file.toPath();
+        DEFAULT_DOWNLOAD_DIRECTORY = path;
     }
 
     public void testFileDependencyDataProvider() throws Exception {

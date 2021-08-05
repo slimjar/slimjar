@@ -24,14 +24,13 @@
 
 package io.github.slimjar.resolver.reader.provider;
 
-import com.google.gson.Gson;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
-import io.github.slimjar.resolver.reader.GsonDependencyReader;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.GsonDependencyReader;
 import io.github.slimjar.resolver.reader.MockDependencyData;
-import io.github.slimjar.resolver.reader.ModuleDependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.ModuleDependencyDataProvider;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;

@@ -22,7 +22,7 @@
 // SOFTWARE.
 //
 
-package io.github.slimjar.resolver.reader;
+package io.github.slimjar.resolver.reader.dependency;
 
 import io.github.slimjar.resolver.data.DependencyData;
 
@@ -31,9 +31,6 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;

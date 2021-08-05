@@ -37,17 +37,19 @@ import io.github.slimjar.relocation.helper.RelocationHelper;
 import io.github.slimjar.relocation.helper.RelocationHelperFactory;
 import io.github.slimjar.resolver.DependencyResolver;
 import io.github.slimjar.resolver.DependencyResolverFactory;
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
 import io.github.slimjar.resolver.mirrors.MirrorSelector;
-import io.github.slimjar.resolver.reader.DependencyDataProviderFactory;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProviderFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Map;
 
 public final class InjectionHelperFactory {
     private final Path downloadDirectoryPath;
@@ -70,14 +72,14 @@ public final class InjectionHelperFactory {
         this.mirrorSelector = mirrorSelector;
     }
 
-    public InjectionHelper create(final DependencyData data) throws IOException, NoSuchAlgorithmException, URISyntaxException {
+    public InjectionHelper create(final DependencyData data, final Map<String, ResolutionResult> preResolvedResults) throws IOException, NoSuchAlgorithmException, URISyntaxException {
         final Collection<Repository> repositories = mirrorSelector
                 .select(data.getRepositories(), data.getMirrors());
         final Relocator relocator = relocatorFactory.create(data.getRelocations());
         final RelocationHelper relocationHelper = relocationHelperFactory.create(relocator);
         final FilePathStrategy filePathStrategy = FilePathStrategy.createDefault(downloadDirectoryPath.toFile());
         final OutputWriterFactory outputWriterFactory = new DependencyOutputWriterFactory(filePathStrategy);
-        final DependencyResolver resolver = resolverFactory.create(repositories, enquirerFactory);
+        final DependencyResolver resolver = resolverFactory.create(repositories, preResolvedResults, enquirerFactory);
         final DependencyDownloader downloader = downloaderFactory.create(outputWriterFactory, resolver, verifier.create(resolver));
         return new InjectionHelper(downloader, relocationHelper);
     }

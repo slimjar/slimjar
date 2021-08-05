@@ -27,6 +27,7 @@ package io.github.slimjar.resolver;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.enquirer.RepositoryEnquirerFactory;
+import io.github.slimjar.resolver.pinger.URLPinger;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
@@ -41,7 +42,17 @@ public class DependencyResolverTest extends TestCase {
     public void testCachingDependencyResolverResolution() throws MalformedURLException {
         final RepositoryEnquirerFactory repositoryEnquirerFactory = new DummyRepositoryEnquirerFactory();
         final Collection<Repository> repositories = Collections.singleton(new Repository(new URL("https://repo.tld/")));
-        final DependencyResolver dependencyResolver = new CachingDependencyResolver(repositories, repositoryEnquirerFactory);
+        final DependencyResolver dependencyResolver = new CachingDependencyResolver(new URLPinger() {
+            @Override
+            public boolean ping(URL url) {
+                return true;
+            }
+
+            @Override
+            public boolean isSupported(URL url) {
+                return true;
+            }
+        }, repositories, repositoryEnquirerFactory, Collections.emptyMap());
         final Dependency testDependency = new Dependency("a.b.c", "d", "1.0", null, Collections.emptyList());
         final Optional<ResolutionResult> url = dependencyResolver.resolve(testDependency);
         final String groupPath = testDependency.getGroupId().replace('.', '/');
@@ -51,7 +62,17 @@ public class DependencyResolverTest extends TestCase {
     public void testCachingDependencyResolverCaching() throws MalformedURLException {
         final RepositoryEnquirerFactory repositoryEnquirerFactory = new DummyRepositoryEnquirerFactory();
         final Collection<Repository> repositories = Collections.singleton(new Repository(new URL("https://repo.tld/")));
-        final DependencyResolver dependencyResolver = new CachingDependencyResolver(repositories, repositoryEnquirerFactory);
+        final DependencyResolver dependencyResolver = new CachingDependencyResolver(new URLPinger() {
+            @Override
+            public boolean ping(URL url) {
+                return true;
+            }
+
+            @Override
+            public boolean isSupported(URL url) {
+                return true;
+            }
+        }, repositories, repositoryEnquirerFactory, Collections.emptyMap());
         final Dependency testDependency = new Dependency("a.b.c", "d", "1.0", null, Collections.emptyList());
         final URL url1 = dependencyResolver.resolve(testDependency).get().getDependencyURL();
         final URL url2 = dependencyResolver.resolve(testDependency).get().getDependencyURL();

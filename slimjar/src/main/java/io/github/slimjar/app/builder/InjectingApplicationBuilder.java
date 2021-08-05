@@ -28,13 +28,16 @@ import io.github.slimjar.app.AppendingApplication;
 import io.github.slimjar.app.Application;
 import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.*;
+import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.DependencyData;
-import io.github.slimjar.resolver.reader.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
+import io.github.slimjar.resolver.reader.resolution.PreResolutionDataProvider;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class InjectingApplicationBuilder extends ApplicationBuilder {
     private final Function<ApplicationBuilder, Injectable> injectableSupplier;
@@ -53,7 +56,11 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
         final DependencyDataProvider dataProvider = getDataProviderFactory().create(getDependencyFileUrl());
         final DependencyData dependencyData = dataProvider.get();
         final DependencyInjector dependencyInjector = createInjector();
-        dependencyInjector.inject(injectableSupplier.apply(this), dependencyData);
+
+        final PreResolutionDataProvider preResolutionDataProvider = getPreResolutionDataProviderFactory().create(getPreResolutionFileUrl());
+        final Map<String, ResolutionResult> preResolutionResultMap = preResolutionDataProvider.get();
+
+        dependencyInjector.inject(injectableSupplier.apply(this), dependencyData, preResolutionResultMap);
         return new AppendingApplication();
     }
 

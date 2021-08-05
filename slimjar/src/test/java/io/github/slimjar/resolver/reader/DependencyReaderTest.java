@@ -27,6 +27,8 @@ package io.github.slimjar.resolver.reader;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
+import io.github.slimjar.resolver.reader.dependency.DependencyReader;
+import io.github.slimjar.resolver.reader.dependency.GsonDependencyReader;
 import io.github.slimjar.resolver.reader.facade.ReflectiveGsonFacadeFactory;
 import junit.framework.TestCase;
 
