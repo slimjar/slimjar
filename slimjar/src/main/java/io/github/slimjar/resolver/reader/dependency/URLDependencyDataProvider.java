@@ -27,8 +27,10 @@ package io.github.slimjar.resolver.reader.dependency;
 
 import io.github.slimjar.resolver.data.DependencyData;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 public final class URLDependencyDataProvider implements DependencyDataProvider {
     private final DependencyReader dependencyReader;
@@ -49,7 +51,12 @@ public final class URLDependencyDataProvider implements DependencyDataProvider {
         if (cachedData != null) {
             return cachedData;
         }
-        try (InputStream is = depFileURL.openStream()) {
+
+        URLConnection connection = depFileURL.openConnection();
+        // Do not cache so we can re-read (ex during some form of reload) from this jar file if it changes.
+        connection.setUseCaches(false);
+
+        try (InputStream is = connection.getInputStream()) {
             cachedData = dependencyReader.read(is);
             return cachedData;
         }
