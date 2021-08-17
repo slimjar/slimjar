@@ -37,13 +37,14 @@ SlimJar makes the process of switching out jars easier by providing jars that ar
 ApplicationBuilder.appending("MyApplicationName").build()
 ```
 (NOTE: If you have specified relocations and are running in a IDE or any environment that does not use the shadowjar-ed build file, use the `ignoreRelocation` flag while running by using `-DignoreRelocation` in your runner arguments)
-*build.gradle*
+*build.gradle* GROOVY DSL
 ```groovy
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
-  id 'io.github.slimjar' version '1.2.1'
+  id 'io.github.slimjar' version '1.3.0'
 }
 dependencies {
+  implementation slimjar("1.2.6")
   slim 'group.id:artifact.id:version'
 }
 
@@ -51,6 +52,9 @@ slimJar {
   relocate 'a.b.c' 'm.n.o'
 }
 ```
+
+(For Kotlin DSL, to use the `slimjar` extension in dependencies block, you will need the following import - `import io.github.slimjar.func.slimjar`)
+
 <br>
 <br>
 <h2 align="center">Development setup</h2>
