@@ -58,10 +58,10 @@ public final class VerifyingRelocationHelper implements RelocationHelper {
         if (relocatedFile.exists()) {
             try {
                 final String ownerHash = metaMediator.readAttribute("slimjar.owner");
-                if (selfHash.trim().equals(ownerHash.trim())) {
+                if (selfHash != null && ownerHash != null && selfHash.trim().equals(ownerHash.trim())) {
                     return relocatedFile;
                 }
-            } catch (final FileNotFoundException | NoSuchFileException exception) {
+            } catch (final Exception exception) {
                 // Possible incomplete relocation present.
                 // todo: Log incident
                 //noinspection ResultOfMethodCallIgnored
