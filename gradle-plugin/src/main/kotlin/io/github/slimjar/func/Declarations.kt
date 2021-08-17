@@ -22,12 +22,15 @@
 // SOFTWARE.
 //
 
+@file:Suppress("UNCHECKED_CAST")
+
 package io.github.slimjar.func
 
 import io.github.slimjar.exceptions.ConfigurationNotFoundException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.maven
 
 /**
@@ -71,3 +74,16 @@ fun Project.createConfig(configName: String, vararg extends: String): Configurat
     return slimConfig
 }
 
+/**
+ * Extension for KDSL support
+ */
+fun DependencyHandlerScope.slimjar(version: String = "+"): String =
+    (extensions.getByName("slimjar") as? (String) -> String)?.let { it(version) }
+        ?: throw IllegalStateException()
+
+/**
+ * Extension for KDSL support
+ */
+fun DependencyHandler.slimjar(version: String = "+"): String =
+    (extensions.getByName("slimjar") as? (String) -> String)?.let { it(version) }
+        ?: throw IllegalStateException()

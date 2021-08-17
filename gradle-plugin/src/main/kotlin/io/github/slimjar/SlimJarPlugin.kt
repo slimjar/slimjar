@@ -30,7 +30,9 @@ import io.github.slimjar.func.*
 import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.maven
 const val SLIM_CONFIGURATION_NAME = "slim"
@@ -56,7 +58,7 @@ class SlimJarPlugin : Plugin<Project> {
 
         val slimJar = tasks.create(SLIM_JAR_TASK_NAME, SlimJar::class.java, slimConfig)
         // Auto adds the slimJar lib dependency
-        beforeEvaluate {
+        afterEvaluate {
             if (applyReleaseRepo) {
                 repositories.maven("https://repo.vshnv.tech/")
             }
