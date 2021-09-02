@@ -6,7 +6,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `groovy`
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.4.20"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     `maven-publish`
