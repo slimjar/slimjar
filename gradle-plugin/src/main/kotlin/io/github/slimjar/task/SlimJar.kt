@@ -70,7 +70,6 @@ import java.io.FileWriter
 import java.lang.reflect.Type
 import java.net.URL
 import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 
 private val scope = CoroutineScope(IO)
 
@@ -85,10 +84,12 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
     private val isolatedProjects = mutableSetOf<Project>()
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
+    private val shadowWriteFolder = File("${project.buildDir}/resources/main/")
 
     @Input
     var shade = true
-    val outputDirectory: File = File("${project.buildDir}/resources/main/")
+
+    val outputDirectory: File = File("${project.buildDir}/resources/slimjar/")
         @OutputDirectory
         get
 
@@ -161,16 +162,20 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
 
         // Note: Commented out to allow creation of empty dependency file
         // if (dependencies.isEmpty() || repositories.isEmpty()) return
-
-        val folder = File("${buildDir}/resources/slimjar/")
         //println("Folder exists: ${folder.exists()}")
-        if (folder.exists().not()) folder.mkdirs()
+        if (outputDirectory.exists().not()) outputDirectory.mkdirs()
 
-        FileWriter(File(folder, "slimjar.json")).use {
+        val file = File(outputDirectory, "slimjar.json")
+
+        FileWriter(file).use {
             gson.toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
         }
+
+        if (shadowWriteFolder.exists().not()) shadowWriteFolder.mkdirs()
+        file.copyTo(File(shadowWriteFolder, file.name), true)
     }
 
+    // FIXME: 9/2/2021 Fix folders on this
     // Finds jars to be isolated and adds them to final jar
     @TaskAction
     internal fun includeIsolatedJars() = with(project) {
@@ -187,7 +192,6 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @TaskAction
     internal fun generateResolvedDependenciesFile() = with(project) {
         if (project.performCompileTimeResolution.not()) return@with
@@ -197,8 +201,8 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         }
 
         val folder = outputDirectory
-        val file = File(folder, "slimjar.json")
-
+        val file = File(folder, "slimjar-resolutions.json")
+        file.delete()
         val mapType: Type = object : TypeToken<MutableMap<String, ResolutionResult>>() {}.type
         val preResolved: MutableMap<String, ResolutionResult> = if (file.exists()) {
             gson.fromJson(FileReader(file), mapType)
@@ -262,9 +266,12 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
 
         if (folder.exists().not()) folder.mkdirs()
 
-        FileWriter(File(folder, "slimjar-resolutions.json")).use {
+        FileWriter(file).use {
             gson.toJson(result, it)
         }
+
+        if (shadowWriteFolder.exists().not()) shadowWriteFolder.mkdirs()
+        file.copyTo(File(shadowWriteFolder, file.name), true)
     }
 
 
