@@ -43,19 +43,23 @@ import io.github.slimjar.resolver.enquirer.PingingRepositoryEnquirerFactory
 import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector
 import io.github.slimjar.resolver.pinger.HttpURLPinger
 import io.github.slimjar.resolver.pinger.URLPinger
-import io.github.slimjar.resolver.strategy.*
+import io.github.slimjar.resolver.strategy.MavenChecksumPathResolutionStrategy
+import io.github.slimjar.resolver.strategy.MavenPathResolutionStrategy
+import io.github.slimjar.resolver.strategy.MavenPomPathResolutionStrategy
+import io.github.slimjar.resolver.strategy.MavenSnapshotPathResolutionStrategy
+import io.github.slimjar.resolver.strategy.MediatingPathResolutionStrategy
+import io.github.slimjar.resolver.strategy.PathResolutionStrategy
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableDependency
 import org.gradle.api.tasks.diagnostics.internal.graph.nodes.RenderableModuleResult
-import org.gradle.kotlin.dsl.maven
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -64,8 +68,9 @@ import java.net.URL
 import java.util.stream.Collectors
 import javax.inject.Inject
 
+
 @CacheableTask
-open class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
+abstract class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
 
     // Find by name since it won't always be present
     private val apiConfig = project.configurations.findByName(SLIM_API_CONFIGURATION_NAME)
@@ -77,8 +82,14 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
     @Input
     var shade = true
 
+    val outputDirectory: File = File("${project.buildDir}/resources/main/")
+        @OutputDirectory
+        get
+
+
     init {
         group = "slimJar"
+        inputs.files(config)
     }
 
     open fun relocate(original: String, relocated: String): SlimJar {
@@ -145,7 +156,8 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         // Note: Commented out to allow creation of empty dependency file
         // if (dependencies.isEmpty() || repositories.isEmpty()) return
 
-        val folder = File("${buildDir}/resources/main/")
+        val folder = File("${buildDir}/resources/slimjar/")
+        //println("Folder exists: ${folder.exists()}")
         if (folder.exists().not()) folder.mkdirs()
 
         FileWriter(File(folder, "slimjar.json")).use {
@@ -172,20 +184,21 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
         }
     }
 
-    // Finds jars to be isolated and adds them to final jar
     @TaskAction
     internal fun generateResolvedDependenciesFile() = with(project) {
         if (project.performCompileTimeResolution.not()) return@with
 
         fun Collection<Dependency>.flatten(): MutableSet<Dependency> {
-            return this.flatMap{ it.transitive.flatten() + it }.toMutableSet()
+            return this.flatMap { it.transitive.flatten() + it }.toMutableSet()
         }
+
         val gson = GsonBuilder()
             .setPrettyPrinting()
             .create()
 
-        val folder = File("${buildDir}/resources/main/")
-        val file = File(folder, "slimjar-resolutions.json")
+        val folder = outputDirectory
+        val file = File(folder, "slimjar.json")
+
         val mapType: Type = object : TypeToken<MutableMap<String, ResolutionResult>>() {}.type
         val preResolved: MutableMap<String, ResolutionResult> = if (file.exists()) {
             gson.fromJson(FileReader(file), mapType)
@@ -202,6 +215,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             .filterNot { it.url.toString().startsWith("file") }
             .toSet()
             .map { Repository(it.url.toURL()) }
+
         val releaseStrategy: PathResolutionStrategy = MavenPathResolutionStrategy()
         val snapshotStrategy: PathResolutionStrategy = MavenSnapshotPathResolutionStrategy()
         val resolutionStrategy: PathResolutionStrategy =
@@ -240,6 +254,7 @@ open class SlimJar @Inject constructor(private val config: Configuration) : Defa
             result.putIfAbsent(it.key, it.value)
         }
         if (folder.exists().not()) folder.mkdirs()
+
         FileWriter(File(folder, "slimjar-resolutions.json")).use {
             GsonBuilder()
                 .setPrettyPrinting()
