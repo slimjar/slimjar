@@ -171,11 +171,11 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             gson.toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
         }
 
+        // Copies to shadow's main folder
         if (shadowWriteFolder.exists().not()) shadowWriteFolder.mkdirs()
         file.copyTo(File(shadowWriteFolder, file.name), true)
     }
 
-    // FIXME: 9/2/2021 Fix folders on this
     // Finds jars to be isolated and adds them to final jar
     @TaskAction
     internal fun includeIsolatedJars() = with(project) {
@@ -184,10 +184,13 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             val jarTask = shadowTask ?: it.getTasksByName("jar", true).firstOrNull()
             jarTask?.let { task ->
                 val archive = task.outputs.files.singleFile
-                val folder = File("${buildDir}/resources/main/")
-                if (folder.exists().not()) folder.mkdirs()
-                val output = File(folder, "${it.name}.isolated-jar")
+                if (outputDirectory.exists().not()) outputDirectory.mkdirs()
+                val output = File(outputDirectory, "${it.name}.isolated-jar")
                 archive.copyTo(output, true)
+
+                // Copies to shadow's main folder
+                if (shadowWriteFolder.exists().not()) shadowWriteFolder.mkdirs()
+                output.copyTo(File(shadowWriteFolder, output.name), true)
             }
         }
     }
@@ -200,8 +203,7 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             return this.flatMap { it.transitive.flatten() + it }.toMutableSet()
         }
 
-        val folder = outputDirectory
-        val file = File(folder, "slimjar-resolutions.json")
+        val file = File(outputDirectory, "slimjar-resolutions.json")
 
         val mapType: Type = object : TypeToken<MutableMap<String, ResolutionResult>>() {}.type
         val preResolved: MutableMap<String, ResolutionResult> = if (file.exists()) {
@@ -263,12 +265,13 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             result.putIfAbsent(it.key, it.value)
         }
 
-        if (folder.exists().not()) folder.mkdirs()
+        if (outputDirectory.exists().not()) outputDirectory.mkdirs()
 
         FileWriter(file).use {
             gson.toJson(result, it)
         }
 
+        // Copies to shadow's main folder
         if (shadowWriteFolder.exists().not()) shadowWriteFolder.mkdirs()
         file.copyTo(File(shadowWriteFolder, file.name), true)
     }
