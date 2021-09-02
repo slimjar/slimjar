@@ -49,6 +49,10 @@ import io.github.slimjar.resolver.strategy.MavenPomPathResolutionStrategy
 import io.github.slimjar.resolver.strategy.MavenSnapshotPathResolutionStrategy
 import io.github.slimjar.resolver.strategy.MediatingPathResolutionStrategy
 import io.github.slimjar.resolver.strategy.PathResolutionStrategy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -65,9 +69,10 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.lang.reflect.Type
 import java.net.URL
-import java.util.stream.Collectors
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
+private val scope = CoroutineScope(IO)
 
 @CacheableTask
 abstract class SlimJar @Inject constructor(private val config: Configuration) : DefaultTask() {
@@ -79,9 +84,10 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
     private val mirrors = mutableSetOf<Mirror>()
     private val isolatedProjects = mutableSetOf<Project>()
 
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+
     @Input
     var shade = true
-
     val outputDirectory: File = File("${project.buildDir}/resources/main/")
         @OutputDirectory
         get
@@ -161,10 +167,7 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         if (folder.exists().not()) folder.mkdirs()
 
         FileWriter(File(folder, "slimjar.json")).use {
-            GsonBuilder()
-                .setPrettyPrinting()
-                .create()
-                .toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
+            gson.toJson(DependencyData(mirrors, repositories, dependencies, relocations), it)
         }
     }
 
@@ -184,6 +187,7 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     @TaskAction
     internal fun generateResolvedDependenciesFile() = with(project) {
         if (project.performCompileTimeResolution.not()) return@with
@@ -191,10 +195,6 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         fun Collection<Dependency>.flatten(): MutableSet<Dependency> {
             return this.flatMap { it.transitive.flatten() + it }.toMutableSet()
         }
-
-        val gson = GsonBuilder()
-            .setPrettyPrinting()
-            .create()
 
         val folder = outputDirectory
         val file = File(folder, "slimjar.json")
@@ -205,12 +205,13 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         } else {
             mutableMapOf()
         }
-        val dependencies =
-            RenderableModuleResult(config.incoming.resolutionResult.root)
-                .children
-                .mapNotNull {
-                    it.toSlimDependency()
-                }.toMutableSet().flatten()
+        val dependencies = RenderableModuleResult(config.incoming.resolutionResult.root)
+            .children
+            .mapNotNull {
+                it.toSlimDependency()
+            }.toMutableSet().flatten()
+
+
         val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
             .filterNot { it.url.toString().startsWith("file") }
             .toSet()
@@ -237,29 +238,32 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             enquirerFactory,
             mapOf()
         )
-        val result: MutableMap<String, ResolutionResult> = dependencies
-            // Filter to enforce incremental resolution
-            .filter {
-                preResolved[it.toString()]?.let { pre ->
-                    repositories.none { r ->
-                        pre.repository.url.toString() == r.url.toString()
-                    }
-                } ?: true
-            }
-            .parallelStream()
-            .map { it.toString() to resolver.resolve(it).orElse(null) }
-            .filter { it.second != null }
-            .collect(Collectors.toMap({ e -> e.first }, { e -> e.second }))
+        val result: MutableMap<String, ResolutionResult> = runBlocking(IO) {
+            dependencies
+                // Filter to enforce incremental resolution
+                .filter {
+                    preResolved[it.toString()]?.let { pre ->
+                        repositories.none { r ->
+                            pre.repository.url.toString() == r.url.toString()
+                        }
+                    } ?: true
+                }
+                .map {
+                    scope.async { it.toString() to resolver.resolve(it).orElse(null) }
+                }
+                .associate { it.await() }
+                .filterValues { it != null }
+                .toMutableMap()
+        }
+
         preResolved.forEach {
             result.putIfAbsent(it.key, it.value)
         }
+
         if (folder.exists().not()) folder.mkdirs()
 
         FileWriter(File(folder, "slimjar-resolutions.json")).use {
-            GsonBuilder()
-                .setPrettyPrinting()
-                .create()
-                .toJson(result, it)
+            gson.toJson(result, it)
         }
     }
 
@@ -285,7 +289,6 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
         relocations.add(rule)
         return this
     }
-
 
     /**
      * Turns a [RenderableDependency] into a [Dependency]] with all its transitives

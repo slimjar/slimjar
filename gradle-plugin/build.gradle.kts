@@ -6,7 +6,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `groovy`
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.5.30"
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
     `maven-publish`
@@ -19,14 +19,13 @@ repositories {
     maven("https://plugins.gradle.org/m2/")
 }
 
-
-
 val shadowImplementation: Configuration by configurations.creating
 configurations["compileOnly"].extendsFrom(shadowImplementation)
 configurations["testImplementation"].extendsFrom(shadowImplementation)
 
 dependencies {
     shadowImplementation(kotlin("stdlib", "1.4.20"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     shadowImplementation(project(":slimjar"))
     shadowImplementation("com.google.code.gson:gson:2.8.6")
 
@@ -104,6 +103,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
+            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
         }
     }
 
