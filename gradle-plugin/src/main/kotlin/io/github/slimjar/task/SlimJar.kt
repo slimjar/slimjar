@@ -202,7 +202,7 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
 
         val folder = outputDirectory
         val file = File(folder, "slimjar-resolutions.json")
-        file.delete()
+
         val mapType: Type = object : TypeToken<MutableMap<String, ResolutionResult>>() {}.type
         val preResolved: MutableMap<String, ResolutionResult> = if (file.exists()) {
             gson.fromJson(FileReader(file), mapType)
@@ -214,7 +214,6 @@ abstract class SlimJar @Inject constructor(private val config: Configuration) : 
             .mapNotNull {
                 it.toSlimDependency()
             }.toMutableSet().flatten()
-
 
         val repositories = repositories.filterIsInstance<MavenArtifactRepository>()
             .filterNot { it.url.toString().startsWith("file") }
