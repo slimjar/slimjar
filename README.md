@@ -49,7 +49,7 @@ dependencies {
 }
 
 slimJar {
-  relocate 'a.b.c' 'm.n.o'
+  relocate 'a.b.c', 'm.n.o'
 }
 ```
 
