@@ -77,7 +77,7 @@ class SlimJarPlugin : Plugin<Project> {
         }
         project.dependencies.extra.set(
             "slimjar",
-            asGroovyClosure("+") { version -> "io.github.slimjar:slimjar:$version" }
+            asGroovyClosure("+") { version -> slimJarLib(version) }
         )
         // Hooks into shadow to inject relocations
         val shadowTask = tasks.withType(ShadowJar::class.java).firstOrNull() ?: return
@@ -90,12 +90,10 @@ class SlimJarPlugin : Plugin<Project> {
             }
         }
 
-        /*slimJar.outputs.upToDateWhen {
-            true
-        }*/
-
         // Runs the task once resources are being processed to save the json file
         tasks.findByName(RESOURCES_TASK)?.finalizedBy(slimJar)
     }
 
 }
+
+internal fun slimJarLib(version: String) = "io.github.slimjar:slimjar:$version"

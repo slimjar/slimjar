@@ -27,11 +27,11 @@
 package io.github.slimjar.func
 
 import io.github.slimjar.exceptions.ConfigurationNotFoundException
+import io.github.slimjar.slimJarLib
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.maven
 
 /**
  * Checks in the gradle.properties if should or not resolve dependencies at compile time
@@ -77,13 +77,9 @@ fun Project.createConfig(configName: String, vararg extends: String): Configurat
 /**
  * Extension for KDSL support
  */
-fun DependencyHandlerScope.slimjar(version: String = "+"): String =
-    (extensions.getByName("slimjar") as? (String) -> String)?.let { it(version) }
-        ?: throw IllegalStateException()
+fun DependencyHandlerScope.slimjar(version: String = "+"): String = slimJarLib(version)
 
 /**
  * Extension for KDSL support
  */
-fun DependencyHandler.slimjar(version: String = "+"): String =
-    (extensions.getByName("slimjar") as? (String) -> String)?.let { it(version) }
-        ?: throw IllegalStateException()
+fun DependencyHandler.slimjar(version: String = "+"): String = slimJarLib(version)
