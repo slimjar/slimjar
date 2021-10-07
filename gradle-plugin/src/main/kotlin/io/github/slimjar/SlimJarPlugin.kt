@@ -29,9 +29,12 @@ import io.github.slimjar.exceptions.ShadowNotFoundException
 import io.github.slimjar.func.applyReleaseRepo
 import io.github.slimjar.func.applySnapshotRepo
 import io.github.slimjar.func.createConfig
+import io.github.slimjar.func.slimApi
 import io.github.slimjar.task.SlimJar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.maven
@@ -74,6 +77,11 @@ class SlimJarPlugin : Plugin<Project> {
             if (applySnapshotRepo) {
                 repositories.maven("https://repo.vshnv.tech/snapshots/")
             }
+            if (plugins.hasPlugin("java-library")) {
+                scanSlimApis(project).forEach {
+                    project.dependencies.slimApi(it)
+                }
+            }
         }
         project.dependencies.extra.set(
             "slimjar",
@@ -98,4 +106,21 @@ class SlimJarPlugin : Plugin<Project> {
         tasks.findByName(RESOURCES_TASK)?.finalizedBy(slimJar)
     }
 
+    private fun scanSlimApis(project: Project): Collection<Dependency> {
+        val found = HashSet<Dependency>()
+        project.configurations.findByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME)
+            ?.dependencies
+            ?.filterIsInstance<DefaultProjectDependency>()
+            ?.map { it.dependencyProject }
+            ?.forEach {
+                found.addAll(scanSlimApis(it))
+                it.configurations.findByName(SLIM_API_CONFIGURATION_NAME)
+                    ?.dependencies
+                    ?.filterNotNull()
+                    ?.forEach { dep ->
+                        found.add(dep)
+                    }
+            }
+        return found
+    }
 }
