@@ -28,6 +28,7 @@ package io.github.slimjar.downloader.output;
 import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,12 +44,8 @@ public final class ChanneledFileOutputWriter implements OutputWriter {
     public File writeFrom(final InputStream inputStream, final long length) throws IOException {
         LOGGER.log(Level.FINE, "Attempting to write from inputStream...");
         if (!outputFile.exists()) {
-            LOGGER.log(Level.FINE, "Writing {0} bytes...", length);
-            try (final ReadableByteChannel channel = Channels.newChannel(inputStream)) {
-                try (final FileOutputStream output = new FileOutputStream(outputFile)) {
-                    output.getChannel().transferFrom(channel, 0, length);
-                }
-            }
+            LOGGER.log(Level.FINE, "Writing {0} bytes...", length == -1 ? "unknown" : length);
+            Files.copy(inputStream, outputFile.toPath());
         }
         inputStream.close();
         return outputFile;
