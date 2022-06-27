@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.hierynomus.license-base' version '0.15.0'
+    id 'com.github.hierynomus.license-base' version '0.16.1'
 }
 
 allprojects {
@@ -21,7 +21,7 @@ allprojects {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
