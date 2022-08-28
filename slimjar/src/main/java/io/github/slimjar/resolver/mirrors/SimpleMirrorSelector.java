@@ -27,16 +27,15 @@ package io.github.slimjar.resolver.mirrors;
 import io.github.slimjar.resolver.data.Mirror;
 import io.github.slimjar.resolver.data.Repository;
 
-
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public final class SimpleMirrorSelector implements MirrorSelector {
-    public static final String DEFAULT_CENTRAL_MIRROR_URL = "https://repo.vshnv.tech/";
     public static final String CENTRAL_URL = "https://repo.maven.apache.org/maven2/";
     public static final String ALT_CENTRAL_URL = "https://repo1.maven.org/maven2/";
+    public static final String DEFAULT_CENTRAL_MIRROR_URL = ALT_CENTRAL_URL;
     private static final Collection<String> CENTRAL_REPO = Arrays.asList(CENTRAL_URL, ALT_CENTRAL_URL);
     private final Collection<Repository> centralMirrors;
 
@@ -45,7 +44,7 @@ public final class SimpleMirrorSelector implements MirrorSelector {
     }
 
     @Override
-    public Collection<Repository> select(final Collection<Repository> mainRepositories, final Collection<Mirror> mirrors) throws MalformedURLException {
+    public Collection<Repository> select(final Collection<Repository> mainRepositories, final Collection<Mirror> mirrors) {
         final Collection<URL> originals = mirrors.stream()
                 .map(Mirror::getOriginal)
                 .collect(Collectors.toSet());
