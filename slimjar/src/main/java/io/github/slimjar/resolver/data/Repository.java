@@ -24,11 +24,14 @@
 
 package io.github.slimjar.resolver.data;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
 public final class Repository {
+    public static final String CENTRAL_URL = "https://repo1.maven.org/maven2/";
 
+    private static Repository centralInstance;
     private final URL url;
 
     public Repository(URL url) {
@@ -59,4 +62,10 @@ public final class Repository {
                 '}';
     }
 
+    public static Repository central() throws MalformedURLException {
+        if (centralInstance == null) {
+            centralInstance = new Repository(new URL(CENTRAL_URL));
+        }
+        return centralInstance;
+    }
 }

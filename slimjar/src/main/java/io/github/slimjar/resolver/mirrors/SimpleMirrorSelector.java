@@ -33,12 +33,6 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public final class SimpleMirrorSelector implements MirrorSelector {
-    private final Collection<Repository> centralMirrors;
-
-    public SimpleMirrorSelector(final Collection<Repository> centralMirrors) {
-        this.centralMirrors = centralMirrors;
-    }
-
     @Override
     public Collection<Repository> select(final Collection<Repository> mainRepositories, final Collection<Mirror> mirrors) {
         final Collection<URL> originals = mirrors.stream()
