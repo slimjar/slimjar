@@ -30,12 +30,14 @@ import io.github.slimjar.injector.DependencyInjector;
 import io.github.slimjar.injector.loader.*;
 import io.github.slimjar.resolver.ResolutionResult;
 import io.github.slimjar.resolver.data.DependencyData;
+import io.github.slimjar.resolver.data.Repository;
 import io.github.slimjar.resolver.reader.dependency.DependencyDataProvider;
 import io.github.slimjar.resolver.reader.resolution.PreResolutionDataProvider;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -72,7 +74,7 @@ public final class InjectingApplicationBuilder extends ApplicationBuilder {
     public static ApplicationBuilder createAppending(final String applicationName, final ClassLoader classLoader) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         return new InjectingApplicationBuilder(applicationName, (ApplicationBuilder builder) -> {
             try {
-                return InjectableFactory.create(builder.getDownloadDirectoryPath(), builder.getInternalRepositories(), classLoader);
+                return InjectableFactory.create(builder.getDownloadDirectoryPath(), Collections.singleton(Repository.central()), classLoader);
             } catch (URISyntaxException | ReflectiveOperationException | NoSuchAlgorithmException | IOException exception) {
                 exception.printStackTrace();
             }
