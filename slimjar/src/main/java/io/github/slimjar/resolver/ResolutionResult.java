@@ -74,6 +74,6 @@ public final class ResolutionResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dependencyURL.toString(), checksumURL.toString(), isAggregator);
+        return Objects.hash(dependencyURL != null ? dependencyURL.toString() : null, checksumURL != null ? checksumURL.toString() : null, isAggregator);
     }
 }
