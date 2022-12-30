@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '1.2.6'
+version '1.2.7'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'me.lucko:jar-relocator:1.5'
+    testImplementation 'me.lucko:jar-relocator:1.6'
     testImplementation 'com.google.code.gson:gson:2.9.0'
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
@@ -77,6 +77,7 @@ publishing {
                 basic(BasicAuthentication)
             }
         }
+        mavenLocal()
     }
 }
 
