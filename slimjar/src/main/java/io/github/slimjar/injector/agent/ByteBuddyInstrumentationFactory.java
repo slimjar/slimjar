@@ -39,7 +39,6 @@ import io.github.slimjar.relocation.facade.JarRelocatorFacadeFactory;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
-import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.util.Packages;
 
 import java.io.File;
