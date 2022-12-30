@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'me.lucko:jar-relocator:1.5'
+    testImplementation 'me.lucko:jar-relocator:1.6'
     testImplementation 'com.google.code.gson:gson:2.9.0'
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
