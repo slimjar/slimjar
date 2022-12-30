@@ -49,6 +49,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -61,6 +62,7 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
     private final URL agentJarUrl;
     private final ModuleExtractor extractor;
     private final JarRelocatorFacadeFactory relocatorFacadeFactory;
+    private Collection<Repository> repositories;
 
     public ByteBuddyInstrumentationFactory(final JarRelocatorFacadeFactory relocatorFacadeFactory) throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         this.relocatorFacadeFactory = relocatorFacadeFactory;
@@ -95,7 +97,7 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
                 .generate();
 
         ApplicationBuilder.injecting("SlimJar-Agent", classLoader)
-                .dataProviderFactory((dataUrl) -> ByteBuddyInstrumentationFactory::getDependency)
+                .dataProviderFactory((dataUrl) -> this::getDependency)
                 .relocatorFactory((rules) -> new PassthroughRelocator())
                 .relocationHelperFactory((rel) -> (dependency, file) -> file)
                 .build();
@@ -118,7 +120,7 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
     }
 
 
-    private static DependencyData getDependency() throws MalformedURLException {
+    private DependencyData getDependency() throws MalformedURLException {
         final Dependency byteBuddy = new Dependency(
                 "net.bytebuddy",
                 "byte-buddy-agent",
@@ -126,15 +128,19 @@ public final class ByteBuddyInstrumentationFactory implements InstrumentationFac
                 null,
                 Collections.emptyList()
         );
-        final Repository centralRepository = new Repository(new URL(SimpleMirrorSelector.CENTRAL_URL));
         return new DependencyData(
                 Collections.emptySet(),
-                Collections.singleton(centralRepository),
+                repositories != null ? repositories : Collections.singleton(Repository.central()),
                 Collections.singleton(byteBuddy),
                 Collections.emptyList()
         );
     }
 
+    public ByteBuddyInstrumentationFactory internalRepositories(final Collection<Repository> repositories) {
+        this.repositories = repositories;
+        return this;
+    }
+    
     private static String generatePattern() {
         return String.format("slimjar.%s", UUID.randomUUID().toString());
     }

@@ -109,6 +109,7 @@ public abstract class ApplicationBuilder {
     private DependencyDownloaderFactory downloaderFactory;
     private DependencyVerifierFactory verifierFactory;
     private MirrorSelector mirrorSelector;
+    private Collection<Repository> internalRepositories;
     private ProcessLogger logger;
 
     /**
@@ -294,6 +295,11 @@ public abstract class ApplicationBuilder {
         return this;
     }
 
+    public final ApplicationBuilder internalRepositories(final Collection<Repository> repositories) {
+        this.internalRepositories = repositories;
+        return this;
+    }
+
     public final ApplicationBuilder logger(final ProcessLogger logger) {
         this.logger = logger;
         return this;
@@ -326,7 +332,7 @@ public abstract class ApplicationBuilder {
 
     protected final RelocatorFactory getRelocatorFactory() throws ReflectiveOperationException, NoSuchAlgorithmException, IOException, URISyntaxException {
         if (relocatorFactory == null) {
-            final JarRelocatorFacadeFactory jarRelocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create(getDownloadDirectoryPath(), Collections.singleton(Repository.central()));
+            final JarRelocatorFacadeFactory jarRelocatorFacadeFactory = ReflectiveJarRelocatorFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.relocatorFactory = new JarFileRelocatorFactory(jarRelocatorFacadeFactory);
         }
         return relocatorFactory;
@@ -334,7 +340,7 @@ public abstract class ApplicationBuilder {
 
     protected final DependencyDataProviderFactory getModuleDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         if (moduleDataProviderFactory == null) {
-            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), Collections.singleton(Repository.central()));
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.moduleDataProviderFactory = new ExternalDependencyDataProviderFactory(gsonFacadeFactory);
         }
         return moduleDataProviderFactory;
@@ -342,7 +348,7 @@ public abstract class ApplicationBuilder {
 
     protected final DependencyDataProviderFactory getDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         if (dataProviderFactory == null) {
-            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), Collections.singleton(Repository.central()));
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.dataProviderFactory = new GsonDependencyDataProviderFactory(gsonFacadeFactory);
         }
         return dataProviderFactory;
@@ -350,7 +356,7 @@ public abstract class ApplicationBuilder {
 
     protected final PreResolutionDataProviderFactory getPreResolutionDataProviderFactory() throws URISyntaxException, ReflectiveOperationException, NoSuchAlgorithmException, IOException {
         if (preResolutionDataProviderFactory == null) {
-            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), Collections.singleton(Repository.central()));
+            final GsonFacadeFactory gsonFacadeFactory = ReflectiveGsonFacadeFactory.create(getDownloadDirectoryPath(), getInternalRepositories());
             this.preResolutionDataProviderFactory = new GsonPreResolutionDataProviderFactory(gsonFacadeFactory);
         }
         return preResolutionDataProviderFactory;
@@ -418,6 +424,14 @@ public abstract class ApplicationBuilder {
         }
         return mirrorSelector;
     }
+
+    protected final Collection<Repository> getInternalRepositories() throws MalformedURLException {
+        if (internalRepositories == null) {
+            internalRepositories = Collections.singleton(Repository.central());
+        }
+        return internalRepositories;
+    }
+
     protected final ProcessLogger getLogger() {
         if (logger == null) {
             logger = (msg, args) -> {};

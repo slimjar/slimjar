@@ -32,7 +32,6 @@ import io.github.slimjar.relocation.RelocationRule;
 import io.github.slimjar.resolver.data.Dependency;
 import io.github.slimjar.resolver.data.DependencyData;
 import io.github.slimjar.resolver.data.Repository;
-import io.github.slimjar.resolver.mirrors.SimpleMirrorSelector;
 import io.github.slimjar.util.Packages;
 
 import java.io.File;
@@ -42,7 +41,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -101,7 +99,7 @@ public final class ReflectiveJarRelocatorFacadeFactory implements JarRelocatorFa
         final Dependency jarRelocator = new Dependency(
                 Packages.fix("me#lucko"),
                 "jar-relocator",
-                "1.4",
+                "1.6",
                 null,
                 Arrays.asList(asm, asmCommons)
         );
@@ -125,6 +123,7 @@ public final class ReflectiveJarRelocatorFacadeFactory implements JarRelocatorFa
                 .dataProviderFactory((url) -> () -> ReflectiveJarRelocatorFacadeFactory.getJarRelocatorDependency(repositories))
                 .relocatorFactory((rules) -> new PassthroughRelocator())
                 .relocationHelperFactory((relocator) -> (dependency,file) -> file)
+                .internalRepositories(repositories)
                 .build();
         final Class<?> jarRelocatorClass = Class.forName(Packages.fix(JAR_RELOCATOR_PACKAGE), true, classLoader);
         final Class<?> relocationClass = Class.forName(Packages.fix(RELOCATION_PACKAGE), true, classLoader);
